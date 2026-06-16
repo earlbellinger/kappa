@@ -631,9 +631,13 @@ def generate_final_cycle_summary(record: dict[str, object], output_dir: Path) ->
         raise RuntimeError(f"Non-positive final-cycle period from {history_path}: {period_days}")
     max_light_local_idx = min(range(len(cycle_mag_v)), key=lambda idx: cycle_mag_v[idx])
     max_light_age_days = cycle_age_days[max_light_local_idx]
+    max_light_phase = (max_light_age_days - cycle_age_days[0]) / period_days
 
-    phase = [((age - max_light_age_days) / period_days) % 1.0 for age in cycle_age_days]
-    order = sorted(range(len(phase)), key=lambda idx: phase[idx])
+    # Keep the displayed cycle chronological.  Rephasing a radius-bounded cycle
+    # to max light moves the cycle boundary into the middle of the plotted
+    # lightcurve when a model has not settled into a clean limit cycle.
+    phase = [(age - cycle_age_days[0]) / period_days for age in cycle_age_days]
+    order = list(range(len(phase)))
 
     csv_path = output_dir / f"{record['prefix']}_final_cycle_lightcurve.csv"
     json_path = output_dir / f"{record['prefix']}_final_cycle_summary.json"
@@ -657,8 +661,10 @@ def generate_final_cycle_summary(record: dict[str, object], output_dir: Path) ->
         "history_file": str(history_path),
         "period_days": float(period_days),
         "max_light_age_days": float(max_light_age_days),
-        "phase_reference_age_days": float(max_light_age_days),
-        "cycle_selection": "radius-maximum to radius-maximum",
+        "max_light_phase": float(max_light_phase),
+        "phase_reference_age_days": float(cycle_age_days[0]),
+        "phase_reference_kind": "cycle-start radius maximum",
+        "cycle_selection": "radius-maximum to radius-maximum, chronological phase",
         "cycle_max_light_local_index": int(max_light_local_idx),
         "radius_min_rsun": float(min(cycle_radius_rsun)),
         "radius_max_rsun": float(max(cycle_radius_rsun)),
