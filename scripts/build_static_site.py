@@ -118,17 +118,25 @@ def copy_model_assets(
     asset_dir = output_dir / "models" / model_id
     asset_dir.mkdir(parents=True, exist_ok=True)
 
+    verify_path = source_output_dir / "verification_summary.json"
+    verify = load_json(verify_path)
+    verified = isinstance(verify, dict) and verify.get("passed") is True
+    verification_failed = isinstance(verify, dict) and verify.get("passed") is False
+
     copied: dict[str, str | None] = {}
     source_map = {
         "gif": source_output_dir / f"{product_stem}.gif",
         "png": source_output_dir / f"{product_stem}.png",
         "summary": source_output_dir / f"{product_stem}_summary.json",
-        "verify": source_output_dir / "verification_summary.json",
+        "verify": verify_path,
         "lightcurve_csv": source_output_dir / f"{prefix}_final_cycle_lightcurve.csv",
         "final_cycle_summary": source_output_dir / f"{prefix}_final_cycle_summary.json",
         "run_status": source_output_dir / "run_status.json",
     }
     for key, source in source_map.items():
+        if key in {"gif", "png"} and not verified:
+            copied[key] = None
+            continue
         if source.suffix.lower() == ".json":
             copied[key] = copy_json_if_exists(source, asset_dir / source.name, output_dir, rre_root)
         elif source.suffix.lower() in {".csv", ".txt"}:
@@ -137,10 +145,11 @@ def copy_model_assets(
             copied[key] = copy_if_exists(source, asset_dir / source.name, output_dir)
 
     summary = load_json(source_map["summary"])
-    verify = load_json(source_map["verify"])
     status = "pending"
-    if isinstance(verify, dict) and verify.get("passed") is True:
+    if verified:
         status = "verified"
+    elif verification_failed:
+        status = "verification failed"
     if live_record and live_record.get("active_stage"):
         status = f"running: {live_record.get('active_stage')}"
     if not source_map["gif"].exists() and not source_map["png"].exists():
@@ -160,11 +169,12 @@ def copy_model_assets(
         "L": record.get("RSP_L"),
         "Z": record.get("RSP_Z"),
         "assets": copied,
-        "gif_mb": file_size_mb(source_map["gif"]),
+        "gif_mb": file_size_mb(source_map["gif"]) if verified else None,
         "profile_count": live_record.get("profile_count") if live_record else None,
         "latest_period": live_record.get("latest_period") if live_record else None,
         "max_periods": live_record.get("max_periods") if live_record else None,
         "verification_passed": live_record.get("verification_passed") if live_record else None,
+        "verification_failures": verify.get("failures", []) if isinstance(verify, dict) else [],
         "phase_curve_break_phases": phase_breaks,
     }
 
@@ -232,7 +242,15 @@ def card_html(model: dict[str, object]) -> str:
     verify = assets.get("verify")
     lightcurve = assets.get("lightcurve_csv")
     image = gif or png
-    badge_class = "ok" if model["status"] == "verified" else ("warn" if "running" in str(model["status"]) else "muted")
+    badge_class = (
+        "ok"
+        if model["status"] == "verified"
+        else "bad"
+        if "failed" in str(model["status"])
+        else "warn"
+        if "running" in str(model["status"])
+        else "muted"
+    )
     phase_breaks = model.get("phase_curve_break_phases") or []
     break_text = ""
     if phase_breaks:
@@ -244,11 +262,11 @@ def card_html(model: dict[str, object]) -> str:
             links.append(f'<a href="{html.escape(str(href))}">{label}</a>')
     if not links:
         links.append('<span class="muted">awaiting render</span>')
-    image_html = (
-        f'<a class="media" href="{html.escape(str(image))}"><img src="{html.escape(str(image))}" alt="{html.escape(str(model["model_id"]))} animation"></a>'
-        if image
-        else '<div class="media placeholder">queued</div>'
-    )
+    if image:
+        image_html = f'<a class="media" href="{html.escape(str(image))}"><img src="{html.escape(str(image))}" alt="{html.escape(str(model["model_id"]))} animation"></a>'
+    else:
+        placeholder = "verification failed" if "failed" in str(model["status"]) else "queued"
+        image_html = f'<div class="media placeholder">{html.escape(placeholder)}</div>'
     progress_bits = []
     if model.get("profile_count"):
         progress_bits.append(f"{model['profile_count']} profiles")
@@ -256,6 +274,9 @@ def card_html(model: dict[str, object]) -> str:
         progress_bits.append(f"period {model['latest_period']} / {model['max_periods']}")
     if model.get("gif_mb") is not None:
         progress_bits.append(f"{float(model['gif_mb']):.1f} MB GIF")
+    failures = model.get("verification_failures") or []
+    if failures:
+        progress_bits.append("; ".join(str(item) for item in failures[:2]))
     return f"""
       <article class="card">
         <div class="card-head">
@@ -316,6 +337,7 @@ def write_index(output_dir: Path, models: list[dict[str, object]], metadata_link
     .badge {{ border:1px solid currentColor; border-radius:7px; padding:4px 8px; white-space:nowrap; font-size:12px; }}
     .badge.ok {{ color:#83d18d; }}
     .badge.warn {{ color:var(--gold); }}
+    .badge.bad {{ color:#f06a6a; }}
     .badge.muted {{ color:#7a7d88; }}
     .media {{ display:block; border-bottom:0; background:#000; }}
     img {{ display:block; width:100%; height:auto; background:#000; }}
