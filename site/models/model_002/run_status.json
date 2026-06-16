@@ -1,0 +1,364 @@
+{
+  "model_id": "model_002",
+  "run_name": "model_002_M0p5753_Z0p00707_T6044",
+  "registered_existing": false,
+  "run_dir": "<local-rre-root>/rsp_batch_runs/runs/model_002_M0p5753_Z0p00707_T6044",
+  "output_dir": "<local-rre-root>/rsp_batch_runs/output/model_002_M0p5753_Z0p00707_T6044",
+  "prefix": "mesa_rsp_model_002_M0p5753_Z0p00707_T6044",
+  "product_stem": "mesa_rsp_model_002_M0p5753_Z0p00707_T6044_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work",
+  "updated_at": "2026-06-16T20:06:01.718912+00:00",
+  "stages": {
+    "prepared": {
+      "status": "complete",
+      "timestamp": "2026-06-14T19:27:22.422965+00:00"
+    },
+    "create": {
+      "status": "complete",
+      "updated_at": "2026-06-15T04:47:51.492629+00:00",
+      "expected_output": "<local-rre-root>/rsp_batch_runs/runs/model_002_M0p5753_Z0p00707_T6044/final_model_002_M0p5753_Z0p00707_T6044_create.mod",
+      "started_at": "2026-06-15T03:23:27.478567+00:00"
+    },
+    "continue_saturation": {
+      "status": "complete",
+      "updated_at": "2026-06-15T09:36:18.146623+00:00",
+      "expected_output": "<local-rre-root>/rsp_batch_runs/runs/model_002_M0p5753_Z0p00707_T6044/final_model_002_M0p5753_Z0p00707_T6044_saturated.mod",
+      "started_at": "2026-06-15T04:47:51.495128+00:00"
+    },
+    "restart": {
+      "status": "complete",
+      "updated_at": "2026-06-15T09:41:49.582263+00:00",
+      "expected_output": "<local-rre-root>/rsp_batch_runs/runs/model_002_M0p5753_Z0p00707_T6044/final_model_002_M0p5753_Z0p00707_T6044_restart.mod",
+      "started_at": "2026-06-15T09:36:18.148623+00:00"
+    },
+    "deep2cycles": {
+      "status": "complete",
+      "updated_at": "2026-06-15T09:44:39.317018+00:00",
+      "expected_output": "<local-rre-root>/rsp_batch_runs/runs/model_002_M0p5753_Z0p00707_T6044/final_model_002_M0p5753_Z0p00707_T6044_deep2cycles.mod",
+      "started_at": "2026-06-15T09:41:49.583262+00:00"
+    },
+    "final_cycle": {
+      "status": "complete",
+      "updated_at": "2026-06-15T09:44:39.426028+00:00",
+      "expected_output": "<local-rre-root>/rsp_batch_runs/output/model_002_M0p5753_Z0p00707_T6044/mesa_rsp_model_002_M0p5753_Z0p00707_T6044_final_cycle_summary.json",
+      "summary": {
+        "history_file": "<local-rre-root>/rsp_batch_runs/runs/model_002_M0p5753_Z0p00707_T6044/LOGS/history.data",
+        "period_days": 0.7306847876498068,
+        "max_light_age_days": 1918.668084206025,
+        "radius_min_rsun": 5.756342687340446,
+        "radius_max_rsun": 5.817037457388382,
+        "radius_peak_to_peak_rsun": 0.06069477004793633,
+        "teff_min_k": 5883.343303523493,
+        "teff_max_k": 5941.150692644126,
+        "abs_mag_V_min": 0.9222981896959928,
+        "abs_mag_V_max": 0.9545659294350164,
+        "abs_mag_V_peak_to_peak": 0.03226773973902364,
+        "abs_mag_I_min": 0.29337688624904223,
+        "abs_mag_I_max": 0.30930304284192944,
+        "abs_mag_I_peak_to_peak": 0.01592615659288721,
+        "cycle_start_age_days": 1918.2362494949748,
+        "cycle_end_age_days": 1918.9669342826246,
+        "models_in_cycle": 1001,
+        "lightcurve_csv": "<local-rre-root>/rsp_batch_runs/output/model_002_M0p5753_Z0p00707_T6044/mesa_rsp_model_002_M0p5753_Z0p00707_T6044_final_cycle_lightcurve.csv"
+      },
+      "started_at": "2026-06-15T09:44:39.318519+00:00"
+    },
+    "plot": {
+      "status": "complete",
+      "updated_at": "2026-06-16T17:37:22.250347+00:00",
+      "expected_output": "<local-rre-root>/rsp_batch_runs/output/model_002_M0p5753_Z0p00707_T6044/mesa_rsp_model_002_M0p5753_Z0p00707_T6044_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work.gif",
+      "started_at": "2026-06-16T17:36:02.187579+00:00"
+    },
+    "verify": {
+      "status": "complete",
+      "updated_at": "2026-06-16T20:06:01.718406+00:00",
+      "expected_output": "<local-rre-root>/rsp_batch_runs/output/model_002_M0p5753_Z0p00707_T6044/verification_summary.json",
+      "result": {
+        "model_id": "model_002",
+        "run_name": "model_002_M0p5753_Z0p00707_T6044",
+        "profile_count": 3000,
+        "first_profile": "<local-rre-root>/rsp_batch_runs/runs/model_002_M0p5753_Z0p00707_T6044/LOGS/profile1.data",
+        "required_profile_columns_present": true,
+        "missing_profile_columns": [],
+        "summary_path": "<local-rre-root>/rsp_batch_runs/output/model_002_M0p5753_Z0p00707_T6044/mesa_rsp_model_002_M0p5753_Z0p00707_T6044_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work_summary.json",
+        "pressure_work_mode": "gas_plus_pav",
+        "heating_mode": "gas_minus_c",
+        "cycle_source": "final-cycle summary age window",
+        "main_radius_xlim_used": [
+          4.71104329084282,
+          5.865920636905688
+        ],
+        "photosphere_radius_rsun_range": [
+          5.71104329084282,
+          5.765920636905689
+        ],
+        "radius_window_contains_photosphere": true,
+        "continue_saturation_stop": {
+          "log_path": "<local-rre-root>/rsp_batch_runs/output/model_002_M0p5753_Z0p00707_T6044/logs/continue_saturation.log",
+          "exists": true,
+          "stop_reason": "period_number >= max_period_number",
+          "termination_code": "reached max number of periods",
+          "saturated_by_grekm": false,
+          "reached_max_periods": true
+        },
+        "saturated_by_grekm": false,
+        "reached_max_periods": true,
+        "phase_seam": {
+          "path": "<local-rre-root>/rsp_batch_runs/output/model_002_M0p5753_Z0p00707_T6044/mesa_rsp_model_002_M0p5753_Z0p00707_T6044_final_cycle_lightcurve.csv",
+          "exists": true,
+          "row_count": 1001,
+          "parsed_row_count": 1001,
+          "phase_first": 0.0,
+          "phase_last": 0.999000000005,
+          "max_allowed_fraction_of_amplitude": 0.02,
+          "metrics": {
+            "luminosity_lsun": {
+              "seam": 0.00018533934713360622,
+              "amplitude": 0.845825063947899,
+              "fraction_of_amplitude": 0.00021912255268073108
+            },
+            "radius_rsun": {
+              "seam": 0.00011087744000004562,
+              "amplitude": 0.06069477004999957,
+              "fraction_of_amplitude": 0.001826803856554794
+            },
+            "teff_k": {
+              "seam": 0.044212769999830925,
+              "amplitude": 57.80738912000015,
+              "fraction_of_amplitude": 0.0007648290412848662
+            }
+          },
+          "failures": [],
+          "age_monotonic_by_phase": false,
+          "minimum_age_step_days_by_phase": -0.7299541099998805,
+          "ok": true
+        },
+        "phase_seam_ok": true,
+        "passed": true,
+        "failures": [],
+        "verified_at": "2026-06-16T20:06:01.717401+00:00"
+      },
+      "started_at": "2026-06-16T20:06:01.683143+00:00"
+    }
+  },
+  "validation": {
+    "passed": true,
+    "stages": {
+      "create": {
+        "allowed_diffs": {
+          "RSP_L": {
+            "template": "58.6724510000000024d0",
+            "generated": "36.22"
+          },
+          "RSP_Teff": {
+            "template": "6332.6061570000001666d0",
+            "generated": "6044"
+          },
+          "RSP_X": {
+            "template": "0.723844d0",
+            "generated": "0.7289"
+          },
+          "RSP_Z": {
+            "template": "0.0000209050398617d0",
+            "generated": "0.00707"
+          },
+          "RSP_alfa": {
+            "template": "2.1912609999999999d0",
+            "generated": "1.7613d0"
+          },
+          "RSP_alfam": {
+            "template": "0.321575d0",
+            "generated": "0.3076d0"
+          },
+          "RSP_alfat": {
+            "template": "0.01d0",
+            "generated": ".01d0"
+          },
+          "RSP_mass": {
+            "template": "0.773726d0",
+            "generated": "0.5753"
+          },
+          "Zbase": {
+            "template": "0.0000209050398617d0",
+            "generated": "0.00707"
+          },
+          "history_columns_file": {
+            "template": "'history_columns_combined_14507.list'",
+            "generated": "'history_columns_batch.list'"
+          },
+          "save_model_filename": {
+            "template": "'final_combined_14507.mod'",
+            "generated": "'final_model_002_M0p5753_Z0p00707_T6044_create.mod'"
+          }
+        },
+        "unexpected_diffs": {},
+        "passed": true
+      },
+      "continue_saturation": {
+        "allowed_diffs": {
+          "RSP_L": {
+            "template": "58.6724510000000024d0",
+            "generated": "36.22"
+          },
+          "RSP_Teff": {
+            "template": "6332.6061570000001666d0",
+            "generated": "6044"
+          },
+          "RSP_X": {
+            "template": "0.723844d0",
+            "generated": "0.7289"
+          },
+          "RSP_Z": {
+            "template": "0.0000209050398617d0",
+            "generated": "0.00707"
+          },
+          "RSP_alfa": {
+            "template": "2.1912609999999999d0",
+            "generated": "1.7613d0"
+          },
+          "RSP_alfam": {
+            "template": "0.321575d0",
+            "generated": "0.3076d0"
+          },
+          "RSP_alfat": {
+            "template": "0.01d0",
+            "generated": ".01d0"
+          },
+          "RSP_mass": {
+            "template": "0.773726d0",
+            "generated": "0.5753"
+          },
+          "Zbase": {
+            "template": "0.0000209050398617d0",
+            "generated": "0.00707"
+          },
+          "history_columns_file": {
+            "template": "'history_columns_combined_14507.list'",
+            "generated": "'history_columns_batch.list'"
+          },
+          "load_model_filename": {
+            "template": "'final_combined_14507_restart.mod'",
+            "generated": "'final_model_002_M0p5753_Z0p00707_T6044_create.mod'"
+          },
+          "save_model_filename": {
+            "template": "'final_combined_14507_saturated.mod'",
+            "generated": "'final_model_002_M0p5753_Z0p00707_T6044_saturated.mod'"
+          }
+        },
+        "unexpected_diffs": {},
+        "passed": true
+      },
+      "restart": {
+        "allowed_diffs": {
+          "RSP_L": {
+            "template": "58.6724510000000024d0",
+            "generated": "36.22"
+          },
+          "RSP_Teff": {
+            "template": "6332.6061570000001666d0",
+            "generated": "6044"
+          },
+          "RSP_X": {
+            "template": "0.723844d0",
+            "generated": "0.7289"
+          },
+          "RSP_Z": {
+            "template": "0.0000209050398617d0",
+            "generated": "0.00707"
+          },
+          "RSP_alfa": {
+            "template": "2.1912609999999999d0",
+            "generated": "1.7613d0"
+          },
+          "RSP_alfam": {
+            "template": "0.321575d0",
+            "generated": "0.3076d0"
+          },
+          "RSP_alfat": {
+            "template": "0.01d0",
+            "generated": ".01d0"
+          },
+          "RSP_mass": {
+            "template": "0.773726d0",
+            "generated": "0.5753"
+          },
+          "Zbase": {
+            "template": "0.0000209050398617d0",
+            "generated": "0.00707"
+          },
+          "history_columns_file": {
+            "template": "'history_columns_combined_14507.list'",
+            "generated": "'history_columns_batch.list'"
+          },
+          "load_model_filename": {
+            "template": "'final_combined_14507_saturated.mod'",
+            "generated": "'final_model_002_M0p5753_Z0p00707_T6044_saturated.mod'"
+          },
+          "save_model_filename": {
+            "template": "'final_combined_14507_restart.mod'",
+            "generated": "'final_model_002_M0p5753_Z0p00707_T6044_restart.mod'"
+          }
+        },
+        "unexpected_diffs": {},
+        "passed": true
+      },
+      "deep2cycles": {
+        "allowed_diffs": {
+          "RSP_L": {
+            "template": "58.6724510000000024d0",
+            "generated": "36.22"
+          },
+          "RSP_Teff": {
+            "template": "6332.6061570000001666d0",
+            "generated": "6044"
+          },
+          "RSP_X": {
+            "template": "0.723844d0",
+            "generated": "0.7289"
+          },
+          "RSP_Z": {
+            "template": "0.0000209050398617d0",
+            "generated": "0.00707"
+          },
+          "RSP_alfa": {
+            "template": "2.1912609999999999d0",
+            "generated": "1.7613d0"
+          },
+          "RSP_alfam": {
+            "template": "0.321575d0",
+            "generated": "0.3076d0"
+          },
+          "RSP_alfat": {
+            "template": "0.01d0",
+            "generated": ".01d0"
+          },
+          "RSP_mass": {
+            "template": "0.773726d0",
+            "generated": "0.5753"
+          },
+          "Zbase": {
+            "template": "0.0000209050398617d0",
+            "generated": "0.00707"
+          },
+          "history_columns_file": {
+            "template": "'history_columns_combined_14507.list'",
+            "generated": "'history_columns_batch.list'"
+          },
+          "load_model_filename": {
+            "template": "'final_combined_14507_restart.mod'",
+            "generated": "'final_model_002_M0p5753_Z0p00707_T6044_restart.mod'"
+          },
+          "profile_columns_file": {
+            "template": "'profile_columns_combined_14507_deep.list'",
+            "generated": "'profile_columns_batch_deep.list'"
+          },
+          "save_model_filename": {
+            "template": "'final_combined_14507_deep2cycles.mod'",
+            "generated": "'final_model_002_M0p5753_Z0p00707_T6044_deep2cycles.mod'"
+          }
+        },
+        "unexpected_diffs": {},
+        "passed": true
+      }
+    }
+  }
+}

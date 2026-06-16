@@ -1,0 +1,65 @@
+{
+  "model_id": "model_001",
+  "run_name": "model_001_M0p5602_Z0p003592_T6824",
+  "profile_count": 3728,
+  "first_profile": "<local-rre-root>/rsp_batch_runs/runs/model_001_M0p5602_Z0p003592_T6824/LOGS/profile1.data",
+  "required_profile_columns_present": true,
+  "missing_profile_columns": [],
+  "summary_path": "<local-rre-root>/rsp_batch_runs/output/model_001_M0p5602_Z0p003592_T6824/mesa_rsp_model_001_M0p5602_Z0p003592_T6824_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work_summary.json",
+  "pressure_work_mode": "gas_plus_pav",
+  "heating_mode": "gas_minus_c",
+  "cycle_source": "final-cycle summary age window",
+  "main_radius_xlim_used": [
+    3.8942481589678604,
+    5.4312389357084
+  ],
+  "photosphere_radius_rsun_range": [
+    4.89424815896786,
+    5.3312389357084005
+  ],
+  "radius_window_contains_photosphere": true,
+  "continue_saturation_stop": {
+    "log_path": "<local-rre-root>/rsp_batch_runs/output/model_001_M0p5602_Z0p003592_T6824/logs/continue_saturation.log",
+    "exists": true,
+    "stop_reason": "GREKM_avg_abs < RSP_GREKM_avg_abs_limit",
+    "termination_code": null,
+    "saturated_by_grekm": true,
+    "reached_max_periods": false
+  },
+  "saturated_by_grekm": true,
+  "reached_max_periods": false,
+  "phase_seam": {
+    "path": "<local-rre-root>/rsp_batch_runs/output/model_001_M0p5602_Z0p003592_T6824/mesa_rsp_model_001_M0p5602_Z0p003592_T6824_final_cycle_lightcurve.csv",
+    "exists": true,
+    "row_count": 1243,
+    "parsed_row_count": 1243,
+    "phase_first": 0.0,
+    "phase_last": 0.998999987833,
+    "max_allowed_fraction_of_amplitude": 0.02,
+    "metrics": {
+      "luminosity_lsun": {
+        "seam": 0.0020679155381060355,
+        "amplitude": 33.22601050743008,
+        "fraction_of_amplitude": 6.223785240914202e-05
+      },
+      "radius_rsun": {
+        "seam": 0.0021640456699998367,
+        "amplitude": 0.5397557172900003,
+        "fraction_of_amplitude": 0.004009305692703088
+      },
+      "teff_k": {
+        "seam": 1.3081559900001594,
+        "amplitude": 1144.4708494200004,
+        "fraction_of_amplitude": 0.0011430225511319158
+      }
+    },
+    "failures": [],
+    "age_monotonic_by_phase": false,
+    "minimum_age_step_days_by_phase": -0.5913912000000892,
+    "ok": true
+  },
+  "phase_seam_ok": true,
+  "passed": true,
+  "failures": [],
+  "verified_at": "2026-06-16T20:06:01.495201+00:00"
+}

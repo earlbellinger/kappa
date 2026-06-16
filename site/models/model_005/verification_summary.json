@@ -1,0 +1,65 @@
+{
+  "model_id": "model_005",
+  "run_name": "model_005_M0p6238_Z0p00007156_T6925",
+  "profile_count": 2995,
+  "first_profile": "<local-rre-root>/rsp_batch_runs/runs/model_005_M0p6238_Z0p00007156_T6925/LOGS/profile1.data",
+  "required_profile_columns_present": true,
+  "missing_profile_columns": [],
+  "summary_path": "<local-rre-root>/rsp_batch_runs/output/model_005_M0p6238_Z0p00007156_T6925/mesa_rsp_model_005_M0p6238_Z0p00007156_T6925_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work_summary.json",
+  "pressure_work_mode": "gas_plus_pav",
+  "heating_mode": "gas_minus_c",
+  "cycle_source": "final-cycle summary age window",
+  "main_radius_xlim_used": [
+    3.7609063686818587,
+    5.063335319658629
+  ],
+  "photosphere_radius_rsun_range": [
+    4.760906368681859,
+    4.963335319658629
+  ],
+  "radius_window_contains_photosphere": true,
+  "continue_saturation_stop": {
+    "log_path": "<local-rre-root>/rsp_batch_runs/output/model_005_M0p6238_Z0p00007156_T6925/logs/continue_saturation.log",
+    "exists": true,
+    "stop_reason": "period_number >= max_period_number",
+    "termination_code": "reached max number of periods",
+    "saturated_by_grekm": false,
+    "reached_max_periods": true
+  },
+  "saturated_by_grekm": false,
+  "reached_max_periods": true,
+  "phase_seam": {
+    "path": "<local-rre-root>/rsp_batch_runs/output/model_005_M0p6238_Z0p00007156_T6925/mesa_rsp_model_005_M0p6238_Z0p00007156_T6925_final_cycle_lightcurve.csv",
+    "exists": true,
+    "row_count": 1070,
+    "parsed_row_count": 1070,
+    "phase_first": 0.0,
+    "phase_last": 0.998999232719,
+    "max_allowed_fraction_of_amplitude": 0.02,
+    "metrics": {
+      "luminosity_lsun": {
+        "seam": 0.0017135183931458187,
+        "amplitude": 11.260209500848426,
+        "fraction_of_amplitude": 0.0001521746458639788
+      },
+      "radius_rsun": {
+        "seam": 0.0006554035499997113,
+        "amplitude": 0.2615772998699999,
+        "fraction_of_amplitude": 0.002505582672217495
+      },
+      "teff_k": {
+        "seam": 0.3023795600001904,
+        "amplitude": 447.3407082699996,
+        "fraction_of_amplitude": 0.0006759491242582921
+      }
+    },
+    "failures": [],
+    "age_monotonic_by_phase": false,
+    "minimum_age_step_days_by_phase": -0.38945672999989256,
+    "ok": true
+  },
+  "phase_seam_ok": true,
+  "passed": true,
+  "failures": [],
+  "verified_at": "2026-06-16T20:57:30.815943+00:00"
+}
