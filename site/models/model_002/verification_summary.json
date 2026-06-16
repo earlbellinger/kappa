@@ -10,12 +10,12 @@
   "heating_mode": "gas_minus_c",
   "cycle_source": "final-cycle summary age window",
   "main_radius_xlim_used": [
-    4.71104329084282,
-    5.865920636905688
+    4.711042152452866,
+    5.865910760003436
   ],
   "photosphere_radius_rsun_range": [
-    5.71104329084282,
-    5.765920636905689
+    5.711042152452866,
+    5.765910760003436
   ],
   "radius_window_contains_photosphere": true,
   "continue_saturation_stop": {
@@ -31,35 +31,35 @@
   "phase_seam": {
     "path": "<local-rre-root>/rsp_batch_runs/output/model_002_M0p5753_Z0p00707_T6044/mesa_rsp_model_002_M0p5753_Z0p00707_T6044_final_cycle_lightcurve.csv",
     "exists": true,
-    "row_count": 1001,
-    "parsed_row_count": 1001,
+    "row_count": 1000,
+    "parsed_row_count": 1000,
     "phase_first": 0.0,
     "phase_last": 0.999000000005,
     "max_allowed_fraction_of_amplitude": 0.02,
     "metrics": {
       "luminosity_lsun": {
-        "seam": 0.00018533934713360622,
+        "seam": 0.0014379702735354272,
         "amplitude": 0.845825063947899,
-        "fraction_of_amplitude": 0.00021912255268073108
+        "fraction_of_amplitude": 0.001700079998603592
       },
       "radius_rsun": {
-        "seam": 0.00011087744000004562,
-        "amplitude": 0.06069477004999957,
-        "fraction_of_amplitude": 0.001826803856554794
+        "seam": 3.171456000039541e-05,
+        "amplitude": 0.06069373232999986,
+        "fraction_of_amplitude": 0.000522534350465698
       },
       "teff_k": {
-        "seam": 0.044212769999830925,
+        "seam": 0.04379125000014028,
         "amplitude": 57.80738912000015,
-        "fraction_of_amplitude": 0.0007648290412848662
+        "fraction_of_amplitude": 0.0007575372399060559
       }
     },
     "failures": [],
-    "age_monotonic_by_phase": false,
-    "minimum_age_step_days_by_phase": -0.7299541099998805,
+    "age_monotonic_by_phase": true,
+    "minimum_age_step_days_by_phase": 0.0007306799998332281,
     "ok": true
   },
   "phase_seam_ok": true,
   "passed": true,
   "failures": [],
-  "verified_at": "2026-06-16T20:06:01.717401+00:00"
+  "verified_at": "2026-06-16T22:41:03.275531+00:00"
 }

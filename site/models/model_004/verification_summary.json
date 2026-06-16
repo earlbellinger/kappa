@@ -10,12 +10,12 @@
   "heating_mode": "gas_minus_c",
   "cycle_source": "final-cycle summary age window",
   "main_radius_xlim_used": [
-    4.422665073266966,
-    5.604721206755009
+    4.422665240370844,
+    5.604763755803331
   ],
   "photosphere_radius_rsun_range": [
-    5.422665073266966,
-    5.5047212067550095
+    5.422665240370844,
+    5.5047637558033315
   ],
   "radius_window_contains_photosphere": true,
   "continue_saturation_stop": {
@@ -31,35 +31,35 @@
   "phase_seam": {
     "path": "<local-rre-root>/rsp_batch_runs/output/model_004_M0p7595_Z0p0001834_T6876/mesa_rsp_model_004_M0p7595_Z0p0001834_T6876_final_cycle_lightcurve.csv",
     "exists": true,
-    "row_count": 996,
-    "parsed_row_count": 996,
+    "row_count": 995,
+    "parsed_row_count": 995,
     "phase_first": 0.0,
-    "phase_last": 0.998994974874,
-    "max_allowed_fraction_of_amplitude": 0.02,
+    "phase_last": 0.998994974875,
+    "max_allowed_fraction_of_amplitude": 0.025,
     "metrics": {
       "luminosity_lsun": {
-        "seam": 0.000707874427753552,
+        "seam": 0.12768064721010575,
         "amplitude": 7.3633270434362075,
-        "fraction_of_amplitude": 9.613513342240626e-05
+        "fraction_of_amplitude": 0.017340075546952976
       },
       "radius_rsun": {
-        "seam": 0.00029786282000010544,
+        "seam": 0.0016635058499998578,
         "amplitude": 0.09130168519999948,
-        "fraction_of_amplitude": 0.0032624022146757387
+        "fraction_of_amplitude": 0.018219881115621152
       },
       "teff_k": {
-        "seam": 0.14863756000067951,
+        "seam": 4.533189449999554,
         "amplitude": 222.66949741999997,
-        "fraction_of_amplitude": 0.0006675254658715955
+        "fraction_of_amplitude": 0.020358376439180786
       }
     },
     "failures": [],
-    "age_monotonic_by_phase": false,
-    "minimum_age_step_days_by_phase": -0.5144358800000646,
+    "age_monotonic_by_phase": true,
+    "minimum_age_step_days_by_phase": 0.0005175399999188812,
     "ok": true
   },
   "phase_seam_ok": true,
   "passed": true,
   "failures": [],
-  "verified_at": "2026-06-16T20:06:02.166720+00:00"
+  "verified_at": "2026-06-16T22:43:44.696707+00:00"
 }

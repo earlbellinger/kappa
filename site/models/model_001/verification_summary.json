@@ -10,12 +10,12 @@
   "heating_mode": "gas_minus_c",
   "cycle_source": "final-cycle summary age window",
   "main_radius_xlim_used": [
-    3.8942481589678604,
-    5.4312389357084
+    3.8942141584611623,
+    5.431241366488648
   ],
   "photosphere_radius_rsun_range": [
-    4.89424815896786,
-    5.3312389357084005
+    4.894214158461162,
+    5.331241366488649
   ],
   "radius_window_contains_photosphere": true,
   "continue_saturation_stop": {
@@ -31,35 +31,35 @@
   "phase_seam": {
     "path": "<local-rre-root>/rsp_batch_runs/output/model_001_M0p5602_Z0p003592_T6824/mesa_rsp_model_001_M0p5602_Z0p003592_T6824_final_cycle_lightcurve.csv",
     "exists": true,
-    "row_count": 1243,
-    "parsed_row_count": 1243,
+    "row_count": 1242,
+    "parsed_row_count": 1242,
     "phase_first": 0.0,
-    "phase_last": 0.998999987833,
+    "phase_last": 0.998999987834,
     "max_allowed_fraction_of_amplitude": 0.02,
     "metrics": {
       "luminosity_lsun": {
-        "seam": 0.0020679155381060355,
+        "seam": 0.06525394942863727,
         "amplitude": 33.22601050743008,
-        "fraction_of_amplitude": 6.223785240914202e-05
+        "fraction_of_amplitude": 0.0019639417562347735
       },
       "radius_rsun": {
-        "seam": 0.0021640456699998367,
-        "amplitude": 0.5397557172900003,
-        "fraction_of_amplitude": 0.004009305692703088
+        "seam": 0.0002471800700005744,
+        "amplitude": 0.5397520781400003,
+        "fraction_of_amplitude": 0.0004579511223974595
       },
       "teff_k": {
-        "seam": 1.3081559900001594,
+        "seam": 2.2921933200004787,
         "amplitude": 1144.4708494200004,
-        "fraction_of_amplitude": 0.0011430225511319158
+        "fraction_of_amplitude": 0.002002841156821186
       }
     },
     "failures": [],
-    "age_monotonic_by_phase": false,
-    "minimum_age_step_days_by_phase": -0.5913912000000892,
+    "age_monotonic_by_phase": true,
+    "minimum_age_step_days_by_phase": 0.0003096599998571037,
     "ok": true
   },
   "phase_seam_ok": true,
   "passed": true,
   "failures": [],
-  "verified_at": "2026-06-16T20:06:01.495201+00:00"
+  "verified_at": "2026-06-16T22:39:18.762383+00:00"
 }

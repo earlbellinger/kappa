@@ -6,7 +6,7 @@
   "output_dir": "<local-rre-root>/rsp_batch_runs/output/model_002_M0p5753_Z0p00707_T6044",
   "prefix": "mesa_rsp_model_002_M0p5753_Z0p00707_T6044",
   "product_stem": "mesa_rsp_model_002_M0p5753_Z0p00707_T6044_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work",
-  "updated_at": "2026-06-16T20:06:01.718912+00:00",
+  "updated_at": "2026-06-16T22:41:03.277035+00:00",
   "stages": {
     "prepared": {
       "status": "complete",
@@ -38,15 +38,20 @@
     },
     "final_cycle": {
       "status": "complete",
-      "updated_at": "2026-06-15T09:44:39.426028+00:00",
+      "updated_at": "2026-06-16T22:39:19.057989+00:00",
       "expected_output": "<local-rre-root>/rsp_batch_runs/output/model_002_M0p5753_Z0p00707_T6044/mesa_rsp_model_002_M0p5753_Z0p00707_T6044_final_cycle_summary.json",
       "summary": {
         "history_file": "<local-rre-root>/rsp_batch_runs/runs/model_002_M0p5753_Z0p00707_T6044/LOGS/history.data",
         "period_days": 0.7306847876498068,
         "max_light_age_days": 1918.668084206025,
+        "max_light_phase": 0.5910000021201738,
+        "phase_reference_age_days": 1918.2362494949748,
+        "phase_reference_kind": "cycle-start radius maximum",
+        "cycle_selection": "radius-maximum to radius-maximum, chronological phase",
+        "cycle_max_light_local_index": 591,
         "radius_min_rsun": 5.756342687340446,
-        "radius_max_rsun": 5.817037457388382,
-        "radius_peak_to_peak_rsun": 0.06069477004793633,
+        "radius_max_rsun": 5.817036419674394,
+        "radius_peak_to_peak_rsun": 0.060693732333947814,
         "teff_min_k": 5883.343303523493,
         "teff_max_k": 5941.150692644126,
         "abs_mag_V_min": 0.9222981896959928,
@@ -57,20 +62,22 @@
         "abs_mag_I_peak_to_peak": 0.01592615659288721,
         "cycle_start_age_days": 1918.2362494949748,
         "cycle_end_age_days": 1918.9669342826246,
-        "models_in_cycle": 1001,
+        "cycle_last_sample_age_days": 1918.9662035978406,
+        "cycle_interval": "half-open [radius maximum, next radius maximum)",
+        "models_in_cycle": 1000,
         "lightcurve_csv": "<local-rre-root>/rsp_batch_runs/output/model_002_M0p5753_Z0p00707_T6044/mesa_rsp_model_002_M0p5753_Z0p00707_T6044_final_cycle_lightcurve.csv"
       },
-      "started_at": "2026-06-15T09:44:39.318519+00:00"
+      "started_at": "2026-06-16T22:39:18.951518+00:00"
     },
     "plot": {
       "status": "complete",
-      "updated_at": "2026-06-16T17:37:22.250347+00:00",
+      "updated_at": "2026-06-16T22:41:03.019333+00:00",
       "expected_output": "<local-rre-root>/rsp_batch_runs/output/model_002_M0p5753_Z0p00707_T6044/mesa_rsp_model_002_M0p5753_Z0p00707_T6044_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work.gif",
-      "started_at": "2026-06-16T17:36:02.187579+00:00"
+      "started_at": "2026-06-16T22:39:19.235149+00:00"
     },
     "verify": {
       "status": "complete",
-      "updated_at": "2026-06-16T20:06:01.718406+00:00",
+      "updated_at": "2026-06-16T22:41:03.277035+00:00",
       "expected_output": "<local-rre-root>/rsp_batch_runs/output/model_002_M0p5753_Z0p00707_T6044/verification_summary.json",
       "result": {
         "model_id": "model_002",
@@ -84,12 +91,12 @@
         "heating_mode": "gas_minus_c",
         "cycle_source": "final-cycle summary age window",
         "main_radius_xlim_used": [
-          4.71104329084282,
-          5.865920636905688
+          4.711042152452866,
+          5.865910760003436
         ],
         "photosphere_radius_rsun_range": [
-          5.71104329084282,
-          5.765920636905689
+          5.711042152452866,
+          5.765910760003436
         ],
         "radius_window_contains_photosphere": true,
         "continue_saturation_stop": {
@@ -105,39 +112,39 @@
         "phase_seam": {
           "path": "<local-rre-root>/rsp_batch_runs/output/model_002_M0p5753_Z0p00707_T6044/mesa_rsp_model_002_M0p5753_Z0p00707_T6044_final_cycle_lightcurve.csv",
           "exists": true,
-          "row_count": 1001,
-          "parsed_row_count": 1001,
+          "row_count": 1000,
+          "parsed_row_count": 1000,
           "phase_first": 0.0,
           "phase_last": 0.999000000005,
           "max_allowed_fraction_of_amplitude": 0.02,
           "metrics": {
             "luminosity_lsun": {
-              "seam": 0.00018533934713360622,
+              "seam": 0.0014379702735354272,
               "amplitude": 0.845825063947899,
-              "fraction_of_amplitude": 0.00021912255268073108
+              "fraction_of_amplitude": 0.001700079998603592
             },
             "radius_rsun": {
-              "seam": 0.00011087744000004562,
-              "amplitude": 0.06069477004999957,
-              "fraction_of_amplitude": 0.001826803856554794
+              "seam": 3.171456000039541e-05,
+              "amplitude": 0.06069373232999986,
+              "fraction_of_amplitude": 0.000522534350465698
             },
             "teff_k": {
-              "seam": 0.044212769999830925,
+              "seam": 0.04379125000014028,
               "amplitude": 57.80738912000015,
-              "fraction_of_amplitude": 0.0007648290412848662
+              "fraction_of_amplitude": 0.0007575372399060559
             }
           },
           "failures": [],
-          "age_monotonic_by_phase": false,
-          "minimum_age_step_days_by_phase": -0.7299541099998805,
+          "age_monotonic_by_phase": true,
+          "minimum_age_step_days_by_phase": 0.0007306799998332281,
           "ok": true
         },
         "phase_seam_ok": true,
         "passed": true,
         "failures": [],
-        "verified_at": "2026-06-16T20:06:01.717401+00:00"
+        "verified_at": "2026-06-16T22:41:03.275531+00:00"
       },
-      "started_at": "2026-06-16T20:06:01.683143+00:00"
+      "started_at": "2026-06-16T22:41:03.213212+00:00"
     }
   },
   "validation": {
