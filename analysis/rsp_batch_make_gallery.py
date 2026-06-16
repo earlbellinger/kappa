@@ -96,8 +96,25 @@ def stage_status(output_dir: Path) -> tuple[str, dict]:
     return "pending", status
 
 
-def read_rsp_max_num_periods(run_dir: Path) -> str | None:
-    for inlist_name in ("inlist_create", "inlist_continue_saturation", "inlist_restart"):
+def read_rsp_max_num_periods(run_dir: Path, log_name: str | None = None) -> str | None:
+    preferred = {
+        "create.log": "inlist_create",
+        "continue_saturation.log": "inlist_continue_saturation",
+        "restart.log": "inlist_restart",
+        "deep2cycles.log": "inlist_deep2cycles",
+    }.get(log_name or "")
+    inlist_names = [
+        name
+        for name in (
+            preferred,
+            "inlist_create",
+            "inlist_continue_saturation",
+            "inlist_restart",
+            "inlist_deep2cycles",
+        )
+        if name is not None
+    ]
+    for inlist_name in inlist_names:
         inlist = run_dir / inlist_name
         if not inlist.exists():
             continue
@@ -183,7 +200,7 @@ def latest_history_progress(record: dict, products: dict[str, Path | None], stat
         for line in reversed(log_lines):
             match = re.search(r"^\s*period\s+(\d+)\b", line)
             if match:
-                max_periods = read_rsp_max_num_periods(run_dir)
+                max_periods = read_rsp_max_num_periods(run_dir, log_file.name)
                 parts.append(period_progress_text(match.group(1), max_periods, active_stage_started_at(status)))
                 break
         if parts:
