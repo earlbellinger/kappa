@@ -84,7 +84,7 @@ def stage_status(output_dir: Path) -> tuple[str, dict]:
     stages = status.get("stages", {})
     if stages.get("verify", {}).get("status") == "complete":
         return "verified", status
-    for stage in ("plot", "final_cycle", "deep2cycles", "restart", "continue_saturation", "create", "prepared"):
+    for stage in ("verify", "plot", "final_cycle", "deep2cycles", "restart", "continue_saturation", "create", "prepared"):
         stage_value = stages.get(stage, {}).get("status")
         if stage_value == "failed":
             return f"failed: {stage}", status
@@ -327,16 +327,19 @@ def build_card(record: dict, output_root: Path, modulation_by_model: dict[str, d
     lum = fmt_float(record.get("RSP_L"), 5)
     progress = latest_history_progress(record, products, status_text, status)
     progress_html = f'<p class="progress">{html.escape(progress)}</p>' if progress else ""
+    verification = read_json(products["verification"]) if products["verification"] is not None else {}
+    verification_failed = isinstance(verification, dict) and verification.get("passed") is False
     diagnostics = verification_diagnostics(products["verification"])
     modulation_checks = modulation_diagnostics(modulation)
     if modulation_checks:
         diagnostics = " | ".join(bit for bit in (diagnostics, modulation_checks) if bit)
     diagnostics_html = f'<p class="checks">{html.escape(diagnostics)}</p>' if diagnostics else ""
 
-    image_html = '<div class="placeholder">No animation yet</div>'
+    placeholder_text = "Verification failed" if verification_failed else "No animation yet"
+    image_html = f'<div class="placeholder">{html.escape(placeholder_text)}</div>'
     gif = products["gif"]
     png = products["png"]
-    if gif is not None and gif.exists():
+    if gif is not None and gif.exists() and not verification_failed:
         src_path = png if png is not None and png.exists() else gif
         src = html.escape(rel_or_uri(src_path, output_root))
         gif_src = html.escape(rel_or_uri(gif, output_root))
@@ -348,8 +351,8 @@ def build_card(record: dict, output_root: Path, modulation_by_model: dict[str, d
 
     links = " ".join(
         [
-            link(products["gif"], "GIF", output_root),
-            link(products["png"], "PNG", output_root),
+            link(None if verification_failed else products["gif"], "GIF", output_root),
+            link(None if verification_failed else products["png"], "PNG", output_root),
             link(products["summary"], "animation summary", output_root),
             link(products["final_cycle"], "cycle summary", output_root),
             link(products["verification"], "verification", output_root),
