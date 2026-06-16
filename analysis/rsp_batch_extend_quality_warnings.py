@@ -152,8 +152,6 @@ def quality_warning_models(args: argparse.Namespace, log_path: Path) -> list[dic
             continue
         if model.get("registered_existing"):
             continue
-        if model.get("status") != "quality_warning":
-            continue
         warnings = model.get("quality_warnings")
         if not warnings:
             continue
