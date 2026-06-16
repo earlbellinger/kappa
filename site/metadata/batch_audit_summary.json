@@ -8,7 +8,7 @@
     "model_008: stages not complete: create, continue_saturation, restart, deep2cycles, final_cycle, plot, verify; missing files: create_model, saturated_model, restart_model, deep_model, final_cycle_summary, final_cycle_lightcurve, gif, png, animation_summary, verification_summary; verification_summary did not pass; pressure_work_mode=None; heating_mode=None; cycle_source=None; radius_window_contains_photosphere=None; phase_seam_ok=None; missing profile columns: cp, gamma1, ionization_he4, rsp_Lc, rsp_Lr, rsp_Lt, rsp_Pvsc, rsp_src_snk, tau",
     "model_009: stages not complete: create, continue_saturation, restart, deep2cycles, final_cycle, plot, verify; missing files: create_model, saturated_model, restart_model, deep_model, final_cycle_summary, final_cycle_lightcurve, gif, png, animation_summary, verification_summary; verification_summary did not pass; pressure_work_mode=None; heating_mode=None; cycle_source=None; radius_window_contains_photosphere=None; phase_seam_ok=None; missing profile columns: cp, gamma1, ionization_he4, rsp_Lc, rsp_Lr, rsp_Lt, rsp_Pvsc, rsp_src_snk, tau"
   ],
-  "generated_at": "2026-06-16T20:58:03.829089+00:00",
+  "generated_at": "2026-06-16T21:13:21.213895+00:00",
   "incomplete_models": [
     "model_003",
     "model_005",
@@ -785,19 +785,19 @@
     {
       "continue_saturation_stop": null,
       "cycle_modulation": {
-        "cycle_count": 991,
+        "cycle_count": 993,
         "diagnostic_png": "<local-rre-root>/rsp_batch_runs/output/cycle_diagnostics/model_006_M0p7194_Z0p001620_T6711_cycle_modulation_diagnostic.png",
         "history_path": "<local-rre-root>/rsp_batch_runs/runs/model_006_M0p7194_Z0p001620_T6711/LOGS_continue_saturation/history.data",
         "history_source": "continue_saturation",
         "last_cycle_count_used": 80,
-        "last_max_l_lsun": 58.37491449836344,
-        "last_min_abs_mag_v": 0.3227065455880074,
-        "last_period_days": 0.22723632438635377,
+        "last_max_l_lsun": 59.827781903993234,
+        "last_min_abs_mag_v": 0.2906333280386684,
+        "last_period_days": 0.39140627483095614,
         "max_l_modulation_fraction": 0.039421572000009966,
         "min_v_modulation_mag": 0.05028153121197204,
         "model_id": "model_006",
-        "period_modulation_fraction": 0.4434644679549808,
-        "radius_amplitude_modulation_fraction": 0.15131726623970132,
+        "period_modulation_fraction": 0.04782632886012654,
+        "radius_amplitude_modulation_fraction": 0.15107393005035813,
         "run_name": "model_006_M0p7194_Z0p001620_T6711"
       },
       "cycle_source": null,
@@ -882,8 +882,7 @@
       "pressure_work_mode": null,
       "profile_count": null,
       "quality_warnings": [
-        "strong min-V cycle modulation 0.05028 mag > 0.05 mag",
-        "strong period modulation 0.4435 > 0.05"
+        "strong min-V cycle modulation 0.05028 mag > 0.05 mag"
       ],
       "radius_window_contains_photosphere": null,
       "reached_max_periods": null,
@@ -906,19 +905,19 @@
     {
       "continue_saturation_stop": null,
       "cycle_modulation": {
-        "cycle_count": 4,
+        "cycle_count": 8,
         "diagnostic_png": "<local-rre-root>/rsp_batch_runs/output/cycle_diagnostics/model_007_M0p6887_Z0p004060_T6669_cycle_modulation_diagnostic.png",
         "history_path": "<local-rre-root>/rsp_batch_runs/runs/model_007_M0p6887_Z0p004060_T6669/LOGS_saturation/history.data",
         "history_source": "saturation",
-        "last_cycle_count_used": 4,
-        "last_max_l_lsun": 50.83077011147638,
-        "last_min_abs_mag_v": 0.479556137427172,
-        "last_period_days": 0.09022356646926266,
-        "max_l_modulation_fraction": 0.002804336997882707,
-        "min_v_modulation_mag": 0.0036239543630166016,
+        "last_cycle_count_used": 8,
+        "last_max_l_lsun": 50.84294099718694,
+        "last_min_abs_mag_v": 0.4792075692617644,
+        "last_period_days": 0.5428420667939462,
+        "max_l_modulation_fraction": 0.0029233096707133224,
+        "min_v_modulation_mag": 0.003786315357818981,
         "model_id": "model_007",
-        "period_modulation_fraction": 1.6691237782080584,
-        "radius_amplitude_modulation_fraction": 1.7577132969525187,
+        "period_modulation_fraction": 1.188466967686323,
+        "radius_amplitude_modulation_fraction": 0.8808361824445967,
         "run_name": "model_007_M0p6887_Z0p004060_T6669"
       },
       "cycle_source": null,
@@ -1003,7 +1002,7 @@
       "pressure_work_mode": null,
       "profile_count": null,
       "quality_warnings": [
-        "strong period modulation 1.669 > 0.05"
+        "strong period modulation 1.188 > 0.05"
       ],
       "radius_window_contains_photosphere": null,
       "reached_max_periods": null,
@@ -1250,15 +1249,15 @@
     "batch_status": "running",
     "current_model": "model_006",
     "status": "waiting_for_batch",
-    "updated_at": "2026-06-16T20:57:23.260996+00:00"
+    "updated_at": "2026-06-16T21:12:23.266914+00:00"
   },
   "quality_extension_complete": false,
   "quality_extension_required": true,
   "quality_warnings": [
     "model_003: strong max-L cycle modulation 0.1188 > 0.05; strong min-V cycle modulation 0.1452 mag > 0.05 mag; strong period modulation 0.1242 > 0.05",
     "model_005: strong max-L cycle modulation 0.197 > 0.05; strong min-V cycle modulation 0.258 mag > 0.05 mag; strong period modulation 0.2449 > 0.05",
-    "model_006: strong min-V cycle modulation 0.05028 mag > 0.05 mag; strong period modulation 0.4435 > 0.05",
-    "model_007: strong period modulation 1.669 > 0.05"
+    "model_006: strong min-V cycle modulation 0.05028 mag > 0.05 mag",
+    "model_007: strong period modulation 1.188 > 0.05"
   ],
   "status": "running",
   "workspace": "<local-rre-root>/rsp_batch_runs"
