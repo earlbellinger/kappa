@@ -10,6 +10,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent
 DEFAULT_WORKSPACE = ROOT / "rsp_batch_runs"
 STAGE_ORDER = ("create", "continue_saturation", "restart", "deep2cycles", "final_cycle", "plot", "verify")
+MESA_STAGES = ("create", "continue_saturation", "restart", "deep2cycles")
 EXPECTED_PRESSURE_WORK_MODE = "gas_plus_pav"
 EXPECTED_HEATING_MODE = "gas_minus_c"
 EXPECTED_CYCLE_SOURCE = "final-cycle summary age window"
@@ -33,6 +34,18 @@ REQUIRED_PROFILE_COLUMNS = {
 
 def now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
+
+
+def parse_iso_datetime(value: object) -> datetime | None:
+    if not isinstance(value, str) or not value:
+        return None
+    try:
+        parsed = datetime.fromisoformat(value)
+    except ValueError:
+        return None
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=timezone.utc)
+    return parsed
 
 
 def parse_args() -> argparse.Namespace:
@@ -192,6 +205,36 @@ def stage_statuses(run_status: dict) -> dict[str, str | None]:
     return result
 
 
+def stale_completed_stage_outputs(run_status: dict) -> list[dict[str, object]]:
+    stages = run_status.get("stages", {}) if isinstance(run_status, dict) else {}
+    if not isinstance(stages, dict):
+        return []
+    stale: list[dict[str, object]] = []
+    for stage in MESA_STAGES:
+        payload = stages.get(stage, {})
+        if not isinstance(payload, dict) or payload.get("status") != "complete":
+            continue
+        started_at = parse_iso_datetime(payload.get("started_at"))
+        expected_output = payload.get("expected_output")
+        if started_at is None or not expected_output:
+            continue
+        expected = Path(str(expected_output))
+        if not expected.exists():
+            continue
+        output_mtime = datetime.fromtimestamp(expected.stat().st_mtime, timezone.utc)
+        if output_mtime < started_at:
+            stale.append(
+                {
+                    "stage": stage,
+                    "expected_output": str(expected),
+                    "started_at": started_at.isoformat(),
+                    "output_mtime": output_mtime.isoformat(),
+                    "reason": "completed stage output predates the recorded stage start time",
+                }
+            )
+    return stale
+
+
 def expected_files(record: dict) -> dict[str, Path]:
     run_dir = Path(str(record["run_dir"]))
     output_dir = Path(str(record["output_dir"]))
@@ -274,6 +317,7 @@ def audit_batch_model(record: dict) -> dict[str, object]:
     validation = run_status.get("validation", {}) if isinstance(run_status, dict) else {}
     validation_passed = validation.get("passed") is True
     stages = stage_statuses(run_status if isinstance(run_status, dict) else {})
+    stale_stage_outputs = stale_completed_stage_outputs(run_status if isinstance(run_status, dict) else {})
     pending_convergence = any(value == "skipped_pending_convergence" for value in stages.values())
     downstream_stages = {"restart", "deep2cycles", "final_cycle", "plot", "verify"}
     missing_or_bad_stages = [
@@ -320,6 +364,11 @@ def audit_batch_model(record: dict) -> dict[str, object]:
         failures.append("validation did not pass")
     if missing_or_bad_stages:
         failures.append("stages not complete: " + ", ".join(missing_or_bad_stages))
+    if stale_stage_outputs:
+        failures.append(
+            "stale completed stage outputs: "
+            + ", ".join(str(item.get("stage")) for item in stale_stage_outputs)
+        )
     if missing_files:
         failures.append("missing files: " + ", ".join(missing_files))
     if not verification_passed and not pending_convergence:
@@ -352,6 +401,7 @@ def audit_batch_model(record: dict) -> dict[str, object]:
         "status": status,
         "validation_passed": validation_passed,
         "stages": stages,
+        "stale_completed_stage_outputs": stale_stage_outputs,
         "files": file_checks,
         "verification_passed": verification_passed,
         "pressure_work_mode": pressure_mode,

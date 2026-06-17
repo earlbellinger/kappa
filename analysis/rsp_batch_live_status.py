@@ -350,6 +350,36 @@ def stage_summary(status: dict) -> dict[str, str]:
     return {name: str(data.get("status")) for name, data in stages.items() if isinstance(data, dict)}
 
 
+def stale_completed_stage_outputs(status: dict) -> list[dict[str, object]]:
+    stages = status.get("stages", {})
+    if not isinstance(stages, dict):
+        return []
+    stale: list[dict[str, object]] = []
+    for stage in ("create", "continue_saturation", "restart", "deep2cycles"):
+        data = stages.get(stage)
+        if not isinstance(data, dict) or data.get("status") != "complete":
+            continue
+        started_at = parse_iso_datetime(data.get("started_at"))
+        expected_output = data.get("expected_output")
+        if started_at is None or not expected_output:
+            continue
+        expected = Path(str(expected_output))
+        if not expected.exists():
+            continue
+        output_mtime = datetime.fromtimestamp(expected.stat().st_mtime, timezone.utc)
+        if output_mtime < started_at:
+            stale.append(
+                {
+                    "stage": stage,
+                    "expected_output": str(expected),
+                    "started_at": started_at.isoformat(),
+                    "output_mtime": output_mtime.isoformat(),
+                    "reason": "completed stage output predates the recorded stage start time",
+                }
+            )
+    return stale
+
+
 def active_stage(status: dict) -> tuple[str | None, str | None]:
     stages = status.get("stages", {})
     if not isinstance(stages, dict):
@@ -430,6 +460,7 @@ def model_summary(record: dict, convergence_by_id: dict[str, dict[str, object]] 
     max_period = max_periods(run_dir, running_stage, period_log)
     convergence = (convergence_by_id or {}).get(str(record["model_id"]), {})
     stages = stage_summary(run_status)
+    stale_stage_outputs = stale_completed_stage_outputs(run_status)
     retry_pending = retry_pending_stages(run_status)
     registered_existing = bool(record.get("registered_existing"))
     gif_exists = gif.exists()
@@ -438,6 +469,7 @@ def model_summary(record: dict, convergence_by_id: dict[str, dict[str, object]] 
     pending_convergence = any(value == "skipped_pending_convergence" for value in stages.values())
     trusted_animation = bool(
         gif_exists
+        and not stale_stage_outputs
         and (
             registered_existing
             or (verification_passed and convergence_passed and not pending_convergence)
@@ -450,6 +482,7 @@ def model_summary(record: dict, convergence_by_id: dict[str, dict[str, object]] 
         "run_dir": str(run_dir),
         "output_dir": str(output_dir),
         "stages": stages,
+        "stale_completed_stage_outputs": stale_stage_outputs,
         "active_stage": running_stage,
         "active_stage_started_at": running_stage_started_at,
         "latest_period": period,
