@@ -8,6 +8,7 @@
   "frame_generation": "fixed-q linear interpolation between bracketing nonlinear profiles on a uniform phase grid",
   "coordinate": "r_over_R",
   "main_terms_only": true,
+  "scaling_method_version": "per-panel-visible-window-v2",
   "layout": "left panel: phase-local power diagnostics versus r/R_sun; right column top: photosphere radial velocity curve; right column bottom: photosphere luminosity curve",
   "zone_boundary_smoothing": "ionization-zone boundaries are converted from temperature spans to q spans, then the q-space zone centers and widths are smoothed over phase with a low-order periodic Fourier fit before being mapped to the displayed coordinate",
   "left_panel_quantity": "phase-local specific power diagnostics",
@@ -47,6 +48,8 @@
   "cycle_profile_count": 1242,
   "frame_count": 180,
   "closing_frame_added_for_seamless_loop": false,
+  "phase_panel_repeat_mode": "repeated cycle copies are separated by NaN gaps; the plot does not connect the last sample of one cycle to the first sample of the next",
+  "phase_panel_repeat_count": 3,
   "fps": 35,
   "period_days_used": 0.5919831873266048,
   "phase_reference_days_used": 1498.126194580616,
@@ -54,19 +57,77 @@
   "phase_curve_break_reason": null,
   "hot_temperature_limit_K": 200000.0,
   "outermost_temperature_limit_K": 5319.962132436796,
+  "left_panel_x_field_for_scaling": "radius_rsun_plot",
+  "left_panel_x_limits_for_scaling": [
+    3.8942141584611623,
+    5.431241366488648
+  ],
+  "left_panel_scaling_method": "per-panel visible-window extrema; power y-limits use the maximum absolute specific-power value between the minimum and maximum shown x coordinate, matching the model_000 reference convention",
+  "panel_y_ranges": {
+    "left_power": {
+      "limits": [
+        -19.929710552338562,
+        19.929710552338562
+      ],
+      "visible_data_bounds": [
+        -18.45343569660978,
+        3.6528648018479095
+      ],
+      "x_field_for_scaling": "radius_rsun_plot",
+      "x_limits_for_scaling": [
+        3.8942141584611623,
+        5.431241366488648
+      ],
+      "method": "minimum and maximum of the plotted power curves within this panel's shown x range; the axis is padded symmetrically about zero using the larger absolute extremum"
+    },
+    "photosphere_radial_velocity": {
+      "limits": [
+        -22.604617852004846,
+        29.286533261643722
+      ],
+      "visible_data_bounds": [
+        -19.025917775201496,
+        25.70783318484037
+      ],
+      "method": "panel-local fractional padding around the displayed photosphere radial-velocity curve"
+    },
+    "photosphere_luminosity": {
+      "limits": [
+        36.18925986054642,
+        74.8897387987291
+      ],
+      "visible_data_bounds": [
+        38.858258408007295,
+        72.22074025126823
+      ],
+      "method": "panel-local fractional padding around the displayed photosphere luminosity curve"
+    }
+  },
+  "left_power_visible_data_bounds": [
+    -18.45343569660978,
+    3.6528648018479095
+  ],
   "left_power_ylim_raw": [
-    -340000000.0,
-    340000000.0
+    -19929710552.338562,
+    19929710552.338562
   ],
   "left_power_ylim": [
-    -0.34,
-    0.34
+    -19.929710552338562,
+    19.929710552338562
   ],
   "scaled_diagnostic_bounds": {
     "opacity": [
       0.0035001471581693473,
       102.37564295569331
     ]
+  },
+  "opacity_scaling": {
+    "method": "left-panel visible-window min opacity maps to zero; left-panel visible-window max opacity maps to a fixed fraction of that panel's positive y-limit",
+    "panel": "left_power",
+    "panel_top_fraction": 0.88,
+    "display_units_per_opacity_unit": 0.1713175557813538,
+    "opacity_min_baseline": 0.0035001471581693473,
+    "opacity_max_display_value": 17.538145286057937
   },
   "radius_rsun_xlim": [
     3.4716921470562174,
