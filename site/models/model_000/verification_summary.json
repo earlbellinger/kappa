@@ -8,8 +8,8 @@
   "summary_path": "<local-rre-root>/output/combined_14507_full_pressure_minus_eq/mesa_rsp_combined_14507_full_pressure_minus_eq_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work_summary.json",
   "pressure_work_mode": "gas_plus_pav",
   "heating_mode": "gas_minus_c",
-  "scaling_method_version": "model000-visible-window-v7",
-  "expected_scaling_method_version": "model000-visible-window-v7",
+  "scaling_method_version": "model000-visible-window-v8",
+  "expected_scaling_method_version": "model000-visible-window-v8",
   "panel_y_ranges": {
     "left_power": {
       "limits": [
@@ -74,9 +74,9 @@
   "opacity_scaling": {
     "method": "left-panel visible-window min and max opacity are mapped into a fixed upper band of this panel's own y-axis range",
     "panel": "left_power",
-    "panel_bottom_fraction": 0.64,
+    "panel_bottom_fraction": 0.76,
     "panel_top_fraction": 0.92,
-    "reference_opacity_max_display_value": 0.8236003905715753,
+    "reference_opacity_max_display_value": 0.7767257274249058,
     "x_field_for_scaling": "radius_rsun_plot",
     "x_limits_for_scaling": [
       5.387294668462144,
@@ -87,13 +87,13 @@
       149.03239726657318
     ],
     "reference_convention": "model_000 example rule: measure opacity min and max only in the shown radius range, then map those two extrema into a reserved band of each panel's own y-axis range",
-    "display_min_value": 0.21958240182058253,
-    "display_units_per_opacity_unit": 0.003738455400737205,
+    "display_min_value": 0.45835811279386385,
+    "display_units_per_opacity_unit": 0.002136260228992689,
     "opacity_min_baseline": 0.0020449198640830274,
     "opacity_max_display_value": 0.7767257274249058,
-    "opacity_display_span": 0.5571433256043232,
+    "opacity_display_span": 0.3183676146310419,
     "scaled_visible_display_bounds": [
-      0.21958240182058253,
+      0.45835811279386385,
       0.7767257274249058
     ]
   },
@@ -152,5 +152,5 @@
   "phase_seam_ok": true,
   "passed": true,
   "failures": [],
-  "verified_at": "2026-06-17T18:47:00.212504+00:00"
+  "verified_at": "2026-06-17T18:58:48.270846+00:00"
 }
