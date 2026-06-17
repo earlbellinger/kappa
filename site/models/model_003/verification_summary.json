@@ -1,0 +1,162 @@
+{
+  "model_id": "model_003",
+  "run_name": "model_003_M0p7317_Z0p001405_T6745",
+  "profile_count": 3004,
+  "first_profile": "<local-rre-root>/rsp_batch_runs/runs/model_003_M0p7317_Z0p001405_T6745/LOGS/profile1.data",
+  "required_profile_columns_present": true,
+  "missing_profile_columns": [],
+  "summary_path": "<local-rre-root>/rsp_batch_runs/output/model_003_M0p7317_Z0p001405_T6745/mesa_rsp_model_003_M0p7317_Z0p001405_T6745_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work_summary.json",
+  "pressure_work_mode": "gas_plus_pav",
+  "heating_mode": "gas_minus_c",
+  "scaling_method_version": "model000-visible-window-v5",
+  "expected_scaling_method_version": "model000-visible-window-v5",
+  "panel_y_ranges": {
+    "left_power": {
+      "limits": [
+        -11.87678575835954,
+        3.093220727900495
+      ],
+      "visible_data_bounds": [
+        -10.997023850332909,
+        2.8640932665745327
+      ],
+      "x_field_for_scaling": "radius_rsun_plot",
+      "x_limits_for_scaling": [
+        4.066853418827715,
+        5.427216374489275
+      ],
+      "reference_floor_limits": [
+        -1.0538880567035844,
+        0.9359095347404265
+      ],
+      "method": "minimum and maximum of the plotted power curves within this panel's shown x range; the axis includes zero and pads the lower and upper sides from their own local visible extrema, then applies the model_000 y-limit floor if available"
+    },
+    "photosphere_radial_velocity": {
+      "limits": [
+        -19.9987740203326,
+        23.076627301402436
+      ],
+      "visible_data_bounds": [
+        -17.02805668779915,
+        20.105909968868986
+      ],
+      "method": "panel-local fractional padding around the displayed photosphere radial-velocity curve"
+    },
+    "photosphere_luminosity": {
+      "limits": [
+        41.16542592360175,
+        60.88557161322522
+      ],
+      "visible_data_bounds": [
+        42.52543597116199,
+        59.52556156566498
+      ],
+      "method": "panel-local fractional padding around the displayed photosphere luminosity curve"
+    }
+  },
+  "cycle_source": "final-cycle summary age window",
+  "main_radius_xlim_used": [
+    4.066853418827715,
+    5.427216374489275
+  ],
+  "left_panel_x_limits_for_scaling": [
+    4.066853418827715,
+    5.427216374489275
+  ],
+  "left_power_visible_data_bounds": [
+    -10.997023850332909,
+    2.8640932665745327
+  ],
+  "left_power_ylim": [
+    -11.87678575835954,
+    3.093220727900495
+  ],
+  "opacity_scaling": {
+    "method": "left-panel visible-window min opacity maps to zero; left-panel visible-window max opacity maps to the model_000 reference display height when available, otherwise to a fixed fraction of this panel's positive y-limit",
+    "panel": "left_power",
+    "panel_top_fraction": 0.88,
+    "reference_opacity_max_display_value": 0.8236003905715753,
+    "x_field_for_scaling": "radius_rsun_plot",
+    "x_limits_for_scaling": [
+      4.066853418827715,
+      5.427216374489275
+    ],
+    "visible_data_bounds": [
+      0.004499435969574968,
+      97.98145439523309
+    ],
+    "reference_convention": "model_000-calibrated per-panel rule: measure opacity min and max only in the shown radius range, subtract the shown minimum, and scale the shown maximum to the same display height used in the model_000 reference, unless no reference is available",
+    "display_min_value": 0.0,
+    "display_units_per_opacity_unit": 0.008406062332861935,
+    "opacity_min_baseline": 0.004499435969574968,
+    "opacity_max_display_value": 0.8236003905715753,
+    "scaled_visible_display_bounds": [
+      0.0,
+      0.8236003905715753
+    ]
+  },
+  "photosphere_radius_rsun_range": [
+    5.066853418827715,
+    5.327216374489275
+  ],
+  "radius_window_contains_photosphere": true,
+  "continue_saturation_stop": {
+    "log_path": "<local-rre-root>/rsp_batch_runs/output/model_003_M0p7317_Z0p001405_T6745/logs/continue_saturation.log",
+    "exists": true,
+    "stop_reason": "period_number >= max_period_number",
+    "termination_code": "reached max number of periods",
+    "saturated_by_grekm": false,
+    "reached_max_periods": true
+  },
+  "saturated_by_grekm": false,
+  "reached_max_periods": true,
+  "phase_seam": {
+    "path": "<local-rre-root>/rsp_batch_runs/output/model_003_M0p7317_Z0p001405_T6745/mesa_rsp_model_003_M0p7317_Z0p001405_T6745_final_cycle_lightcurve.csv",
+    "exists": true,
+    "row_count": 1103,
+    "parsed_row_count": 1103,
+    "phase_first": 0.0,
+    "phase_last": 0.999075392712,
+    "max_allowed_fraction_of_amplitude": 0.025,
+    "max_allowed_adjacent_fraction_of_amplitude": 0.025,
+    "metrics": {
+      "luminosity_lsun": {
+        "seam": 0.864675662990166,
+        "amplitude": 16.73020086627382,
+        "fraction_of_amplitude": 0.05168351951668756,
+        "max_adjacent_step": 0.10655469126222528,
+        "max_adjacent_fraction_of_amplitude": 0.006369002507138298
+      },
+      "radius_rsun": {
+        "seam": 0.01880610520999948,
+        "amplitude": 0.3313124612599996,
+        "fraction_of_amplitude": 0.05676244454699598,
+        "max_adjacent_step": 0.0010743277599996048,
+        "max_adjacent_fraction_of_amplitude": 0.0032426421750449018
+      },
+      "teff_k": {
+        "seam": 24.407150359999832,
+        "amplitude": 582.4633420600003,
+        "fraction_of_amplitude": 0.04190332437691095,
+        "max_adjacent_step": 3.737499480000224,
+        "max_adjacent_fraction_of_amplitude": 0.006416711937238481
+      }
+    },
+    "failures": [
+      "luminosity_lsun phase seam is 0.05168 of amplitude, expected <= 0.025",
+      "radius_rsun phase seam is 0.05676 of amplitude, expected <= 0.025",
+      "teff_k phase seam is 0.0419 of amplitude, expected <= 0.025"
+    ],
+    "age_monotonic_by_phase": true,
+    "minimum_age_step_days_by_phase": 0.00012822999997297302,
+    "ok": false
+  },
+  "phase_seam_ok": false,
+  "passed": false,
+  "failures": [
+    "luminosity_lsun phase seam is 0.05168 of amplitude, expected <= 0.025",
+    "radius_rsun phase seam is 0.05676 of amplitude, expected <= 0.025",
+    "teff_k phase seam is 0.0419 of amplitude, expected <= 0.025"
+  ],
+  "verified_at": "2026-06-17T15:39:50.863428+00:00"
+}

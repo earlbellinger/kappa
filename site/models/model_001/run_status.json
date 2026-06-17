@@ -1,0 +1,460 @@
+{
+  "model_id": "model_001",
+  "run_name": "model_001_M0p5602_Z0p003592_T6824",
+  "registered_existing": false,
+  "run_dir": "<local-rre-root>/rsp_batch_runs/runs/model_001_M0p5602_Z0p003592_T6824",
+  "output_dir": "<local-rre-root>/rsp_batch_runs/output/model_001_M0p5602_Z0p003592_T6824",
+  "prefix": "mesa_rsp_model_001_M0p5602_Z0p003592_T6824",
+  "product_stem": "mesa_rsp_model_001_M0p5602_Z0p003592_T6824_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work",
+  "updated_at": "2026-06-17T15:39:50.534499+00:00",
+  "stages": {
+    "prepared": {
+      "status": "complete",
+      "timestamp": "2026-06-14T19:27:22.368456+00:00"
+    },
+    "create": {
+      "status": "complete",
+      "updated_at": "2026-06-15T03:21:51.691741+00:00",
+      "skipped": true,
+      "expected_output": "<local-rre-root>/rsp_batch_runs/runs/model_001_M0p5602_Z0p003592_T6824/final_model_001_M0p5602_Z0p003592_T6824_create.mod"
+    },
+    "continue_saturation": {
+      "status": "complete",
+      "updated_at": "2026-06-15T03:21:51.692743+00:00",
+      "skipped": true,
+      "expected_output": "<local-rre-root>/rsp_batch_runs/runs/model_001_M0p5602_Z0p003592_T6824/final_model_001_M0p5602_Z0p003592_T6824_saturated.mod"
+    },
+    "restart": {
+      "status": "complete",
+      "updated_at": "2026-06-15T03:21:51.693243+00:00",
+      "skipped": true,
+      "expected_output": "<local-rre-root>/rsp_batch_runs/runs/model_001_M0p5602_Z0p003592_T6824/final_model_001_M0p5602_Z0p003592_T6824_restart.mod"
+    },
+    "deep2cycles": {
+      "status": "complete",
+      "updated_at": "2026-06-15T03:21:51.693742+00:00",
+      "skipped": true,
+      "expected_output": "<local-rre-root>/rsp_batch_runs/runs/model_001_M0p5602_Z0p003592_T6824/final_model_001_M0p5602_Z0p003592_T6824_deep2cycles.mod"
+    },
+    "plot": {
+      "status": "complete",
+      "updated_at": "2026-06-17T15:32:11.756566+00:00",
+      "expected_output": "<local-rre-root>/rsp_batch_runs/output/model_001_M0p5602_Z0p003592_T6824/mesa_rsp_model_001_M0p5602_Z0p003592_T6824_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work.gif",
+      "started_at": "2026-06-17T15:30:41.693045+00:00"
+    },
+    "final_cycle": {
+      "status": "complete",
+      "updated_at": "2026-06-16T22:37:22.759640+00:00",
+      "expected_output": "<local-rre-root>/rsp_batch_runs/output/model_001_M0p5602_Z0p003592_T6824/mesa_rsp_model_001_M0p5602_Z0p003592_T6824_final_cycle_summary.json",
+      "summary": {
+        "history_file": "<local-rre-root>/rsp_batch_runs/runs/model_001_M0p5602_Z0p003592_T6824/LOGS/history.data",
+        "period_days": 0.5919831873266048,
+        "max_light_age_days": 1498.5697563549788,
+        "max_light_phase": 0.74928103341255,
+        "phase_reference_age_days": 1498.126194580616,
+        "phase_reference_kind": "cycle-start radius maximum",
+        "cycle_selection": "radius-maximum to radius-maximum, chronological phase",
+        "cycle_max_light_local_index": 990,
+        "radius_min_rsun": 4.913350134617521,
+        "radius_max_rsun": 5.453102212763534,
+        "radius_peak_to_peak_rsun": 0.5397520781460132,
+        "teff_min_k": 6366.323803557248,
+        "teff_max_k": 7510.794652983828,
+        "abs_mag_V_min": 0.038725711566569156,
+        "abs_mag_V_max": 0.8077963665657139,
+        "abs_mag_V_peak_to_peak": 0.7690706549991447,
+        "abs_mag_I_min": -0.14964660853253695,
+        "abs_mag_I_max": 0.3082429388408849,
+        "abs_mag_I_peak_to_peak": 0.4578895473734218,
+        "cycle_start_age_days": 1498.126194580616,
+        "cycle_end_age_days": 1498.7181777679425,
+        "cycle_last_sample_age_days": 1498.717585777553,
+        "cycle_interval": "half-open [radius maximum, next radius maximum)",
+        "models_in_cycle": 1242,
+        "lightcurve_csv": "<local-rre-root>/rsp_batch_runs/output/model_001_M0p5602_Z0p003592_T6824/mesa_rsp_model_001_M0p5602_Z0p003592_T6824_final_cycle_lightcurve.csv"
+      },
+      "started_at": "2026-06-16T22:37:22.621011+00:00"
+    },
+    "verify": {
+      "status": "complete",
+      "updated_at": "2026-06-17T15:39:50.534499+00:00",
+      "expected_output": "<local-rre-root>/rsp_batch_runs/output/model_001_M0p5602_Z0p003592_T6824/verification_summary.json",
+      "result": {
+        "model_id": "model_001",
+        "run_name": "model_001_M0p5602_Z0p003592_T6824",
+        "profile_count": 3728,
+        "first_profile": "<local-rre-root>/rsp_batch_runs/runs/model_001_M0p5602_Z0p003592_T6824/LOGS/profile1.data",
+        "required_profile_columns_present": true,
+        "missing_profile_columns": [],
+        "summary_path": "<local-rre-root>/rsp_batch_runs/output/model_001_M0p5602_Z0p003592_T6824/mesa_rsp_model_001_M0p5602_Z0p003592_T6824_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work_summary.json",
+        "pressure_work_mode": "gas_plus_pav",
+        "heating_mode": "gas_minus_c",
+        "scaling_method_version": "model000-visible-window-v5",
+        "expected_scaling_method_version": "model000-visible-window-v5",
+        "panel_y_ranges": {
+          "left_power": {
+            "limits": [
+              -19.929710552338562,
+              3.9450939859957423
+            ],
+            "visible_data_bounds": [
+              -18.45343569660978,
+              3.6528648018479095
+            ],
+            "x_field_for_scaling": "radius_rsun_plot",
+            "x_limits_for_scaling": [
+              3.8942141584611623,
+              5.431241366488648
+            ],
+            "reference_floor_limits": [
+              -1.0538880567035844,
+              0.9359095347404265
+            ],
+            "method": "minimum and maximum of the plotted power curves within this panel's shown x range; the axis includes zero and pads the lower and upper sides from their own local visible extrema, then applies the model_000 y-limit floor if available"
+          },
+          "photosphere_radial_velocity": {
+            "limits": [
+              -22.604617852004846,
+              29.286533261643722
+            ],
+            "visible_data_bounds": [
+              -19.025917775201496,
+              25.70783318484037
+            ],
+            "method": "panel-local fractional padding around the displayed photosphere radial-velocity curve"
+          },
+          "photosphere_luminosity": {
+            "limits": [
+              36.18925986054642,
+              74.8897387987291
+            ],
+            "visible_data_bounds": [
+              38.858258408007295,
+              72.22074025126823
+            ],
+            "method": "panel-local fractional padding around the displayed photosphere luminosity curve"
+          }
+        },
+        "cycle_source": "final-cycle summary age window",
+        "main_radius_xlim_used": [
+          3.8942141584611623,
+          5.431241366488648
+        ],
+        "left_panel_x_limits_for_scaling": [
+          3.8942141584611623,
+          5.431241366488648
+        ],
+        "left_power_visible_data_bounds": [
+          -18.45343569660978,
+          3.6528648018479095
+        ],
+        "left_power_ylim": [
+          -19.929710552338562,
+          3.9450939859957423
+        ],
+        "opacity_scaling": {
+          "method": "left-panel visible-window min opacity maps to zero; left-panel visible-window max opacity maps to the model_000 reference display height when available, otherwise to a fixed fraction of this panel's positive y-limit",
+          "panel": "left_power",
+          "panel_top_fraction": 0.88,
+          "reference_opacity_max_display_value": 0.8236003905715753,
+          "x_field_for_scaling": "radius_rsun_plot",
+          "x_limits_for_scaling": [
+            3.8942141584611623,
+            5.431241366488648
+          ],
+          "visible_data_bounds": [
+            0.0035001471581693473,
+            102.37564295569331
+          ],
+          "reference_convention": "model_000-calibrated per-panel rule: measure opacity min and max only in the shown radius range, subtract the shown minimum, and scale the shown maximum to the same display height used in the model_000 reference, unless no reference is available",
+          "display_min_value": 0.0,
+          "display_units_per_opacity_unit": 0.008045161193039994,
+          "opacity_min_baseline": 0.0035001471581693473,
+          "opacity_max_display_value": 0.8236003905715753,
+          "scaled_visible_display_bounds": [
+            0.0,
+            0.8236003905715753
+          ]
+        },
+        "photosphere_radius_rsun_range": [
+          4.894214158461162,
+          5.331241366488649
+        ],
+        "radius_window_contains_photosphere": true,
+        "continue_saturation_stop": {
+          "log_path": "<local-rre-root>/rsp_batch_runs/output/model_001_M0p5602_Z0p003592_T6824/logs/continue_saturation.log",
+          "exists": true,
+          "stop_reason": "GREKM_avg_abs < RSP_GREKM_avg_abs_limit",
+          "termination_code": null,
+          "saturated_by_grekm": true,
+          "reached_max_periods": false
+        },
+        "saturated_by_grekm": true,
+        "reached_max_periods": false,
+        "phase_seam": {
+          "path": "<local-rre-root>/rsp_batch_runs/output/model_001_M0p5602_Z0p003592_T6824/mesa_rsp_model_001_M0p5602_Z0p003592_T6824_final_cycle_lightcurve.csv",
+          "exists": true,
+          "row_count": 1242,
+          "parsed_row_count": 1242,
+          "phase_first": 0.0,
+          "phase_last": 0.998999987834,
+          "max_allowed_fraction_of_amplitude": 0.025,
+          "max_allowed_adjacent_fraction_of_amplitude": 0.025,
+          "metrics": {
+            "luminosity_lsun": {
+              "seam": 0.06525394942863727,
+              "amplitude": 33.22601050743008,
+              "fraction_of_amplitude": 0.0019639417562347735,
+              "max_adjacent_step": 0.2203397634051214,
+              "max_adjacent_fraction_of_amplitude": 0.006631544384657571
+            },
+            "radius_rsun": {
+              "seam": 0.0002471800700005744,
+              "amplitude": 0.5397520781400003,
+              "fraction_of_amplitude": 0.0004579511223974595,
+              "max_adjacent_step": 0.0023337103300002937,
+              "max_adjacent_fraction_of_amplitude": 0.004323670856520498
+            },
+            "teff_k": {
+              "seam": 2.2921933200004787,
+              "amplitude": 1144.4708494200004,
+              "fraction_of_amplitude": 0.002002841156821186,
+              "max_adjacent_step": 5.777908510000088,
+              "max_adjacent_fraction_of_amplitude": 0.005048541439852523
+            }
+          },
+          "failures": [],
+          "age_monotonic_by_phase": true,
+          "minimum_age_step_days_by_phase": 0.0003096599998571037,
+          "ok": true
+        },
+        "phase_seam_ok": true,
+        "passed": true,
+        "failures": [],
+        "verified_at": "2026-06-17T15:39:50.531985+00:00"
+      },
+      "started_at": "2026-06-17T15:39:50.495658+00:00"
+    }
+  },
+  "validation": {
+    "passed": true,
+    "stages": {
+      "create": {
+        "allowed_diffs": {
+          "RSP_L": {
+            "template": "58.6724510000000024d0",
+            "generated": "51.51"
+          },
+          "RSP_Teff": {
+            "template": "6332.6061570000001666d0",
+            "generated": "6824"
+          },
+          "RSP_X": {
+            "template": "0.723844d0",
+            "generated": "0.7026"
+          },
+          "RSP_Z": {
+            "template": "0.0000209050398617d0",
+            "generated": "0.003592"
+          },
+          "RSP_alfa": {
+            "template": "2.1912609999999999d0",
+            "generated": "1.9096d0"
+          },
+          "RSP_alfam": {
+            "template": "0.321575d0",
+            "generated": "0.7073d0"
+          },
+          "RSP_alfat": {
+            "template": "0.01d0",
+            "generated": ".01d0"
+          },
+          "RSP_mass": {
+            "template": "0.773726d0",
+            "generated": "0.5602"
+          },
+          "Zbase": {
+            "template": "0.0000209050398617d0",
+            "generated": "0.003592"
+          },
+          "history_columns_file": {
+            "template": "'history_columns_combined_14507.list'",
+            "generated": "'history_columns_batch.list'"
+          },
+          "save_model_filename": {
+            "template": "'final_combined_14507.mod'",
+            "generated": "'final_model_001_M0p5602_Z0p003592_T6824_create.mod'"
+          }
+        },
+        "unexpected_diffs": {},
+        "passed": true
+      },
+      "continue_saturation": {
+        "allowed_diffs": {
+          "RSP_L": {
+            "template": "58.6724510000000024d0",
+            "generated": "51.51"
+          },
+          "RSP_Teff": {
+            "template": "6332.6061570000001666d0",
+            "generated": "6824"
+          },
+          "RSP_X": {
+            "template": "0.723844d0",
+            "generated": "0.7026"
+          },
+          "RSP_Z": {
+            "template": "0.0000209050398617d0",
+            "generated": "0.003592"
+          },
+          "RSP_alfa": {
+            "template": "2.1912609999999999d0",
+            "generated": "1.9096d0"
+          },
+          "RSP_alfam": {
+            "template": "0.321575d0",
+            "generated": "0.7073d0"
+          },
+          "RSP_alfat": {
+            "template": "0.01d0",
+            "generated": ".01d0"
+          },
+          "RSP_mass": {
+            "template": "0.773726d0",
+            "generated": "0.5602"
+          },
+          "Zbase": {
+            "template": "0.0000209050398617d0",
+            "generated": "0.003592"
+          },
+          "history_columns_file": {
+            "template": "'history_columns_combined_14507.list'",
+            "generated": "'history_columns_batch.list'"
+          },
+          "load_model_filename": {
+            "template": "'final_combined_14507_restart.mod'",
+            "generated": "'final_model_001_M0p5602_Z0p003592_T6824_create.mod'"
+          },
+          "save_model_filename": {
+            "template": "'final_combined_14507_saturated.mod'",
+            "generated": "'final_model_001_M0p5602_Z0p003592_T6824_saturated.mod'"
+          }
+        },
+        "unexpected_diffs": {},
+        "passed": true
+      },
+      "restart": {
+        "allowed_diffs": {
+          "RSP_L": {
+            "template": "58.6724510000000024d0",
+            "generated": "51.51"
+          },
+          "RSP_Teff": {
+            "template": "6332.6061570000001666d0",
+            "generated": "6824"
+          },
+          "RSP_X": {
+            "template": "0.723844d0",
+            "generated": "0.7026"
+          },
+          "RSP_Z": {
+            "template": "0.0000209050398617d0",
+            "generated": "0.003592"
+          },
+          "RSP_alfa": {
+            "template": "2.1912609999999999d0",
+            "generated": "1.9096d0"
+          },
+          "RSP_alfam": {
+            "template": "0.321575d0",
+            "generated": "0.7073d0"
+          },
+          "RSP_alfat": {
+            "template": "0.01d0",
+            "generated": ".01d0"
+          },
+          "RSP_mass": {
+            "template": "0.773726d0",
+            "generated": "0.5602"
+          },
+          "Zbase": {
+            "template": "0.0000209050398617d0",
+            "generated": "0.003592"
+          },
+          "history_columns_file": {
+            "template": "'history_columns_combined_14507.list'",
+            "generated": "'history_columns_batch.list'"
+          },
+          "load_model_filename": {
+            "template": "'final_combined_14507_saturated.mod'",
+            "generated": "'final_model_001_M0p5602_Z0p003592_T6824_saturated.mod'"
+          },
+          "save_model_filename": {
+            "template": "'final_combined_14507_restart.mod'",
+            "generated": "'final_model_001_M0p5602_Z0p003592_T6824_restart.mod'"
+          }
+        },
+        "unexpected_diffs": {},
+        "passed": true
+      },
+      "deep2cycles": {
+        "allowed_diffs": {
+          "RSP_L": {
+            "template": "58.6724510000000024d0",
+            "generated": "51.51"
+          },
+          "RSP_Teff": {
+            "template": "6332.6061570000001666d0",
+            "generated": "6824"
+          },
+          "RSP_X": {
+            "template": "0.723844d0",
+            "generated": "0.7026"
+          },
+          "RSP_Z": {
+            "template": "0.0000209050398617d0",
+            "generated": "0.003592"
+          },
+          "RSP_alfa": {
+            "template": "2.1912609999999999d0",
+            "generated": "1.9096d0"
+          },
+          "RSP_alfam": {
+            "template": "0.321575d0",
+            "generated": "0.7073d0"
+          },
+          "RSP_alfat": {
+            "template": "0.01d0",
+            "generated": ".01d0"
+          },
+          "RSP_mass": {
+            "template": "0.773726d0",
+            "generated": "0.5602"
+          },
+          "Zbase": {
+            "template": "0.0000209050398617d0",
+            "generated": "0.003592"
+          },
+          "history_columns_file": {
+            "template": "'history_columns_combined_14507.list'",
+            "generated": "'history_columns_batch.list'"
+          },
+          "load_model_filename": {
+            "template": "'final_combined_14507_restart.mod'",
+            "generated": "'final_model_001_M0p5602_Z0p003592_T6824_restart.mod'"
+          },
+          "profile_columns_file": {
+            "template": "'profile_columns_combined_14507_deep.list'",
+            "generated": "'profile_columns_batch_deep.list'"
+          },
+          "save_model_filename": {
+            "template": "'final_combined_14507_deep2cycles.mod'",
+            "generated": "'final_model_001_M0p5602_Z0p003592_T6824_deep2cycles.mod'"
+          }
+        },
+        "unexpected_diffs": {},
+        "passed": true
+      }
+    }
+  }
+}

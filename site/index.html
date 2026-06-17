@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kappa</title>
+  <style>
+    :root { color-scheme: dark; --bg:#050506; --panel:#101114; --panel2:#181a20; --text:#f7f1e4; --muted:#afa89c; --line:#333640; --red:#c1121f; --gold:#ffb703; --blue:#669bbc; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; }
+    header { padding: 32px clamp(18px, 4vw, 52px) 22px; background:#08090c; border-bottom: 1px solid var(--line); }
+    h1 { margin:0 0 8px; font-size: clamp(34px, 6vw, 72px); letter-spacing:0; line-height: 0.95; }
+    .dek { max-width: 900px; color: var(--muted); margin: 0 0 14px; }
+    .meta { color: var(--muted); margin: 0; }
+    main { padding: 24px clamp(18px, 4vw, 52px) 48px; }
+    .toolbar { display:flex; flex-wrap:wrap; gap:12px; margin:0 0 24px; color:var(--muted); }
+    a { color:#d9edf8; text-decoration:none; border-bottom:1px solid rgba(217,237,248,.38); }
+    a:hover { border-bottom-color:#d9edf8; }
+    .diagnostic { margin:0 0 24px; padding:16px; background:var(--panel); border:1px solid var(--line); border-radius:8px; }
+    .diagnostic h2 { margin:0 0 12px; font-size:24px; }
+    .diagnostic a { display:block; border:0; }
+    .diagnostic img { width:100%; height:auto; border-radius:6px; background:#fff; }
+    .diagnostic-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(420px,1fr)); gap:16px; }
+    figure { margin:0; }
+    figcaption { margin-top:8px; color:var(--muted); }
+    .caption-link { display:inline; margin-left:8px; border-bottom:1px solid rgba(217,237,248,.38); }
+    .metric-row { margin:6px 0 0; color:#f7f1e4; font-size:13px; }
+    .grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(480px, 1fr)); gap:22px; align-items:start; }
+    .card { background:var(--panel); border:1px solid var(--line); border-radius:8px; overflow:hidden; }
+    .card-head { display:flex; justify-content:space-between; gap:16px; align-items:start; padding:16px 18px 12px; background:var(--panel2); border-bottom:1px solid var(--line); }
+    h2 { margin:0; font-size:22px; }
+    .card-head p { margin:5px 0 0; color:var(--muted); font-size:13px; overflow-wrap:anywhere; }
+    .badge { border:1px solid currentColor; border-radius:7px; padding:4px 8px; white-space:nowrap; font-size:12px; }
+    .badge.ok { color:#83d18d; }
+    .badge.warn { color:var(--gold); }
+    .badge.bad { color:#f06a6a; }
+    .badge.muted { color:#7a7d88; }
+    .media { display:block; border-bottom:0; background:#000; }
+    .diagnostic-media { outline:2px solid rgba(255,183,3,.55); outline-offset:-2px; }
+    img { display:block; width:100%; height:auto; background:#000; }
+    .placeholder { min-height:260px; display:grid; place-items:center; color:#656977; background:repeating-linear-gradient(135deg,#07080b,#07080b 14px,#0d0f14 14px,#0d0f14 28px); }
+    .body { padding: 14px 18px 18px; }
+    .params { margin:0 0 8px; font-weight:650; }
+    .details { margin:0 0 12px; color:var(--muted); }
+    .details span { margin-left:10px; color:var(--gold); }
+    .links { margin:0; display:flex; flex-wrap:wrap; gap:12px; }
+    .muted { color:#777b85; }
+    @media (max-width:700px) { .grid { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Kappa</h1>
+    <p class="dek">RR Lyrae RSP animations for following pressure-volume work, gas heating, ionization structure, radius, temperature, luminosity, and radial velocity through pulsation phase.</p>
+    <p class="meta">Generated 2026-06-17T15:59:33+00:00. Trusted GIFs: 1/10. Seam-verified: 4/10.</p>
+  </header>
+  <main>
+    <nav class="toolbar"><a href="metadata/live_status.json">live status</a> <a href="metadata/batch_audit_summary.json">audit</a> <a href="metadata/manifest.json">manifest</a> <a href="metadata/cycle_modulation_summary.json">cycle modulation</a> <a href="metadata/convergence_summary_last100.json">convergence</a> <a href="metadata/convergence_summary_last100.png">convergence plot</a> <a href="metadata/convergence_trends_last100.json">convergence trends</a> <a href="metadata/convergence_trends_last100.png">convergence trend plot</a> <a href="metadata/convergence_trends_exact_last100.png">exact-history trend plot</a> <a href="metadata/models.csv">models CSV</a></nav>
+
+    <section class="diagnostic">
+      <h2>Limit-Cycle Convergence</h2>
+      <a href="metadata/convergence_summary_last100.png"><img src="metadata/convergence_summary_last100.png" alt="Strict limit-cycle convergence summary"></a>
+    </section>
+
+
+    <section class="diagnostic">
+      <h2>Rolling Convergence Trends</h2>
+      <a href="metadata/convergence_trends_last100.png"><img src="metadata/convergence_trends_last100.png" alt="Rolling final-100-cycle convergence trends"></a>
+    </section>
+
+
+    <section class="diagnostic">
+      <h2>Rolling Convergence Trends: Exact-History Runs</h2>
+      <a href="metadata/convergence_trends_exact_last100.png"><img src="metadata/convergence_trends_exact_last100.png" alt="Rolling final-100-cycle convergence trends for exact-history runs"></a>
+    </section>
+
+
+    <section class="diagnostic">
+      <h2>Active Amplitude Growth</h2>
+      <div class="diagnostic-grid">
+
+        <figure>
+          <a href="cycle_diagnostics/model_007_growth_diagnostic.png"><img src="cycle_diagnostics/model_007_growth_diagnostic.png" alt="model 007 active amplitude growth diagnostic"></a>
+          <figcaption>model 007 active amplitude growth <a class="caption-link" href="metadata/model_007_growth_diagnostic.json">JSON</a></figcaption>
+          <p class="metric-row">DeltaR window 79.1x criterion | amplitude doubles in 29799 cycles | max v<sub>surf</sub>/c<sub>s</sub> 4.73 | v<sub>surf</sub>/c<sub>s</sub>=0.8 in 0 cycles</p>
+        </figure>
+
+        <figure>
+          <a href="cycle_diagnostics/model_008_growth_diagnostic.png"><img src="cycle_diagnostics/model_008_growth_diagnostic.png" alt="model 008 active amplitude growth diagnostic"></a>
+          <figcaption>model 008 active amplitude growth <a class="caption-link" href="metadata/model_008_growth_diagnostic.json">JSON</a></figcaption>
+          <p class="metric-row">DeltaR window 203x criterion | amplitude doubles in 339 cycles | max v<sub>surf</sub>/c<sub>s</sub> 0.305 | v<sub>surf</sub>/c<sub>s</sub>=0.8 in 450 cycles</p>
+        </figure>
+
+        <figure>
+          <a href="cycle_diagnostics/model_009_growth_diagnostic.png"><img src="cycle_diagnostics/model_009_growth_diagnostic.png" alt="model 009 active amplitude growth diagnostic"></a>
+          <figcaption>model 009 active amplitude growth <a class="caption-link" href="metadata/model_009_growth_diagnostic.json">JSON</a></figcaption>
+          <p class="metric-row">DeltaR window ...x criterion | amplitude doubles in ... cycles | max v<sub>surf</sub>/c<sub>s</sub> 0.016 | v<sub>surf</sub>/c<sub>s</sub>=0.8 in ... cycles</p>
+        </figure>
+
+      </div>
+    </section>
+
+    <section class="grid">
+
+      <article class="card">
+        <div class="card-head">
+          <div>
+            <h2>model_000</h2>
+            <p>model_000_combined_14507_full_pressure_minus_eq</p>
+          </div>
+          <span class="badge ok">verified</span>
+        </div>
+        <a class="media" href="models/model_000/mesa_rsp_combined_14507_full_pressure_minus_eq_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work.gif"><img src="models/model_000/mesa_rsp_combined_14507_full_pressure_minus_eq_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work.gif" alt="model_000 animation"></a>
+        <div class="body">
+          <p class="params">M=0.7737 M_sun &nbsp; Teff=6332.6 K &nbsp; L=58.67 L_sun &nbsp; Z=2.091e-05</p>
+          <p class="details">3184 profiles | 17.3 MB GIF </p>
+          <p class="links"><a href="models/model_000/mesa_rsp_combined_14507_full_pressure_minus_eq_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work.gif">GIF</a> <a href="models/model_000/mesa_rsp_combined_14507_full_pressure_minus_eq_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work.png">PNG</a> <a href="models/model_000/mesa_rsp_combined_14507_full_pressure_minus_eq_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work_summary.json">summary</a> <a href="models/model_000/verification_summary.json">verify</a> <a href="models/model_000/mesa_rsp_combined_14507_full_pressure_minus_eq_final_cycle_lightcurve.csv">lightcurve</a></p>
+        </div>
+      </article>
+    
+
+      <article class="card">
+        <div class="card-head">
+          <div>
+            <h2>model_001</h2>
+            <p>model_001_M0p5602_Z0p003592_T6824</p>
+          </div>
+          <span class="badge muted">awaiting convergence</span>
+        </div>
+        <a class="media diagnostic-media" href="models/model_001/mesa_rsp_model_001_M0p5602_Z0p003592_T6824_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work.gif"><img src="models/model_001/mesa_rsp_model_001_M0p5602_Z0p003592_T6824_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work.gif" alt="model_001 animation"></a>
+        <div class="body">
+          <p class="params">M=0.5602 M_sun &nbsp; Teff=6824 K &nbsp; L=51.51 L_sun &nbsp; Z=0.003592</p>
+          <p class="details">3728 profiles | max v_surf/c_s 4.38 (supersonic) | strict convergence pending | period_log_fallback | 2508 cycles | Gamma not recorded | P frac 0.00629 | DeltaR frac 0.0938 | window max v_surf/c_s 4.33 | diagnostic animation, not trusted | 16.0 MB GIF </p>
+          <p class="links"><a href="models/model_001/mesa_rsp_model_001_M0p5602_Z0p003592_T6824_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work.gif">GIF</a> <a href="models/model_001/mesa_rsp_model_001_M0p5602_Z0p003592_T6824_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work.png">PNG</a> <a href="models/model_001/mesa_rsp_model_001_M0p5602_Z0p003592_T6824_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work_summary.json">summary</a> <a href="models/model_001/verification_summary.json">verify</a> <a href="models/model_001/mesa_rsp_model_001_M0p5602_Z0p003592_T6824_final_cycle_lightcurve.csv">lightcurve</a></p>
+        </div>
+      </article>
+    
+
+      <article class="card">
+        <div class="card-head">
+          <div>
+            <h2>model_002</h2>
+            <p>model_002_M0p5753_Z0p00707_T6044</p>
+          </div>
+          <span class="badge muted">awaiting convergence</span>
+        </div>
+        <a class="media diagnostic-media" href="models/model_002/mesa_rsp_model_002_M0p5753_Z0p00707_T6044_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work.gif"><img src="models/model_002/mesa_rsp_model_002_M0p5753_Z0p00707_T6044_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work.gif" alt="model_002 animation"></a>
+        <div class="body">
+          <p class="params">M=0.5753 M_sun &nbsp; Teff=6044 K &nbsp; L=36.22 L_sun &nbsp; Z=0.00707</p>
+          <p class="details">3000 profiles | max v_surf/c_s 0.286 (ok) | strict convergence pending | period_log_fallback | 2599 cycles | Gamma not recorded | P frac 0 | DeltaR frac 0.111 | window max v_surf/c_s 0.279 | diagnostic animation, not trusted | 11.9 MB GIF </p>
+          <p class="links"><a href="models/model_002/mesa_rsp_model_002_M0p5753_Z0p00707_T6044_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work.gif">GIF</a> <a href="models/model_002/mesa_rsp_model_002_M0p5753_Z0p00707_T6044_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work.png">PNG</a> <a href="models/model_002/mesa_rsp_model_002_M0p5753_Z0p00707_T6044_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work_summary.json">summary</a> <a href="models/model_002/verification_summary.json">verify</a> <a href="models/model_002/mesa_rsp_model_002_M0p5753_Z0p00707_T6044_final_cycle_lightcurve.csv">lightcurve</a></p>
+        </div>
+      </article>
+    
+
+      <article class="card">
+        <div class="card-head">
+          <div>
+            <h2>model_003</h2>
+            <p>model_003_M0p7317_Z0p001405_T6745</p>
+          </div>
+          <span class="badge bad">verification failed</span>
+        </div>
+        <a class="media diagnostic-media" href="models/model_003/mesa_rsp_model_003_M0p7317_Z0p001405_T6745_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work.gif"><img src="models/model_003/mesa_rsp_model_003_M0p7317_Z0p001405_T6745_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work.gif" alt="model_003 animation"></a>
+        <div class="body">
+          <p class="params">M=0.7317 M_sun &nbsp; Teff=6745 K &nbsp; L=50.21 L_sun &nbsp; Z=0.001405</p>
+          <p class="details">3004 profiles | max v_surf/c_s 3.28 (supersonic) | strict convergence pending | period_log_fallback | 2599 cycles | Gamma not recorded | P frac 0.12 | DeltaR frac 0.554 | window max v_surf/c_s 3.26 | diagnostic animation, not trusted | 15.4 MB GIF | luminosity_lsun phase seam is 0.05168 of amplitude, expected &lt;= 0.025; radius_rsun phase seam is 0.05676 of amplitude, expected &lt;= 0.025 </p>
+          <p class="links"><a href="models/model_003/mesa_rsp_model_003_M0p7317_Z0p001405_T6745_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work.gif">GIF</a> <a href="models/model_003/mesa_rsp_model_003_M0p7317_Z0p001405_T6745_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work.png">PNG</a> <a href="models/model_003/mesa_rsp_model_003_M0p7317_Z0p001405_T6745_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work_summary.json">summary</a> <a href="models/model_003/verification_summary.json">verify</a> <a href="models/model_003/mesa_rsp_model_003_M0p7317_Z0p001405_T6745_final_cycle_lightcurve.csv">lightcurve</a></p>
+        </div>
+      </article>
+    
+
+      <article class="card">
+        <div class="card-head">
+          <div>
+            <h2>model_004</h2>
+            <p>model_004_M0p7595_Z0p0001834_T6876</p>
+          </div>
+          <span class="badge muted">awaiting convergence</span>
+        </div>
+        <a class="media diagnostic-media" href="models/model_004/mesa_rsp_model_004_M0p7595_Z0p0001834_T6876_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work.gif"><img src="models/model_004/mesa_rsp_model_004_M0p7595_Z0p0001834_T6876_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work.gif" alt="model_004 animation"></a>
+        <div class="body">
+          <p class="params">M=0.7595 M_sun &nbsp; Teff=6876 K &nbsp; L=60.04 L_sun &nbsp; Z=0.0001834</p>
+          <p class="details">3008 profiles | max v_surf/c_s 0.636 (watch) | strict convergence pending | period_log_fallback | 2599 cycles | Gamma not recorded | P frac 0.0252 | DeltaR frac 0.195 | window max v_surf/c_s 0.631 | diagnostic animation, not trusted | 13.1 MB GIF </p>
+          <p class="links"><a href="models/model_004/mesa_rsp_model_004_M0p7595_Z0p0001834_T6876_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work.gif">GIF</a> <a href="models/model_004/mesa_rsp_model_004_M0p7595_Z0p0001834_T6876_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work.png">PNG</a> <a href="models/model_004/mesa_rsp_model_004_M0p7595_Z0p0001834_T6876_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work_summary.json">summary</a> <a href="models/model_004/verification_summary.json">verify</a> <a href="models/model_004/mesa_rsp_model_004_M0p7595_Z0p0001834_T6876_final_cycle_lightcurve.csv">lightcurve</a></p>
+        </div>
+      </article>
+    
+
+      <article class="card">
+        <div class="card-head">
+          <div>
+            <h2>model_005</h2>
+            <p>model_005_M0p6238_Z0p00007156_T6925</p>
+          </div>
+          <span class="badge bad">verification failed</span>
+        </div>
+        <a class="media diagnostic-media" href="models/model_005/mesa_rsp_model_005_M0p6238_Z0p00007156_T6925_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work.gif"><img src="models/model_005/mesa_rsp_model_005_M0p6238_Z0p00007156_T6925_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work.gif" alt="model_005 animation"></a>
+        <div class="body">
+          <p class="params">M=0.6238 M_sun &nbsp; Teff=6925 K &nbsp; L=48.84 L_sun &nbsp; Z=7.156e-05</p>
+          <p class="details">2995 profiles | max v_surf/c_s 1.87 (supersonic) | strict convergence pending | period_log_fallback | 2599 cycles | Gamma not recorded | P frac 0.238 | DeltaR frac 1.08 | window max v_surf/c_s 3.02 | diagnostic animation, not trusted | 15.0 MB GIF | radius_rsun phase seam is 0.3245 of amplitude, expected &lt;= 0.025; teff_k phase seam is 0.1056 of amplitude, expected &lt;= 0.025 </p>
+          <p class="links"><a href="models/model_005/mesa_rsp_model_005_M0p6238_Z0p00007156_T6925_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work.gif">GIF</a> <a href="models/model_005/mesa_rsp_model_005_M0p6238_Z0p00007156_T6925_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work.png">PNG</a> <a href="models/model_005/mesa_rsp_model_005_M0p6238_Z0p00007156_T6925_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work_summary.json">summary</a> <a href="models/model_005/verification_summary.json">verify</a> <a href="models/model_005/mesa_rsp_model_005_M0p6238_Z0p00007156_T6925_final_cycle_lightcurve.csv">lightcurve</a></p>
+        </div>
+      </article>
+    
+
+      <article class="card">
+        <div class="card-head">
+          <div>
+            <h2>model_006</h2>
+            <p>model_006_M0p7194_Z0p001620_T6711</p>
+          </div>
+          <span class="badge bad">verification failed</span>
+        </div>
+        <a class="media diagnostic-media" href="models/model_006/mesa_rsp_model_006_M0p7194_Z0p001620_T6711_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work.gif"><img src="models/model_006/mesa_rsp_model_006_M0p7194_Z0p001620_T6711_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work.gif" alt="model_006 animation"></a>
+        <div class="body">
+          <p class="params">M=0.7194 M_sun &nbsp; Teff=6711 K &nbsp; L=51.9 L_sun &nbsp; Z=0.00162</p>
+          <p class="details">3097 profiles | max v_surf/c_s 2.54 (supersonic) | strict convergence pending | period_log_fallback | 2599 cycles | Gamma not recorded | P frac 0.0913 | DeltaR frac 0.378 | window max v_surf/c_s 3.65 | diagnostic animation, not trusted | 15.3 MB GIF | luminosity_lsun phase seam is 0.05396 of amplitude, expected &lt;= 0.025; radius_rsun phase seam is 0.08457 of amplitude, expected &lt;= 0.025 </p>
+          <p class="links"><a href="models/model_006/mesa_rsp_model_006_M0p7194_Z0p001620_T6711_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work.gif">GIF</a> <a href="models/model_006/mesa_rsp_model_006_M0p7194_Z0p001620_T6711_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work.png">PNG</a> <a href="models/model_006/mesa_rsp_model_006_M0p7194_Z0p001620_T6711_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work_summary.json">summary</a> <a href="models/model_006/verification_summary.json">verify</a> <a href="models/model_006/mesa_rsp_model_006_M0p7194_Z0p001620_T6711_final_cycle_lightcurve.csv">lightcurve</a></p>
+        </div>
+      </article>
+    
+
+      <article class="card">
+        <div class="card-head">
+          <div>
+            <h2>model_007</h2>
+            <p>model_007_M0p6887_Z0p004060_T6669</p>
+          </div>
+          <span class="badge warn">running: continue_saturation</span>
+        </div>
+        <div class="media placeholder">queued</div>
+        <div class="body">
+          <p class="params">M=0.6887 M_sun &nbsp; Teff=6669 K &nbsp; L=50.79 L_sun &nbsp; Z=0.00406</p>
+          <p class="details">period 1572 / 5000 | max v_surf/c_s 4.75 (supersonic) | 1332 steps/cycle | strict convergence pending | history_exact_rsp_columns | 1575 cycles | Gamma ptp 0.00099 | P frac 0.000307 | DeltaR frac 0.0796 | window max v_surf/c_s 4.73 </p>
+          <p class="links"><span class="muted">awaiting render</span></p>
+        </div>
+      </article>
+    
+
+      <article class="card">
+        <div class="card-head">
+          <div>
+            <h2>model_008</h2>
+            <p>model_008_M0p6151_Z0p0004406_T6792</p>
+          </div>
+          <span class="badge warn">running: continue_saturation</span>
+        </div>
+        <div class="media placeholder">queued</div>
+        <div class="body">
+          <p class="params">M=0.6151 M_sun &nbsp; Teff=6792 K &nbsp; L=60.65 L_sun &nbsp; Z=0.0004406</p>
+          <p class="details">period 930 / 5000 | max v_surf/c_s 0.305 (ok) | 1000 steps/cycle | strict convergence pending | history_exact_rsp_columns | 1530 cycles | Gamma ptp 3.46e-05 | P frac 9.83e-06 | DeltaR frac 0.203 | window max v_surf/c_s 0.305 </p>
+          <p class="links"><span class="muted">awaiting render</span></p>
+        </div>
+      </article>
+    
+
+      <article class="card">
+        <div class="card-head">
+          <div>
+            <h2>model_009</h2>
+            <p>model_009_M0p6668_Z0p0001120_T6852</p>
+          </div>
+          <span class="badge warn">running: create</span>
+        </div>
+        <div class="media placeholder">queued</div>
+        <div class="body">
+          <p class="params">M=0.6668 M_sun &nbsp; Teff=6852 K &nbsp; L=51.19 L_sun &nbsp; Z=0.000112</p>
+          <p class="details">period 33 / 600 | model 35120 | max v_surf/c_s 0.016 (ok) | 960 steps/cycle | strict convergence pending | history_exact_rsp_columns | 33 cycles | 33/100-cycle window </p>
+          <p class="links"><span class="muted">awaiting render</span></p>
+        </div>
+      </article>
+    
+    </section>
+  </main>
+</body>
+</html>

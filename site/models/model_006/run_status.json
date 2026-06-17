@@ -1,0 +1,307 @@
+{
+  "model_id": "model_006",
+  "run_name": "model_006_M0p7194_Z0p001620_T6711",
+  "registered_existing": false,
+  "run_dir": "<local-rre-root>/rsp_batch_runs/runs/model_006_M0p7194_Z0p001620_T6711",
+  "output_dir": "<local-rre-root>/rsp_batch_runs/output/model_006_M0p7194_Z0p001620_T6711",
+  "prefix": "mesa_rsp_model_006_M0p7194_Z0p001620_T6711",
+  "product_stem": "mesa_rsp_model_006_M0p7194_Z0p001620_T6711_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work",
+  "updated_at": "2026-06-17T15:40:01.781517+00:00",
+  "stages": {
+    "prepared": {
+      "status": "complete",
+      "timestamp": "2026-06-14T19:27:22.635490+00:00"
+    },
+    "create": {
+      "status": "complete",
+      "updated_at": "2026-06-16T17:42:22.489114+00:00",
+      "expected_output": "<local-rre-root>/rsp_batch_runs/runs/model_006_M0p7194_Z0p001620_T6711/final_model_006_M0p7194_Z0p001620_T6711_create.mod",
+      "started_at": "2026-06-16T15:59:09.506868+00:00"
+    },
+    "continue_saturation": {
+      "status": "complete",
+      "updated_at": "2026-06-17T01:05:00.310547+00:00",
+      "expected_output": "<local-rre-root>/rsp_batch_runs/runs/model_006_M0p7194_Z0p001620_T6711/final_model_006_M0p7194_Z0p001620_T6711_saturated.mod",
+      "started_at": "2026-06-16T17:42:22.491115+00:00"
+    },
+    "restart": {
+      "status": "complete",
+      "updated_at": "2026-06-17T01:11:39.309446+00:00",
+      "expected_output": "<local-rre-root>/rsp_batch_runs/runs/model_006_M0p7194_Z0p001620_T6711/final_model_006_M0p7194_Z0p001620_T6711_restart.mod",
+      "started_at": "2026-06-17T01:05:00.312547+00:00"
+    },
+    "deep2cycles": {
+      "status": "complete",
+      "updated_at": "2026-06-17T01:14:37.481799+00:00",
+      "expected_output": "<local-rre-root>/rsp_batch_runs/runs/model_006_M0p7194_Z0p001620_T6711/final_model_006_M0p7194_Z0p001620_T6711_deep2cycles.mod",
+      "started_at": "2026-06-17T01:11:39.310945+00:00"
+    },
+    "final_cycle": {
+      "status": "complete",
+      "updated_at": "2026-06-17T01:17:25.914558+00:00",
+      "expected_output": "<local-rre-root>/rsp_batch_runs/output/model_006_M0p7194_Z0p001620_T6711/mesa_rsp_model_006_M0p7194_Z0p001620_T6711_final_cycle_summary.json",
+      "summary": {
+        "history_file": "<local-rre-root>/rsp_batch_runs/runs/model_006_M0p7194_Z0p001620_T6711/LOGS/history.data",
+        "period_days": 0.37815321405855684,
+        "max_light_age_days": 1065.5793647048793,
+        "max_light_phase": 0.535917935458136,
+        "phase_reference_age_days": 1065.3767056151141,
+        "phase_reference_kind": "cycle-start radius maximum",
+        "cycle_selection": "radius-maximum to radius-maximum, chronological phase",
+        "cycle_max_light_local_index": 517,
+        "radius_min_rsun": 5.262020179033999,
+        "radius_max_rsun": 5.5527457196294305,
+        "radius_peak_to_peak_rsun": 0.29072554059543165,
+        "teff_min_k": 6439.7575986807615,
+        "teff_max_k": 6913.26822556015,
+        "abs_mag_V_min": 0.3598904517796785,
+        "abs_mag_V_max": 0.6542960637823397,
+        "abs_mag_V_peak_to_peak": 0.29440561200266124,
+        "abs_mag_I_min": -0.0004980523479855559,
+        "abs_mag_I_max": 0.1699790476506436,
+        "abs_mag_I_peak_to_peak": 0.17047709999862914,
+        "cycle_start_age_days": 1065.3767056151141,
+        "cycle_end_age_days": 1065.7548588291727,
+        "cycle_last_sample_age_days": 1065.754452592774,
+        "cycle_interval": "half-open [radius maximum, next radius maximum)",
+        "models_in_cycle": 949,
+        "lightcurve_csv": "<local-rre-root>/rsp_batch_runs/output/model_006_M0p7194_Z0p001620_T6711/mesa_rsp_model_006_M0p7194_Z0p001620_T6711_final_cycle_lightcurve.csv"
+      },
+      "started_at": "2026-06-17T01:17:25.785124+00:00"
+    },
+    "plot": {
+      "status": "complete",
+      "updated_at": "2026-06-17T15:39:39.224350+00:00",
+      "expected_output": "<local-rre-root>/rsp_batch_runs/output/model_006_M0p7194_Z0p001620_T6711/mesa_rsp_model_006_M0p7194_Z0p001620_T6711_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work.gif",
+      "started_at": "2026-06-17T15:38:12.964244+00:00"
+    },
+    "verify": {
+      "status": "failed",
+      "updated_at": "2026-06-17T15:40:01.781016+00:00",
+      "error": "RuntimeError('luminosity_lsun phase seam is 0.05396 of amplitude, expected <= 0.025; radius_rsun phase seam is 0.08457 of amplitude, expected <= 0.025')",
+      "expected_output": "<local-rre-root>/rsp_batch_runs/output/model_006_M0p7194_Z0p001620_T6711/verification_summary.json",
+      "started_at": "2026-06-17T15:40:01.750293+00:00"
+    }
+  },
+  "validation": {
+    "passed": true,
+    "stages": {
+      "create": {
+        "allowed_diffs": {
+          "RSP_L": {
+            "template": "58.6724510000000024d0",
+            "generated": "51.90"
+          },
+          "RSP_Teff": {
+            "template": "6332.6061570000001666d0",
+            "generated": "6711"
+          },
+          "RSP_X": {
+            "template": "0.723844d0",
+            "generated": "0.7210"
+          },
+          "RSP_Z": {
+            "template": "0.0000209050398617d0",
+            "generated": "0.001620"
+          },
+          "RSP_alfa": {
+            "template": "2.1912609999999999d0",
+            "generated": "2.0784d0"
+          },
+          "RSP_alfam": {
+            "template": "0.321575d0",
+            "generated": "0.2945d0"
+          },
+          "RSP_alfat": {
+            "template": "0.01d0",
+            "generated": ".01d0"
+          },
+          "RSP_mass": {
+            "template": "0.773726d0",
+            "generated": "0.7194"
+          },
+          "Zbase": {
+            "template": "0.0000209050398617d0",
+            "generated": "0.001620"
+          },
+          "history_columns_file": {
+            "template": "'history_columns_combined_14507.list'",
+            "generated": "'history_columns_batch.list'"
+          },
+          "save_model_filename": {
+            "template": "'final_combined_14507.mod'",
+            "generated": "'final_model_006_M0p7194_Z0p001620_T6711_create.mod'"
+          }
+        },
+        "unexpected_diffs": {},
+        "passed": true
+      },
+      "continue_saturation": {
+        "allowed_diffs": {
+          "RSP_L": {
+            "template": "58.6724510000000024d0",
+            "generated": "51.90"
+          },
+          "RSP_Teff": {
+            "template": "6332.6061570000001666d0",
+            "generated": "6711"
+          },
+          "RSP_X": {
+            "template": "0.723844d0",
+            "generated": "0.7210"
+          },
+          "RSP_Z": {
+            "template": "0.0000209050398617d0",
+            "generated": "0.001620"
+          },
+          "RSP_alfa": {
+            "template": "2.1912609999999999d0",
+            "generated": "2.0784d0"
+          },
+          "RSP_alfam": {
+            "template": "0.321575d0",
+            "generated": "0.2945d0"
+          },
+          "RSP_alfat": {
+            "template": "0.01d0",
+            "generated": ".01d0"
+          },
+          "RSP_mass": {
+            "template": "0.773726d0",
+            "generated": "0.7194"
+          },
+          "Zbase": {
+            "template": "0.0000209050398617d0",
+            "generated": "0.001620"
+          },
+          "history_columns_file": {
+            "template": "'history_columns_combined_14507.list'",
+            "generated": "'history_columns_batch.list'"
+          },
+          "load_model_filename": {
+            "template": "'final_combined_14507_restart.mod'",
+            "generated": "'final_model_006_M0p7194_Z0p001620_T6711_create.mod'"
+          },
+          "save_model_filename": {
+            "template": "'final_combined_14507_saturated.mod'",
+            "generated": "'final_model_006_M0p7194_Z0p001620_T6711_saturated.mod'"
+          }
+        },
+        "unexpected_diffs": {},
+        "passed": true
+      },
+      "restart": {
+        "allowed_diffs": {
+          "RSP_L": {
+            "template": "58.6724510000000024d0",
+            "generated": "51.90"
+          },
+          "RSP_Teff": {
+            "template": "6332.6061570000001666d0",
+            "generated": "6711"
+          },
+          "RSP_X": {
+            "template": "0.723844d0",
+            "generated": "0.7210"
+          },
+          "RSP_Z": {
+            "template": "0.0000209050398617d0",
+            "generated": "0.001620"
+          },
+          "RSP_alfa": {
+            "template": "2.1912609999999999d0",
+            "generated": "2.0784d0"
+          },
+          "RSP_alfam": {
+            "template": "0.321575d0",
+            "generated": "0.2945d0"
+          },
+          "RSP_alfat": {
+            "template": "0.01d0",
+            "generated": ".01d0"
+          },
+          "RSP_mass": {
+            "template": "0.773726d0",
+            "generated": "0.7194"
+          },
+          "Zbase": {
+            "template": "0.0000209050398617d0",
+            "generated": "0.001620"
+          },
+          "history_columns_file": {
+            "template": "'history_columns_combined_14507.list'",
+            "generated": "'history_columns_batch.list'"
+          },
+          "load_model_filename": {
+            "template": "'final_combined_14507_saturated.mod'",
+            "generated": "'final_model_006_M0p7194_Z0p001620_T6711_saturated.mod'"
+          },
+          "save_model_filename": {
+            "template": "'final_combined_14507_restart.mod'",
+            "generated": "'final_model_006_M0p7194_Z0p001620_T6711_restart.mod'"
+          }
+        },
+        "unexpected_diffs": {},
+        "passed": true
+      },
+      "deep2cycles": {
+        "allowed_diffs": {
+          "RSP_L": {
+            "template": "58.6724510000000024d0",
+            "generated": "51.90"
+          },
+          "RSP_Teff": {
+            "template": "6332.6061570000001666d0",
+            "generated": "6711"
+          },
+          "RSP_X": {
+            "template": "0.723844d0",
+            "generated": "0.7210"
+          },
+          "RSP_Z": {
+            "template": "0.0000209050398617d0",
+            "generated": "0.001620"
+          },
+          "RSP_alfa": {
+            "template": "2.1912609999999999d0",
+            "generated": "2.0784d0"
+          },
+          "RSP_alfam": {
+            "template": "0.321575d0",
+            "generated": "0.2945d0"
+          },
+          "RSP_alfat": {
+            "template": "0.01d0",
+            "generated": ".01d0"
+          },
+          "RSP_mass": {
+            "template": "0.773726d0",
+            "generated": "0.7194"
+          },
+          "Zbase": {
+            "template": "0.0000209050398617d0",
+            "generated": "0.001620"
+          },
+          "history_columns_file": {
+            "template": "'history_columns_combined_14507.list'",
+            "generated": "'history_columns_batch.list'"
+          },
+          "load_model_filename": {
+            "template": "'final_combined_14507_restart.mod'",
+            "generated": "'final_model_006_M0p7194_Z0p001620_T6711_restart.mod'"
+          },
+          "profile_columns_file": {
+            "template": "'profile_columns_combined_14507_deep.list'",
+            "generated": "'profile_columns_batch_deep.list'"
+          },
+          "save_model_filename": {
+            "template": "'final_combined_14507_deep2cycles.mod'",
+            "generated": "'final_model_006_M0p7194_Z0p001620_T6711_deep2cycles.mod'"
+          }
+        },
+        "unexpected_diffs": {},
+        "passed": true
+      }
+    }
+  }
+}

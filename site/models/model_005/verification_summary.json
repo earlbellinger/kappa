@@ -1,0 +1,160 @@
+{
+  "model_id": "model_005",
+  "run_name": "model_005_M0p6238_Z0p00007156_T6925",
+  "profile_count": 2995,
+  "first_profile": "<local-rre-root>/rsp_batch_runs/runs/model_005_M0p6238_Z0p00007156_T6925/LOGS/profile1.data",
+  "required_profile_columns_present": true,
+  "missing_profile_columns": [],
+  "summary_path": "<local-rre-root>/rsp_batch_runs/output/model_005_M0p6238_Z0p00007156_T6925/mesa_rsp_model_005_M0p6238_Z0p00007156_T6925_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work_summary.json",
+  "pressure_work_mode": "gas_plus_pav",
+  "heating_mode": "gas_minus_c",
+  "scaling_method_version": "model000-visible-window-v5",
+  "expected_scaling_method_version": "model000-visible-window-v5",
+  "panel_y_ranges": {
+    "left_power": {
+      "limits": [
+        -6.426521775140409,
+        2.0422262437792083
+      ],
+      "visible_data_bounds": [
+        -5.950483125130008,
+        1.890950225721489
+      ],
+      "x_field_for_scaling": "radius_rsun_plot",
+      "x_limits_for_scaling": [
+        3.760900494369208,
+        5.063335222631426
+      ],
+      "reference_floor_limits": [
+        -1.0538880567035844,
+        0.9359095347404265
+      ],
+      "method": "minimum and maximum of the plotted power curves within this panel's shown x range; the axis includes zero and pads the lower and upper sides from their own local visible extrema, then applies the model_000 y-limit floor if available"
+    },
+    "photosphere_radial_velocity": {
+      "limits": [
+        -14.91272637715275,
+        12.934046092627943
+      ],
+      "visible_data_bounds": [
+        -12.992259310271322,
+        11.013579025746516
+      ],
+      "method": "panel-local fractional padding around the displayed photosphere radial-velocity curve"
+    },
+    "photosphere_luminosity": {
+      "limits": [
+        41.129687963830754,
+        54.346313084245274
+      ],
+      "visible_data_bounds": [
+        42.04117935144555,
+        53.43482169663048
+      ],
+      "method": "panel-local fractional padding around the displayed photosphere luminosity curve"
+    }
+  },
+  "cycle_source": "final-cycle summary age window",
+  "main_radius_xlim_used": [
+    3.760900494369208,
+    5.063335222631426
+  ],
+  "left_panel_x_limits_for_scaling": [
+    3.760900494369208,
+    5.063335222631426
+  ],
+  "left_power_visible_data_bounds": [
+    -5.950483125130008,
+    1.890950225721489
+  ],
+  "left_power_ylim": [
+    -6.426521775140409,
+    2.0422262437792083
+  ],
+  "opacity_scaling": {
+    "method": "left-panel visible-window min opacity maps to zero; left-panel visible-window max opacity maps to the model_000 reference display height when available, otherwise to a fixed fraction of this panel's positive y-limit",
+    "panel": "left_power",
+    "panel_top_fraction": 0.88,
+    "reference_opacity_max_display_value": 0.8236003905715753,
+    "x_field_for_scaling": "radius_rsun_plot",
+    "x_limits_for_scaling": [
+      3.760900494369208,
+      5.063335222631426
+    ],
+    "visible_data_bounds": [
+      0.006230552250480179,
+      75.38694169219511
+    ],
+    "reference_convention": "model_000-calibrated per-panel rule: measure opacity min and max only in the shown radius range, subtract the shown minimum, and scale the shown maximum to the same display height used in the model_000 reference, unless no reference is available",
+    "display_min_value": 0.0,
+    "display_units_per_opacity_unit": 0.010925877165612798,
+    "opacity_min_baseline": 0.006230552250480179,
+    "opacity_max_display_value": 0.8236003905715752,
+    "scaled_visible_display_bounds": [
+      0.0,
+      0.8236003905715752
+    ]
+  },
+  "photosphere_radius_rsun_range": [
+    4.760900494369208,
+    4.963335222631426
+  ],
+  "radius_window_contains_photosphere": true,
+  "continue_saturation_stop": {
+    "log_path": "<local-rre-root>/rsp_batch_runs/output/model_005_M0p6238_Z0p00007156_T6925/logs/continue_saturation.log",
+    "exists": true,
+    "stop_reason": "period_number >= max_period_number",
+    "termination_code": "reached max number of periods",
+    "saturated_by_grekm": false,
+    "reached_max_periods": true
+  },
+  "saturated_by_grekm": false,
+  "reached_max_periods": true,
+  "phase_seam": {
+    "path": "<local-rre-root>/rsp_batch_runs/output/model_005_M0p6238_Z0p00007156_T6925/mesa_rsp_model_005_M0p6238_Z0p00007156_T6925_final_cycle_lightcurve.csv",
+    "exists": true,
+    "row_count": 1070,
+    "parsed_row_count": 1070,
+    "phase_first": 0.0,
+    "phase_last": 0.998999232718,
+    "max_allowed_fraction_of_amplitude": 0.025,
+    "max_allowed_adjacent_fraction_of_amplitude": 0.025,
+    "metrics": {
+      "luminosity_lsun": {
+        "seam": 0.1635490790563452,
+        "amplitude": 11.260209500848426,
+        "fraction_of_amplitude": 0.014524514756499178,
+        "max_adjacent_step": 0.04697652910925143,
+        "max_adjacent_fraction_of_amplitude": 0.0041719054255351
+      },
+      "radius_rsun": {
+        "seam": 0.08487921747000016,
+        "amplitude": 0.2615772998699999,
+        "fraction_of_amplitude": 0.3244899978407296,
+        "max_adjacent_step": 0.0006598171799998553,
+        "max_adjacent_fraction_of_amplitude": 0.0025224558106830175
+      },
+      "teff_k": {
+        "seam": 47.231199359999664,
+        "amplitude": 447.3407082699996,
+        "fraction_of_amplitude": 0.10558216251469009,
+        "max_adjacent_step": 1.741070529999888,
+        "max_adjacent_fraction_of_amplitude": 0.0038920458116434987
+      }
+    },
+    "failures": [
+      "radius_rsun phase seam is 0.3245 of amplitude, expected <= 0.025",
+      "teff_k phase seam is 0.1056 of amplitude, expected <= 0.025"
+    ],
+    "age_monotonic_by_phase": true,
+    "minimum_age_step_days_by_phase": 0.0003068199998779164,
+    "ok": false
+  },
+  "phase_seam_ok": false,
+  "passed": false,
+  "failures": [
+    "radius_rsun phase seam is 0.3245 of amplitude, expected <= 0.025",
+    "teff_k phase seam is 0.1056 of amplitude, expected <= 0.025"
+  ],
+  "verified_at": "2026-06-17T15:40:01.612834+00:00"
+}
