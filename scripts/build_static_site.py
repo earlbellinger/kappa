@@ -268,9 +268,6 @@ def copy_model_assets(
         "run_status": source_output_dir / "run_status.json",
     }
     for key, source in source_map.items():
-        if key in {"gif", "png"} and not trusted_animation:
-            copied[key] = None
-            continue
         if source.suffix.lower() == ".json":
             copied[key] = copy_json_if_exists(source, asset_dir / source.name, output_dir, rre_root)
         elif source.suffix.lower() in {".csv", ".txt"}:
@@ -314,7 +311,7 @@ def copy_model_assets(
         "L": record.get("RSP_L"),
         "Z": record.get("RSP_Z"),
         "assets": copied,
-        "gif_mb": file_size_mb(source_map["gif"]) if trusted_animation else None,
+        "gif_mb": file_size_mb(source_map["gif"]),
         "profile_count": live_record.get("profile_count") if live_record else None,
         "latest_period": live_record.get("latest_period") if live_record else None,
         "latest_history_model": live_record.get("latest_history_model") if live_record else None,
@@ -430,7 +427,8 @@ def card_html(model: dict[str, object]) -> str:
     if not links:
         links.append('<span class="muted">awaiting render</span>')
     if image:
-        image_html = f'<a class="media" href="{html.escape(str(image))}"><img src="{html.escape(str(image))}" alt="{html.escape(str(model["model_id"]))} animation"></a>'
+        media_class = "media" if model.get("animation_trusted") else "media diagnostic-media"
+        image_html = f'<a class="{media_class}" href="{html.escape(str(image))}"><img src="{html.escape(str(image))}" alt="{html.escape(str(model["model_id"]))} animation"></a>'
     else:
         if str(model["status"]) == "awaiting convergence":
             placeholder = "strict convergence pending"
@@ -467,6 +465,8 @@ def card_html(model: dict[str, object]) -> str:
         progress_bits.append(f"{model['latest_steps']} steps/cycle")
     if model.get("convergence"):
         progress_bits.append(str(model["convergence"]))
+    if image and not model.get("animation_trusted"):
+        progress_bits.append("diagnostic animation, not trusted")
     if model.get("gif_mb") is not None:
         progress_bits.append(f"{float(model['gif_mb']):.1f} MB GIF")
     failures = model.get("verification_failures") or []
@@ -493,7 +493,7 @@ def card_html(model: dict[str, object]) -> str:
 
 def write_index(output_dir: Path, models: list[dict[str, object]], metadata_links: dict[str, str | None]) -> None:
     generated = datetime.now(timezone.utc).isoformat(timespec="seconds")
-    trusted = sum(1 for model in models if model["assets"].get("gif"))
+    trusted = sum(1 for model in models if model.get("animation_trusted"))
     verified = sum(1 for model in models if model.get("verification_passed") is True or model["status"] == "verified")
     cards = "\n".join(card_html(model) for model in models)
     convergence_figure = ""
@@ -609,6 +609,7 @@ def write_index(output_dir: Path, models: list[dict[str, object]], metadata_link
     .badge.bad {{ color:#f06a6a; }}
     .badge.muted {{ color:#7a7d88; }}
     .media {{ display:block; border-bottom:0; background:#000; }}
+    .diagnostic-media {{ outline:2px solid rgba(255,183,3,.55); outline-offset:-2px; }}
     img {{ display:block; width:100%; height:auto; background:#000; }}
     .placeholder {{ min-height:260px; display:grid; place-items:center; color:#656977; background:repeating-linear-gradient(135deg,#07080b,#07080b 14px,#0d0f14 14px,#0d0f14 28px); }}
     .body {{ padding: 14px 18px 18px; }}
