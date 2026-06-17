@@ -131,6 +131,7 @@ def commit_and_push(repo: Path, message: str, log_path: Path, branch: str) -> No
     for command in (
         ["git", "add", "."],
         ["git", "commit", "-m", message],
+        ["git", "pull", "--rebase", "origin", branch],
         ["git", "push", "origin", branch],
     ):
         completed = run_command(command, repo, log_path)
