@@ -44,6 +44,19 @@ def read_status(path: Path) -> dict:
         return {}
 
 
+def read_active_batch_status(output_dir: Path) -> tuple[dict, Path | None]:
+    candidates: list[tuple[float, Path, dict]] = []
+    for path in output_dir.glob("batch*_status.json"):
+        data = read_status(path)
+        if isinstance(data, dict):
+            candidates.append((path.stat().st_mtime, path, data))
+    if not candidates:
+        return {}, None
+    running = [item for item in candidates if item[2].get("status") == "running"]
+    selected = max(running, key=lambda item: item[0]) if running else max(candidates, key=lambda item: item[0])
+    return selected[2], selected[1]
+
+
 def append_log(path: Path, line: str) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("a", encoding="utf-8") as handle:
@@ -161,14 +174,22 @@ def main() -> int:
     args = parse_args()
     workspace = args.workspace.resolve()
     output_dir = workspace / "output"
-    status_path = (args.batch_status or output_dir / "batch_remaining_006_009_status.json").resolve()
+    explicit_status_path = args.batch_status.resolve() if args.batch_status else None
+    initial_status_path = explicit_status_path or read_active_batch_status(output_dir)[1] or output_dir / "batch_remaining_006_009_status.json"
+    status_path = initial_status_path.resolve()
     log_path = (args.log or output_dir / "gallery_watch.log").resolve()
 
     append_log(log_path, f"[{now_iso()}] watcher started; status={status_path}")
     last_status = None
     while True:
         rebuild(args, log_path)
-        status = read_status(status_path)
+        if explicit_status_path is None:
+            status, selected_path = read_active_batch_status(output_dir)
+            if selected_path is not None and selected_path.resolve() != status_path:
+                status_path = selected_path.resolve()
+                append_log(log_path, f"[{now_iso()}] watcher switched status={status_path}")
+        else:
+            status = read_status(status_path)
         status_text = status.get("status") if isinstance(status, dict) else None
         if status_text != last_status:
             append_log(log_path, f"[{now_iso()}] batch status={status_text}")
