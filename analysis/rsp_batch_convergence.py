@@ -220,6 +220,29 @@ def select_log_source(output_dir: Path, required_cycles: int) -> tuple[str | Non
     return None, None, [], []
 
 
+def attach_steps_from_period_log(
+    rows: list[dict[str, float]],
+    output_dir: Path,
+    required_cycles: int,
+) -> tuple[list[dict[str, float]], str | None, Path | None]:
+    log_label, log_path, log_rows, _stops = select_log_source(output_dir, required_cycles)
+    if not rows or not log_rows:
+        return rows, log_label, log_path
+    steps_by_period = {
+        int(round(float(row["period_number"]))): float(row["steps"])
+        for row in log_rows
+        if "steps" in row and np.isfinite(float(row["steps"]))
+    }
+    merged: list[dict[str, float]] = []
+    for row in rows:
+        copied = dict(row)
+        steps = steps_by_period.get(int(round(float(row["period_number"]))))
+        if steps is not None:
+            copied["steps"] = steps
+        merged.append(copied)
+    return merged, log_label, log_path
+
+
 def summarize_rows(
     rows: list[dict[str, float]],
     *,
@@ -276,6 +299,11 @@ def summarize_model(record: dict[str, object], last_cycles: int, tolerance: floa
     output_dir = Path(str(record["output_dir"]))
     exact_label, exact_path, exact_rows = select_exact_source(run_dir, last_cycles)
     if exact_rows:
+        exact_rows, steps_label, steps_path = attach_steps_from_period_log(
+            exact_rows,
+            output_dir,
+            last_cycles,
+        )
         summary = summarize_rows(
             exact_rows,
             last_cycles=last_cycles,
@@ -290,6 +318,8 @@ def summarize_model(record: dict[str, object], last_cycles: int, tolerance: floa
                 "stop_reasons": [],
                 "grekm_stopped": None,
                 "period_cap_stopped": None,
+                "steps_source": steps_label,
+                "steps_source_path": str(steps_path) if steps_path is not None else None,
             }
         )
     else:
