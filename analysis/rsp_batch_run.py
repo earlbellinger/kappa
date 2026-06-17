@@ -314,8 +314,15 @@ def convergence_summary_path(workspace: Path) -> Path:
     return workspace / "output" / "convergence_summary_last100.json"
 
 
-def refresh_convergence(workspace: Path, python_exe: Path, dry_run: bool) -> None:
+def refresh_convergence(
+    workspace: Path,
+    python_exe: Path,
+    dry_run: bool,
+    model_id: object | None = None,
+) -> None:
     command = [str(python_exe), str(CONVERGENCE_SCRIPT), "--workspace", str(workspace)]
+    if model_id is not None and convergence_summary_path(workspace).exists():
+        command.extend(["--models", str(model_id), "--merge-existing"])
     print(" ".join(command))
     if dry_run:
         return
@@ -1228,7 +1235,7 @@ def main() -> None:
                 and not args.allow_unconverged_products
                 and not bool(record["registered_existing"])
             ):
-                refresh_convergence(args.workspace, args.python, args.dry_run)
+                refresh_convergence(args.workspace, args.python, args.dry_run, record["model_id"])
                 row = convergence_row(args.workspace, record["model_id"])
                 if row.get("converged_exact") is not True:
                     reason = convergence_gate_reason(row)
