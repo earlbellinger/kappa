@@ -469,7 +469,8 @@ def run_mesa_stage(
         output_usable, output_reason = existing_output_can_complete_stage(expected, status, stage)
         if output_usable:
             mark_stage(status, stage, "complete", skipped=True, expected_output=str(expected))
-            save_status(output_dir, status)
+            if not dry_run:
+                save_status(output_dir, status)
             print(f"{record['model_id']} {stage}: already complete")
             return
         print(f"{record['model_id']} {stage}: ignoring stale output ({output_reason})")
@@ -1297,7 +1298,8 @@ def run_verify_stage(
                 expected_output=str(expected),
                 current_product_reason=current_reason,
             )
-            save_status(output_dir, status)
+            if not dry_run:
+                save_status(output_dir, status)
             print(f"{record['model_id']} verify: already complete")
             return
         print(f"{record['model_id']} verify: regenerating stale verification ({current_reason})")
