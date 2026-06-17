@@ -35,7 +35,32 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--workspace", type=Path, default=DEFAULT_WORKSPACE)
     parser.add_argument("--last-cycles", type=int, default=100)
     parser.add_argument("--tolerance", type=float, default=1.0e-3)
+    parser.add_argument(
+        "--models",
+        nargs="*",
+        default=None,
+        help="Optional model_id or run_name list to refresh instead of parsing the full manifest.",
+    )
+    parser.add_argument(
+        "--merge-existing",
+        action="store_true",
+        help="When --models is used, merge refreshed rows into the existing trend file.",
+    )
     return parser.parse_args()
+
+
+def record_matches_models(record: dict[str, object], selected: set[str]) -> bool:
+    if not selected:
+        return True
+    return str(record.get("model_id")) in selected or str(record.get("run_name")) in selected
+
+
+def ordered_records(manifest: list[object], selected: set[str]) -> list[dict[str, object]]:
+    return [
+        record
+        for record in manifest
+        if isinstance(record, dict) and record_matches_models(record, selected)
+    ]
 
 
 def safe_float(value: object) -> float | None:
@@ -152,6 +177,24 @@ def latest_by_model(rows: list[dict[str, object]]) -> dict[str, dict[str, object
     return latest
 
 
+def merge_trend_rows(
+    existing_payload: dict | list,
+    refreshed_rows: list[dict[str, object]],
+    refreshed_model_ids: set[str],
+) -> list[dict[str, object]]:
+    if not isinstance(existing_payload, dict):
+        return refreshed_rows
+    existing_rows = existing_payload.get("rows")
+    if not isinstance(existing_rows, list):
+        return refreshed_rows
+    kept_rows = [
+        row
+        for row in existing_rows
+        if isinstance(row, dict) and str(row.get("model_id")) not in refreshed_model_ids
+    ]
+    return kept_rows + refreshed_rows
+
+
 def plot_trends(
     path: Path,
     rows: list[dict[str, object]],
@@ -224,22 +267,26 @@ def main() -> int:
     manifest = read_json(workspace / "inputs" / "manifest.json")
     if not isinstance(manifest, list):
         raise RuntimeError(f"Could not read manifest list from {workspace / 'inputs' / 'manifest.json'}")
+    selected = set(args.models or [])
+    records = ordered_records(manifest, selected)
+    refreshed_model_ids = {str(record.get("model_id")) for record in records if record.get("model_id")}
     rows: list[dict[str, object]] = []
-    for record in manifest:
-        if isinstance(record, dict):
-            rows.extend(
-                rolling_rows(
-                    record,
-                    last_cycles=int(args.last_cycles),
-                    tolerance=float(args.tolerance),
-                )
+    for record in records:
+        rows.extend(
+            rolling_rows(
+                record,
+                last_cycles=int(args.last_cycles),
+                tolerance=float(args.tolerance),
             )
+        )
 
     output_dir = workspace / "output"
     json_path = output_dir / "convergence_trends_last100.json"
     csv_path = output_dir / "convergence_trends_last100.csv"
     png_path = output_dir / "convergence_trends_last100.png"
     exact_png_path = output_dir / "convergence_trends_exact_last100.png"
+    if selected and args.merge_existing:
+        rows = merge_trend_rows(read_json(json_path), rows, refreshed_model_ids)
     latest = latest_by_model(rows)
     payload = {
         "generated_at": now_iso(),

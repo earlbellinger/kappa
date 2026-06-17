@@ -59,6 +59,19 @@ def read_active_batch_status(output_dir: Path) -> tuple[dict, Path | None]:
     return selected[2], selected[1]
 
 
+def active_model_convergence_args(workspace: Path) -> list[str]:
+    output_dir = workspace / "output"
+    status, _status_path = read_active_batch_status(output_dir)
+    current_model = status.get("current_model") if isinstance(status, dict) else None
+    if status.get("status") != "running" or not current_model:
+        return []
+    if not (output_dir / "convergence_summary_last100.json").exists():
+        return []
+    if not (output_dir / "convergence_trends_last100.json").exists():
+        return []
+    return ["--models", str(current_model), "--merge-existing"]
+
+
 def append_log(path: Path, line: str) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("a", encoding="utf-8") as handle:
@@ -132,6 +145,7 @@ def rebuild(args: argparse.Namespace, log_path: Path) -> int:
             "--workspace",
             str(args.workspace),
         ]
+        convergence_command.extend(active_model_convergence_args(args.workspace))
         convergence_completed = subprocess.run(convergence_command, cwd=ROOT, capture_output=True, text=True)
         append_log(log_path, f"[{now_iso()}] convergence returncode={convergence_completed.returncode}")
         if convergence_completed.stdout.strip():
@@ -145,6 +159,7 @@ def rebuild(args: argparse.Namespace, log_path: Path) -> int:
             "--workspace",
             str(args.workspace),
         ]
+        convergence_trends_command.extend(active_model_convergence_args(args.workspace))
         convergence_trends_completed = subprocess.run(convergence_trends_command, cwd=ROOT, capture_output=True, text=True)
         append_log(log_path, f"[{now_iso()}] convergence trends returncode={convergence_trends_completed.returncode}")
         if convergence_trends_completed.stdout.strip():

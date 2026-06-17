@@ -33,6 +33,17 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--workspace", type=Path, default=DEFAULT_WORKSPACE)
     parser.add_argument("--last-cycles", type=int, default=100)
     parser.add_argument("--tolerance", type=float, default=1.0e-3)
+    parser.add_argument(
+        "--models",
+        nargs="*",
+        default=None,
+        help="Optional model_id or run_name list to refresh instead of parsing the full manifest.",
+    )
+    parser.add_argument(
+        "--merge-existing",
+        action="store_true",
+        help="When --models is used, merge refreshed rows into the existing summary file.",
+    )
     return parser.parse_args()
 
 
@@ -44,6 +55,46 @@ def read_json(path: Path) -> dict | list:
     if not path.exists():
         return {}
     return json.loads(path.read_text())
+
+
+def record_matches_models(record: dict[str, object], selected: set[str]) -> bool:
+    if not selected:
+        return True
+    return str(record.get("model_id")) in selected or str(record.get("run_name")) in selected
+
+
+def ordered_records(manifest: list[object], selected: set[str]) -> list[dict[str, object]]:
+    return [
+        record
+        for record in manifest
+        if isinstance(record, dict) and record_matches_models(record, selected)
+    ]
+
+
+def merge_summary_rows(
+    existing_payload: dict | list,
+    refreshed_rows: list[dict[str, object]],
+    manifest: list[object],
+) -> list[dict[str, object]]:
+    if not isinstance(existing_payload, dict):
+        return refreshed_rows
+    existing_rows = existing_payload.get("models")
+    if not isinstance(existing_rows, list):
+        return refreshed_rows
+    by_model: dict[str, dict[str, object]] = {
+        str(row.get("model_id")): row
+        for row in existing_rows
+        if isinstance(row, dict) and row.get("model_id")
+    }
+    for row in refreshed_rows:
+        by_model[str(row.get("model_id"))] = row
+    ordered_ids = [
+        str(record.get("model_id"))
+        for record in manifest
+        if isinstance(record, dict) and record.get("model_id") in by_model
+    ]
+    ordered_ids.extend(model_id for model_id in by_model if model_id not in ordered_ids)
+    return [by_model[model_id] for model_id in ordered_ids]
 
 
 def fortran_float(text: str) -> float:
@@ -652,12 +703,16 @@ def main() -> int:
     manifest = read_json(workspace / "inputs" / "manifest.json")
     if not isinstance(manifest, list):
         raise RuntimeError(f"Could not read manifest list from {workspace / 'inputs' / 'manifest.json'}")
+    selected = set(args.models or [])
+    records = ordered_records(manifest, selected)
     models = [
         summarize_model(record, int(args.last_cycles), float(args.tolerance))
-        for record in manifest
-        if isinstance(record, dict)
+        for record in records
     ]
     output_dir = workspace / "output"
+    json_path = output_dir / "convergence_summary_last100.json"
+    if selected and args.merge_existing:
+        models = merge_summary_rows(read_json(json_path), models, manifest)
     payload = {
         "generated_at": now_iso(),
         "workspace": str(workspace),
@@ -675,7 +730,6 @@ def main() -> int:
         },
         "models": models,
     }
-    json_path = output_dir / "convergence_summary_last100.json"
     csv_path = output_dir / "convergence_summary_last100.csv"
     png_path = output_dir / "convergence_summary_last100.png"
     json_path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
