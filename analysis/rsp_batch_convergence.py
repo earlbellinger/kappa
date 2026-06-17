@@ -18,7 +18,9 @@ ROOT = Path(__file__).resolve().parent
 DEFAULT_WORKSPACE = ROOT / "rsp_batch_runs"
 PERIOD_LINE_RE = re.compile(
     r"^\s*period\s+(?P<n>\d+)\s+(?P<period>[+\-0-9.EeDd]+)\s+"
-    r"delta R\s+(?P<delta_r>[+\-0-9.EeDd]+).*?"
+    r"delta R\s+(?P<delta_r>[+\-0-9.EeDd]+)\s+"
+    r"(?:max\s+vsurf/cs\s+(?P<max_vsurf_div_cs>[+\-0-9.EeDd]+)\s+)?"
+    r".*?"
     r"steps\s+(?P<steps>\d+)"
 )
 STOP_RE = re.compile(r"stop because\s+(?P<reason>.+)")
@@ -288,14 +290,16 @@ def parse_period_log(path: Path) -> tuple[list[dict[str, float]], list[str]]:
                 segments.append((rows, stops))
                 rows = []
                 stops = []
-            rows.append(
-                {
-                    "period_number": float(period_number),
-                    "period_days": fortran_float(match.group("period")),
-                    "delta_r": fortran_float(match.group("delta_r")),
-                    "steps": float(int(match.group("steps"))),
-                }
-            )
+            row = {
+                "period_number": float(period_number),
+                "period_days": fortran_float(match.group("period")),
+                "delta_r": fortran_float(match.group("delta_r")),
+                "steps": float(int(match.group("steps"))),
+            }
+            max_vsurf = match.group("max_vsurf_div_cs")
+            if max_vsurf is not None:
+                row["max_vsurf_div_cs"] = fortran_float(max_vsurf)
+            rows.append(row)
             last_period_number = period_number
         stop = STOP_RE.search(line)
         if stop:
@@ -396,17 +400,21 @@ def attach_steps_from_period_log(
     log_label, log_path, log_rows, _stops = select_log_source(output_dir, required_cycles)
     if not rows or not log_rows:
         return rows, log_label, log_path
-    steps_by_period = {
-        int(round(float(row["period_number"]))): float(row["steps"])
-        for row in log_rows
-        if "steps" in row and np.isfinite(float(row["steps"]))
-    }
+    metrics_by_period: dict[int, dict[str, float]] = {}
+    for row in log_rows:
+        period = int(round(float(row["period_number"])))
+        metrics: dict[str, float] = {}
+        for key in ("steps", "max_vsurf_div_cs"):
+            if key in row and np.isfinite(float(row[key])):
+                metrics[key] = float(row[key])
+        if metrics:
+            metrics_by_period[period] = metrics
     merged: list[dict[str, float]] = []
     for row in rows:
         copied = dict(row)
-        steps = steps_by_period.get(int(round(float(row["period_number"]))))
-        if steps is not None:
-            copied["steps"] = steps
+        metrics = metrics_by_period.get(int(round(float(row["period_number"]))))
+        if metrics is not None:
+            copied.update(metrics)
         merged.append(copied)
     return merged, log_label, log_path
 
@@ -430,6 +438,7 @@ def summarize_rows(
     delta_r = np.asarray([row["delta_r"] for row in tail], dtype=float)
     gamma = np.asarray([row.get("gamma", np.nan) for row in tail], dtype=float)
     steps = np.asarray([row.get("steps", np.nan) for row in tail], dtype=float)
+    max_vsurf = np.asarray([row.get("max_vsurf_div_cs", np.nan) for row in tail], dtype=float)
     gamma_ptp = absolute_peak_to_peak(gamma)
     period_fraction = fractional_peak_to_peak(period)
     delta_r_fraction = fractional_peak_to_peak(delta_r)
@@ -463,6 +472,18 @@ def summarize_rows(
         "steps_median_last_window": median_value(steps),
         "steps_min_last_window": float(np.nanmin(steps)) if np.any(np.isfinite(steps)) else None,
         "steps_max_last_window": float(np.nanmax(steps)) if np.any(np.isfinite(steps)) else None,
+        "max_vsurf_div_cs_median_last_window": median_value(max_vsurf),
+        "max_vsurf_div_cs_first_last_window": [
+            float(max_vsurf[0]) if np.isfinite(max_vsurf[0]) else None,
+            float(max_vsurf[-1]) if np.isfinite(max_vsurf[-1]) else None,
+        ],
+        "max_vsurf_div_cs_slope_per_cycle_last_window": linear_slope_per_cycle(max_vsurf),
+        "max_vsurf_div_cs_min_last_window": (
+            float(np.nanmin(max_vsurf)) if np.any(np.isfinite(max_vsurf)) else None
+        ),
+        "max_vsurf_div_cs_max_last_window": (
+            float(np.nanmax(max_vsurf)) if np.any(np.isfinite(max_vsurf)) else None
+        ),
         "has_full_window": has_full_window,
         "has_gamma": has_gamma,
         "converged_gamma": converged_gamma,
@@ -558,6 +579,11 @@ def write_csv(path: Path, models: list[dict[str, object]]) -> None:
         "steps_median_last_window",
         "steps_min_last_window",
         "steps_max_last_window",
+        "max_vsurf_div_cs_median_last_window",
+        "max_vsurf_div_cs_first_last_window",
+        "max_vsurf_div_cs_slope_per_cycle_last_window",
+        "max_vsurf_div_cs_min_last_window",
+        "max_vsurf_div_cs_max_last_window",
         "grekm_stopped",
         "period_cap_stopped",
         "converged_gamma",

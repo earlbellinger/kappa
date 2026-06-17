@@ -125,6 +125,7 @@ def safe_array(rows: list[dict[str, float]], key: str) -> tuple[np.ndarray, np.n
 def growth_outlook(
     fits: dict[str, dict[str, dict[str, object]]],
     rolling: list[dict[str, object]],
+    rows: list[dict[str, float]],
     *,
     tolerance: float = CONVERGENCE_TOLERANCE,
 ) -> dict[str, object]:
@@ -156,6 +157,41 @@ def growth_outlook(
             status = "amplitude nearly flat"
     if criterion_factor is not None and criterion_factor <= 1.0:
         status = "DeltaR convergence term is within tolerance"
+
+    velocity_fit = fits.get("100", {}).get("max_vsurf_div_cs")
+    if not (isinstance(velocity_fit, dict) and velocity_fit.get("available")):
+        available_velocity = [
+            fit.get("max_vsurf_div_cs", {})
+            for _window, fit in sorted(fits.items(), key=lambda item: int(item[0]))
+            if isinstance(fit.get("max_vsurf_div_cs"), dict) and fit["max_vsurf_div_cs"].get("available")
+        ]
+        velocity_fit = available_velocity[-1] if available_velocity else {}
+    latest_velocity = None
+    for row in reversed(rows):
+        value = row.get("max_vsurf_div_cs")
+        if value is not None and np.isfinite(float(value)):
+            latest_velocity = float(value)
+            break
+    velocity_log_slope = velocity_fit.get("log_slope_per_cycle") if isinstance(velocity_fit, dict) else None
+    velocity_efolding_cycles = velocity_fit.get("efolding_cycles") if isinstance(velocity_fit, dict) else None
+    cycles_to_vsurf_0p8 = None
+    cycles_to_vsurf_1p0 = None
+    if (
+        latest_velocity is not None
+        and latest_velocity > 0.0
+        and velocity_log_slope is not None
+        and float(velocity_log_slope) > 0.0
+    ):
+        for target, key in ((0.8, "cycles_to_vsurf_0p8"), (1.0, "cycles_to_vsurf_1p0")):
+            if latest_velocity < target:
+                cycles = float(math.log(target / latest_velocity) / float(velocity_log_slope))
+            else:
+                cycles = 0.0
+            if key == "cycles_to_vsurf_0p8":
+                cycles_to_vsurf_0p8 = cycles
+            else:
+                cycles_to_vsurf_1p0 = cycles
+
     return {
         "status": status,
         "tolerance": float(tolerance),
@@ -165,6 +201,18 @@ def growth_outlook(
         "efolding_cycles": None if efolding_cycles is None else float(efolding_cycles),
         "doubling_cycles": doubling_cycles,
         "fit_window_cycles": preferred_fit.get("window_cycles") if isinstance(preferred_fit, dict) else None,
+        "max_vsurf_div_cs_latest": latest_velocity,
+        "max_vsurf_div_cs_log_slope_per_cycle": (
+            None if velocity_log_slope is None else float(velocity_log_slope)
+        ),
+        "max_vsurf_div_cs_efolding_cycles": (
+            None if velocity_efolding_cycles is None else float(velocity_efolding_cycles)
+        ),
+        "max_vsurf_div_cs_fit_window_cycles": (
+            velocity_fit.get("window_cycles") if isinstance(velocity_fit, dict) else None
+        ),
+        "cycles_to_vsurf_div_cs_0p8": cycles_to_vsurf_0p8,
+        "cycles_to_vsurf_div_cs_1p0": cycles_to_vsurf_1p0,
     }
 
 
@@ -179,7 +227,7 @@ def plot_diagnostic(
     plot_tail: int,
 ) -> None:
     shown_rows = rows[-plot_tail:] if len(rows) > plot_tail else rows
-    fig, axes = plt.subplots(3, 1, figsize=(11.5, 9.5), sharex=False, constrained_layout=True)
+    fig, axes = plt.subplots(4, 1, figsize=(11.5, 11.5), sharex=False, constrained_layout=True)
     fig.suptitle(f"{model_id} active limit-cycle growth diagnostic", fontsize=15)
 
     x_delta, y_delta = safe_array(shown_rows, "delta_r")
@@ -225,14 +273,44 @@ def plot_diagnostic(
                 color="0.15",
             )
 
+    x_vsurf, y_vsurf = safe_array(shown_rows, "max_vsurf_div_cs")
+    if y_vsurf.size:
+        axes[1].plot(x_vsurf, y_vsurf, color="#FB8500", lw=1.7)
+    axes[1].axhline(0.8, color="0.25", lw=1.0, ls=":", label=r"$v_\mathrm{surf}/c_s=0.8$")
+    axes[1].axhline(1.0, color="0.15", lw=1.0, ls="--", label=r"$v_\mathrm{surf}/c_s=1$")
+    axes[1].set_ylabel(r"max $v_\mathrm{surf}/c_s$")
+    axes[1].set_title("Surface velocity growth", loc="left", fontsize=11)
+    velocity_fit = fits.get("500", {}).get("max_vsurf_div_cs") or fits.get("100", {}).get("max_vsurf_div_cs") or {}
+    if velocity_fit.get("available") and velocity_fit.get("log_slope_per_cycle") is not None:
+        start = float(velocity_fit["window_start_period"])
+        end = float(velocity_fit["window_end_period"])
+        slope = float(velocity_fit["log_slope_per_cycle"])
+        x_fit = np.linspace(start, end, 120)
+        y0 = float(velocity_fit["first"])
+        y_fit = y0 * np.exp(slope * (x_fit - start))
+        axes[1].plot(x_fit, y_fit, color="#FDF0D5", lw=1.4, ls="--")
+    cycles_to_08 = outlook.get("cycles_to_vsurf_div_cs_0p8")
+    if cycles_to_08 is not None:
+        axes[1].text(
+            0.02,
+            0.94,
+            f"0.8 in {float(cycles_to_08):.0f} cycles if this rate persists",
+            transform=axes[1].transAxes,
+            va="top",
+            ha="left",
+            fontsize=10,
+            color="0.15",
+        )
+    axes[1].legend(frameon=False, loc="upper right", fontsize=9)
+
     x_gamma, y_gamma = safe_array(shown_rows, "gamma")
     gamma_mask = y_gamma > 0.0
     x_gamma = x_gamma[gamma_mask]
     y_gamma = y_gamma[gamma_mask]
-    axes[1].plot(x_gamma, y_gamma, color="#669BBC", lw=1.4, label="Gamma")
-    axes[1].axhline(0.0, color="0.2", lw=1.0, ls="--")
-    axes[1].set_ylabel("Gamma")
-    axes[1].set_title("Growth-rate history", loc="left", fontsize=11)
+    axes[2].plot(x_gamma, y_gamma, color="#669BBC", lw=1.4, label="Gamma")
+    axes[2].axhline(0.0, color="0.2", lw=1.0, ls="--")
+    axes[2].set_ylabel("Gamma")
+    axes[2].set_title("Growth-rate history", loc="left", fontsize=11)
 
     if rolling:
         x_roll = np.asarray([row["window_end_period"] for row in rolling], dtype=float)
@@ -247,27 +325,27 @@ def plot_diagnostic(
             )
             mask = np.isfinite(x_roll) & np.isfinite(y) & (y > 0.0)
             if np.any(mask):
-                axes[2].plot(x_roll[mask], y[mask], lw=1.5, color=color, label=label)
-    axes[2].axhline(1.0e-3, color="0.1", lw=1.1, ls="--", label="1e-3 criterion")
-    axes[2].set_yscale("log")
-    axes[2].set_ylabel("final-window metric")
-    axes[2].set_xlabel("cumulative cycle")
-    axes[2].set_title("Strict convergence terms", loc="left", fontsize=11)
-    axes[2].legend(ncol=4, frameon=False, loc="upper right")
+                axes[3].plot(x_roll[mask], y[mask], lw=1.5, color=color, label=label)
+    axes[3].axhline(1.0e-3, color="0.1", lw=1.1, ls="--", label="1e-3 criterion")
+    axes[3].set_yscale("log")
+    axes[3].set_ylabel("final-window metric")
+    axes[3].set_xlabel("cumulative cycle")
+    axes[3].set_title("Strict convergence terms", loc="left", fontsize=11)
+    axes[3].legend(ncol=4, frameon=False, loc="upper right")
     criterion_factor = outlook.get("delta_r_criterion_factor")
     if criterion_factor is not None:
-        axes[2].text(
+        axes[3].text(
             0.02,
             0.94,
             f"Delta R term is {float(criterion_factor):.0f}x the 1e-3 criterion",
-            transform=axes[2].transAxes,
+            transform=axes[3].transAxes,
             va="top",
             ha="left",
             fontsize=10,
             color="0.15",
         )
     if shown_rows:
-        axes[2].set_xlim(float(shown_rows[0]["period_number"]), float(shown_rows[-1]["period_number"]))
+        axes[3].set_xlim(float(shown_rows[0]["period_number"]), float(shown_rows[-1]["period_number"]))
 
     for ax in axes:
         ax.grid(axis="y", color="0.88", lw=0.7)
@@ -318,10 +396,10 @@ def main() -> int:
     for window in args.windows:
         fits[str(window)] = {
             key: fit_window(rows, key, int(window))
-            for key in ("delta_r", "period_days", "gamma")
+            for key in ("delta_r", "period_days", "gamma", "max_vsurf_div_cs")
         }
     rolling = rolling_rows(rows, int(args.rolling_window))
-    outlook = growth_outlook(fits, rolling)
+    outlook = growth_outlook(fits, rolling, rows)
     payload = {
         "generated_at": now_iso(),
         "workspace": str(workspace),
