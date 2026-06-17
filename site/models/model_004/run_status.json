@@ -6,7 +6,7 @@
   "output_dir": "<local-rre-root>/rsp_batch_runs/output/model_004_M0p7595_Z0p0001834_T6876",
   "prefix": "mesa_rsp_model_004_M0p7595_Z0p0001834_T6876",
   "product_stem": "mesa_rsp_model_004_M0p7595_Z0p0001834_T6876_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work",
-  "updated_at": "2026-06-17T20:11:10.742943+00:00",
+  "updated_at": "2026-06-17T21:34:38.982228+00:00",
   "stages": {
     "prepared": {
       "status": "complete",
@@ -71,13 +71,13 @@
     },
     "plot": {
       "status": "complete",
-      "updated_at": "2026-06-17T20:11:10.553111+00:00",
+      "updated_at": "2026-06-17T21:34:38.776591+00:00",
       "expected_output": "<local-rre-root>/rsp_batch_runs/output/model_004_M0p7595_Z0p0001834_T6876/mesa_rsp_model_004_M0p7595_Z0p0001834_T6876_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work.gif",
-      "started_at": "2026-06-17T20:09:44.959800+00:00"
+      "started_at": "2026-06-17T21:33:09.467115+00:00"
     },
     "verify": {
       "status": "complete",
-      "updated_at": "2026-06-17T20:11:10.742943+00:00",
+      "updated_at": "2026-06-17T21:34:38.981225+00:00",
       "expected_output": "<local-rre-root>/rsp_batch_runs/output/model_004_M0p7595_Z0p0001834_T6876/verification_summary.json",
       "result": {
         "model_id": "model_004",
@@ -89,8 +89,8 @@
         "summary_path": "<local-rre-root>/rsp_batch_runs/output/model_004_M0p7595_Z0p0001834_T6876/mesa_rsp_model_004_M0p7595_Z0p0001834_T6876_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work_summary.json",
         "pressure_work_mode": "gas_plus_pav",
         "heating_mode": "gas_minus_c",
-        "scaling_method_version": "model000-visible-window-v9",
-        "expected_scaling_method_version": "model000-visible-window-v9",
+        "scaling_method_version": "model000-visible-window-v10",
+        "expected_scaling_method_version": "model000-visible-window-v10",
         "panel_y_ranges": {
           "left_power": {
             "limits": [
@@ -111,7 +111,7 @@
               0.9359095347404265
             ],
             "pad_fraction": 0.07999999999999996,
-            "method": "minimum and maximum of the plotted power curves within this panel's shown x range; the axis includes zero and pads the lower and upper sides from their own local visible extrema using the model_000 reference padding convention"
+            "method": "minimum and maximum of the plotted power curves within this panel's shown x range; the axis includes zero, uses the model_000 shown y-limits as a reference floor, and expands beyond that floor when this panel's own local visible extrema require it"
           },
           "photosphere_radial_velocity": {
             "limits": [
@@ -234,9 +234,9 @@
         "phase_seam_ok": true,
         "passed": true,
         "failures": [],
-        "verified_at": "2026-06-17T20:11:10.741936+00:00"
+        "verified_at": "2026-06-17T21:34:38.980225+00:00"
       },
-      "started_at": "2026-06-17T20:11:10.700352+00:00"
+      "started_at": "2026-06-17T21:34:38.939088+00:00"
     }
   },
   "validation": {

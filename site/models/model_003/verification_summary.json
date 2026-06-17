@@ -8,8 +8,8 @@
   "summary_path": "<local-rre-root>/rsp_batch_runs/output/model_003_M0p7317_Z0p001405_T6745/mesa_rsp_model_003_M0p7317_Z0p001405_T6745_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work_summary.json",
   "pressure_work_mode": "gas_plus_pav",
   "heating_mode": "gas_minus_c",
-  "scaling_method_version": "model000-visible-window-v9",
-  "expected_scaling_method_version": "model000-visible-window-v9",
+  "scaling_method_version": "model000-visible-window-v10",
+  "expected_scaling_method_version": "model000-visible-window-v10",
   "panel_y_ranges": {
     "left_power": {
       "limits": [
@@ -30,7 +30,7 @@
         0.9359095347404265
       ],
       "pad_fraction": 0.07999999999999996,
-      "method": "minimum and maximum of the plotted power curves within this panel's shown x range; the axis includes zero and pads the lower and upper sides from their own local visible extrema using the model_000 reference padding convention"
+      "method": "minimum and maximum of the plotted power curves within this panel's shown x range; the axis includes zero, uses the model_000 shown y-limits as a reference floor, and expands beyond that floor when this panel's own local visible extrema require it"
     },
     "photosphere_radial_velocity": {
       "limits": [
@@ -161,5 +161,5 @@
     "radius_rsun phase seam is 0.05676 of amplitude, expected <= 0.025",
     "teff_k phase seam is 0.0419 of amplitude, expected <= 0.025"
   ],
-  "verified_at": "2026-06-17T20:09:44.798017+00:00"
+  "verified_at": "2026-06-17T21:33:09.332357+00:00"
 }
