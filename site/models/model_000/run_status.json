@@ -9,13 +9,13 @@
   "stages": {
     "plot": {
       "status": "complete",
-      "updated_at": "2026-06-17T18:58:48.087441+00:00",
+      "updated_at": "2026-06-17T21:28:50.210486+00:00",
       "expected_output": "<local-rre-root>/output/combined_14507_full_pressure_minus_eq/mesa_rsp_combined_14507_full_pressure_minus_eq_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work.gif",
-      "started_at": "2026-06-17T18:57:20.184482+00:00"
+      "started_at": "2026-06-17T21:27:20.981332+00:00"
     },
     "verify": {
       "status": "complete",
-      "updated_at": "2026-06-17T18:58:48.271354+00:00",
+      "updated_at": "2026-06-17T21:28:50.396476+00:00",
       "expected_output": "<local-rre-root>/output/combined_14507_full_pressure_minus_eq/verification_summary.json",
       "result": {
         "model_id": "model_000",
@@ -27,8 +27,8 @@
         "summary_path": "<local-rre-root>/output/combined_14507_full_pressure_minus_eq/mesa_rsp_combined_14507_full_pressure_minus_eq_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work_summary.json",
         "pressure_work_mode": "gas_plus_pav",
         "heating_mode": "gas_minus_c",
-        "scaling_method_version": "model000-visible-window-v8",
-        "expected_scaling_method_version": "model000-visible-window-v8",
+        "scaling_method_version": "model000-visible-window-v10",
+        "expected_scaling_method_version": "model000-visible-window-v10",
         "panel_y_ranges": {
           "left_power": {
             "limits": [
@@ -48,7 +48,8 @@
               -1.0538880567035844,
               0.9359095347404265
             ],
-            "method": "minimum and maximum of the plotted power curves within this panel's shown x range; the axis includes zero and pads the lower and upper sides from their own local visible extrema"
+            "pad_fraction": 0.07999999999999996,
+            "method": "minimum and maximum of the plotted power curves within this panel's shown x range; the axis includes zero, uses the model_000 shown y-limits as a reference floor, and expands beyond that floor when this panel's own local visible extrema require it"
           },
           "photosphere_radial_velocity": {
             "limits": [
@@ -91,7 +92,7 @@
           0.9359095347404265
         ],
         "opacity_scaling": {
-          "method": "left-panel visible-window min and max opacity are mapped into a fixed upper band of this panel's own y-axis range",
+          "method": "left-panel visible-window min and max opacity are mapped into the same fractional band used by the model_000 reference, but inside this panel's own y-axis range",
           "panel": "left_power",
           "panel_bottom_fraction": 0.76,
           "panel_top_fraction": 0.92,
@@ -171,10 +172,10 @@
         "phase_seam_ok": true,
         "passed": true,
         "failures": [],
-        "verified_at": "2026-06-17T18:58:48.270846+00:00"
+        "verified_at": "2026-06-17T21:28:50.395476+00:00"
       },
-      "started_at": "2026-06-17T18:58:48.232511+00:00"
+      "started_at": "2026-06-17T21:28:50.357772+00:00"
     }
   },
-  "updated_at": "2026-06-17T18:58:48.272360+00:00"
+  "updated_at": "2026-06-17T21:28:50.396476+00:00"
 }

@@ -110,7 +110,7 @@ PLOT_SCALE_FACTORS = {
     "pdv_power": 1.0,
 }
 DISPLAY_POWER_SCALE = 1.0e9
-ANIMATION_SCALING_VERSION = "model000-visible-window-v8"
+ANIMATION_SCALING_VERSION = "model000-visible-window-v10"
 ZONE_LABEL_COLOR = "#2B2B2B"
 ZONE_LABEL_FONT_SIZE = 9.2
 ZONE_LABEL_STROKE_WIDTH = 1.3
@@ -2507,6 +2507,7 @@ def main() -> None:
     else:
         left_power_ylim = power_panel_limits_from_visible_bounds(
             visible_power_bounds,
+            reference_limits=reference_power_ylim,
             pad_fraction=reference_power_pad_fraction,
         )
         left_power_ylim_raw = (
@@ -3491,9 +3492,10 @@ def main() -> None:
             float(left_panel_x_limits[1]),
         ],
         "left_panel_scaling_method": (
-            "panel-local visible-window extrema; each model's power extrema are measured only between "
-            "the minimum and maximum shown x coordinate, zero is included, and the model_000 summary is "
-            "used only as a reference example for the calibration convention"
+            "reference-guided panel-local visible-window extrema; each model's power extrema are measured "
+            "only between the minimum and maximum shown x coordinate, zero is included, model_000's shown "
+            "left-panel limits set the minimum displayed range, and the panel expands only when its own "
+            "visible extrema exceed that reference range"
         ),
         "scaling_reference": scaling_reference,
         "panel_y_ranges": {
@@ -3510,8 +3512,8 @@ def main() -> None:
                 "pad_fraction": float(reference_power_pad_fraction),
                 "method": (
                     "minimum and maximum of the plotted power curves within this panel's shown x range; "
-                    "the axis includes zero and pads the lower and upper sides from their own local "
-                    "visible extrema using the model_000 reference padding convention"
+                    "the axis includes zero, uses the model_000 shown y-limits as a reference floor, "
+                    "and expands beyond that floor when this panel's own local visible extrema require it"
                 ),
             },
             "photosphere_radial_velocity": {

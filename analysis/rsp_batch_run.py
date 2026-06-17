@@ -53,10 +53,9 @@ EXPECTED_MODEL_FIELD = {
     "restart": "restart_model",
     "deep2cycles": "deep_model",
 }
-EXPECTED_ANIMATION_SCALING_VERSION = "model000-visible-window-v8"
+EXPECTED_ANIMATION_SCALING_VERSION = "model000-visible-window-v10"
 ACCEPTED_ANIMATION_SCALING_VERSIONS = {
     EXPECTED_ANIMATION_SCALING_VERSION,
-    "model000-visible-window-v9",
 }
 REQUIRED_PROFILE_COLUMNS = {
     "rsp_Pvsc",
