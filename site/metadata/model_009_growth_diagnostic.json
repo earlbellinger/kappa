@@ -1,129 +1,129 @@
 {
-  "generated_at": "2026-06-17T21:19:19.880707+00:00",
+  "generated_at": "2026-06-17T23:22:58.488163+00:00",
   "workspace": "<local-rre-root>/rsp_batch_runs",
   "model_id": "model_009",
   "run_name": "model_009_M0p6668_Z0p0001120_T6852",
   "source": "cumulative:saturation",
   "source_kind": "history_exact_rsp_columns",
-  "cycle_count": 69,
+  "cycle_count": 83,
   "first_period": 1.0,
-  "last_period": 69.0,
+  "last_period": 83.0,
   "rolling_window": 100,
   "fits": {
     "50": {
       "delta_r": {
         "available": true,
         "window_cycles": 50,
-        "window_start_period": 20.0,
-        "window_end_period": 69.0,
-        "first": 0.001973820062022291,
-        "last": 0.0024190055229009744,
-        "median": 0.0021834560389160096,
-        "peak_to_peak": 0.0004893552735838469,
-        "fractional_peak_to_peak": 0.22411959062239256,
-        "slope_per_cycle": 6.329541978751206e-06,
-        "fractional_slope_per_cycle": 0.002898863941356725,
-        "log_slope_per_cycle": 0.0028498180404237647,
-        "efolding_cycles": 350.8995963304735
+        "window_start_period": 34.0,
+        "window_end_period": 83.0,
+        "first": 0.002179841274922545,
+        "last": 0.0026154771915711805,
+        "median": 0.002320499112613561,
+        "peak_to_peak": 0.0005773499934003112,
+        "fractional_peak_to_peak": 0.24880422934100854,
+        "slope_per_cycle": 6.548292890697302e-06,
+        "fractional_slope_per_cycle": 0.002821932943263231,
+        "log_slope_per_cycle": 0.002829528959328327,
+        "efolding_cycles": 353.41571490308405
       },
       "period_days": {
         "available": true,
         "window_cycles": 50,
-        "window_start_period": 20.0,
-        "window_end_period": 69.0,
-        "first": 0.5025806692729357,
-        "last": 0.4928944032723181,
-        "median": 0.5010291575953818,
+        "window_start_period": 34.0,
+        "window_end_period": 83.0,
+        "first": 0.4962976394552162,
+        "last": 0.4912331468212371,
+        "median": 0.4991607525229699,
         "peak_to_peak": 0.027002767584662857,
-        "fractional_peak_to_peak": 0.05389460308908727,
-        "slope_per_cycle": -2.4672929828353135e-05,
-        "fractional_slope_per_cycle": -4.924449895644268e-05,
-        "log_slope_per_cycle": -5.0431126350335304e-05,
+        "fractional_peak_to_peak": 0.05409633559565617,
+        "slope_per_cycle": -8.96749811127131e-06,
+        "fractional_slope_per_cycle": -1.7965150637236153e-05,
+        "log_slope_per_cycle": -1.749190403533642e-05,
         "efolding_cycles": null
       },
       "gamma": {
         "available": true,
         "window_cycles": 50,
-        "window_start_period": 20.0,
-        "window_end_period": 69.0,
-        "first": 0.006701498303840745,
-        "last": 0.004597133683280997,
-        "median": 0.0050029539327094055,
-        "peak_to_peak": 0.004328706867256331,
-        "fractional_peak_to_peak": 0.8652302070892889,
-        "slope_per_cycle": -3.33078163665868e-06,
-        "fractional_slope_per_cycle": -0.0006657630035091805,
-        "log_slope_per_cycle": -0.0006420646679886718,
+        "window_start_period": 34.0,
+        "window_end_period": 83.0,
+        "first": 0.004498461755079869,
+        "last": 0.005262679440144619,
+        "median": 0.005018675243395182,
+        "peak_to_peak": 0.004200258966582731,
+        "fractional_peak_to_peak": 0.8369258345836331,
+        "slope_per_cycle": -2.2655874547210137e-07,
+        "fractional_slope_per_cycle": -4.51431372791582e-05,
+        "log_slope_per_cycle": -0.000228373807615117,
         "efolding_cycles": null
       },
       "max_vsurf_div_cs": {
         "available": true,
         "window_cycles": 50,
-        "window_start_period": 20.0,
-        "window_end_period": 69.0,
-        "first": 0.01349,
-        "last": 0.01679,
-        "median": 0.015075,
-        "peak_to_peak": 0.004359999999999999,
-        "fractional_peak_to_peak": 0.2892205638474295,
-        "slope_per_cycle": 4.369507803121248e-05,
-        "fractional_slope_per_cycle": 0.0028985126388864,
-        "log_slope_per_cycle": 0.0028764764290853625,
-        "efolding_cycles": 347.64755583899273
+        "window_start_period": 34.0,
+        "window_end_period": 83.0,
+        "first": 0.01509,
+        "last": 0.01848,
+        "median": 0.016085000000000002,
+        "peak_to_peak": 0.00519,
+        "fractional_peak_to_peak": 0.32266086415915446,
+        "slope_per_cycle": 4.600336134453782e-05,
+        "fractional_slope_per_cycle": 0.0028600162477176137,
+        "log_slope_per_cycle": 0.0028957529912380965,
+        "efolding_cycles": 345.33332194623546
       }
     },
     "100": {
       "delta_r": {
         "available": false,
-        "reason": "only 69 rows for 100-cycle window"
+        "reason": "only 83 rows for 100-cycle window"
       },
       "period_days": {
         "available": false,
-        "reason": "only 69 rows for 100-cycle window"
+        "reason": "only 83 rows for 100-cycle window"
       },
       "gamma": {
         "available": false,
-        "reason": "only 69 rows for 100-cycle window"
+        "reason": "only 83 rows for 100-cycle window"
       },
       "max_vsurf_div_cs": {
         "available": false,
-        "reason": "only 69 rows for 100-cycle window"
+        "reason": "only 83 rows for 100-cycle window"
       }
     },
     "250": {
       "delta_r": {
         "available": false,
-        "reason": "only 69 rows for 250-cycle window"
+        "reason": "only 83 rows for 250-cycle window"
       },
       "period_days": {
         "available": false,
-        "reason": "only 69 rows for 250-cycle window"
+        "reason": "only 83 rows for 250-cycle window"
       },
       "gamma": {
         "available": false,
-        "reason": "only 69 rows for 250-cycle window"
+        "reason": "only 83 rows for 250-cycle window"
       },
       "max_vsurf_div_cs": {
         "available": false,
-        "reason": "only 69 rows for 250-cycle window"
+        "reason": "only 83 rows for 250-cycle window"
       }
     },
     "500": {
       "delta_r": {
         "available": false,
-        "reason": "only 69 rows for 500-cycle window"
+        "reason": "only 83 rows for 500-cycle window"
       },
       "period_days": {
         "available": false,
-        "reason": "only 69 rows for 500-cycle window"
+        "reason": "only 83 rows for 500-cycle window"
       },
       "gamma": {
         "available": false,
-        "reason": "only 69 rows for 500-cycle window"
+        "reason": "only 83 rows for 500-cycle window"
       },
       "max_vsurf_div_cs": {
         "available": false,
-        "reason": "only 69 rows for 500-cycle window"
+        "reason": "only 83 rows for 500-cycle window"
       }
     }
   },
@@ -133,15 +133,15 @@
     "tolerance": 0.001,
     "delta_r_fractional_peak_to_peak": null,
     "delta_r_criterion_factor": null,
-    "log_slope_per_cycle": 0.0028498180404237647,
-    "efolding_cycles": 350.8995963304735,
-    "doubling_cycles": 243.22506585609062,
+    "log_slope_per_cycle": 0.002829528959328327,
+    "efolding_cycles": 353.41571490308405,
+    "doubling_cycles": 244.96910635065012,
     "fit_window_cycles": 50,
-    "max_vsurf_div_cs_latest": 0.01679,
-    "max_vsurf_div_cs_log_slope_per_cycle": 0.0028764764290853625,
-    "max_vsurf_div_cs_efolding_cycles": 347.64755583899273,
+    "max_vsurf_div_cs_latest": 0.01848,
+    "max_vsurf_div_cs_log_slope_per_cycle": 0.0028957529912380965,
+    "max_vsurf_div_cs_efolding_cycles": 345.33332194623546,
     "max_vsurf_div_cs_fit_window_cycles": 50,
-    "cycles_to_vsurf_div_cs_0p8": 1343.2504495811443,
-    "cycles_to_vsurf_div_cs_1p0": 1420.8257597967624
+    "cycles_to_vsurf_div_cs_0p8": 1301.189249516545,
+    "cycles_to_vsurf_div_cs_1p0": 1378.2481533627615
   }
 }
