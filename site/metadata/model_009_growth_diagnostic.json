@@ -1,102 +1,146 @@
 {
-  "generated_at": "2026-06-17T18:14:10.824785+00:00",
+  "generated_at": "2026-06-17T18:30:50.817595+00:00",
   "workspace": "<local-rre-root>/rsp_batch_runs",
   "model_id": "model_009",
   "run_name": "model_009_M0p6668_Z0p0001120_T6852",
   "source": "cumulative:saturation",
   "source_kind": "history_exact_rsp_columns",
-  "cycle_count": 48,
+  "cycle_count": 50,
   "first_period": 1.0,
-  "last_period": 48.0,
+  "last_period": 50.0,
   "rolling_window": 100,
   "fits": {
     "50": {
       "delta_r": {
-        "available": false,
-        "reason": "only 48 rows for 50-cycle window"
+        "available": true,
+        "window_cycles": 50,
+        "window_start_period": 1.0,
+        "window_end_period": 50.0,
+        "first": 0.0003672392929301438,
+        "last": 0.0022171196089768586,
+        "median": 0.002131197208223856,
+        "peak_to_peak": 0.002272511808066646,
+        "fractional_peak_to_peak": 1.066307613062501,
+        "slope_per_cycle": 1.5514819196712812e-05,
+        "fractional_slope_per_cycle": 0.00727986088609927,
+        "log_slope_per_cycle": 0.0149366915693269,
+        "efolding_cycles": 66.94923004593203
       },
       "period_days": {
-        "available": false,
-        "reason": "only 48 rows for 50-cycle window"
+        "available": true,
+        "window_cycles": 50,
+        "window_start_period": 1.0,
+        "window_end_period": 50.0,
+        "first": 0.3258624383140597,
+        "last": 0.5131833598854644,
+        "median": 0.49767605893779004,
+        "peak_to_peak": 0.3949565433795009,
+        "fractional_peak_to_peak": 0.7936016536991402,
+        "slope_per_cycle": 0.0005727469720142664,
+        "fractional_slope_per_cycle": 0.0011508429262936683,
+        "log_slope_per_cycle": 0.0018724480571864078,
+        "efolding_cycles": 534.0602085927167
       },
       "gamma": {
-        "available": false,
-        "reason": "only 48 rows for 50-cycle window"
+        "available": true,
+        "window_cycles": 50,
+        "window_start_period": 1.0,
+        "window_end_period": 50.0,
+        "first": 0.0,
+        "last": 0.005071681728652315,
+        "median": 0.0050891091393153376,
+        "peak_to_peak": 0.013914661240107403,
+        "fractional_peak_to_peak": 2.7288219123096304,
+        "slope_per_cycle": 4.479261386479405e-05,
+        "fractional_slope_per_cycle": 0.008784336471775341,
+        "log_slope_per_cycle": null,
+        "efolding_cycles": null
       },
       "max_vsurf_div_cs": {
-        "available": false,
-        "reason": "only 48 rows for 50-cycle window"
+        "available": true,
+        "window_cycles": 50,
+        "window_start_period": 1.0,
+        "window_end_period": 50.0,
+        "first": 0.05066,
+        "last": 0.01511,
+        "median": 0.014855,
+        "peak_to_peak": 0.0474,
+        "fractional_peak_to_peak": 3.190844833389431,
+        "slope_per_cycle": -9.472605042016807e-05,
+        "fractional_slope_per_cycle": -0.006376711573218988,
+        "log_slope_per_cycle": -0.001692462423297042,
+        "efolding_cycles": null
       }
     },
     "100": {
       "delta_r": {
         "available": false,
-        "reason": "only 48 rows for 100-cycle window"
+        "reason": "only 50 rows for 100-cycle window"
       },
       "period_days": {
         "available": false,
-        "reason": "only 48 rows for 100-cycle window"
+        "reason": "only 50 rows for 100-cycle window"
       },
       "gamma": {
         "available": false,
-        "reason": "only 48 rows for 100-cycle window"
+        "reason": "only 50 rows for 100-cycle window"
       },
       "max_vsurf_div_cs": {
         "available": false,
-        "reason": "only 48 rows for 100-cycle window"
+        "reason": "only 50 rows for 100-cycle window"
       }
     },
     "250": {
       "delta_r": {
         "available": false,
-        "reason": "only 48 rows for 250-cycle window"
+        "reason": "only 50 rows for 250-cycle window"
       },
       "period_days": {
         "available": false,
-        "reason": "only 48 rows for 250-cycle window"
+        "reason": "only 50 rows for 250-cycle window"
       },
       "gamma": {
         "available": false,
-        "reason": "only 48 rows for 250-cycle window"
+        "reason": "only 50 rows for 250-cycle window"
       },
       "max_vsurf_div_cs": {
         "available": false,
-        "reason": "only 48 rows for 250-cycle window"
+        "reason": "only 50 rows for 250-cycle window"
       }
     },
     "500": {
       "delta_r": {
         "available": false,
-        "reason": "only 48 rows for 500-cycle window"
+        "reason": "only 50 rows for 500-cycle window"
       },
       "period_days": {
         "available": false,
-        "reason": "only 48 rows for 500-cycle window"
+        "reason": "only 50 rows for 500-cycle window"
       },
       "gamma": {
         "available": false,
-        "reason": "only 48 rows for 500-cycle window"
+        "reason": "only 50 rows for 500-cycle window"
       },
       "max_vsurf_div_cs": {
         "available": false,
-        "reason": "only 48 rows for 500-cycle window"
+        "reason": "only 50 rows for 500-cycle window"
       }
     }
   },
   "latest_rolling": null,
   "growth_outlook": {
-    "status": "insufficient amplitude-growth fit",
+    "status": "amplitude still growing",
     "tolerance": 0.001,
     "delta_r_fractional_peak_to_peak": null,
     "delta_r_criterion_factor": null,
-    "log_slope_per_cycle": null,
-    "efolding_cycles": null,
-    "doubling_cycles": null,
-    "fit_window_cycles": null,
-    "max_vsurf_div_cs_latest": 0.01667,
-    "max_vsurf_div_cs_log_slope_per_cycle": null,
+    "log_slope_per_cycle": 0.0149366915693269,
+    "efolding_cycles": 66.94923004593203,
+    "doubling_cycles": 46.40567004699695,
+    "fit_window_cycles": 50,
+    "max_vsurf_div_cs_latest": 0.01511,
+    "max_vsurf_div_cs_log_slope_per_cycle": -0.001692462423297042,
     "max_vsurf_div_cs_efolding_cycles": null,
-    "max_vsurf_div_cs_fit_window_cycles": null,
+    "max_vsurf_div_cs_fit_window_cycles": 50,
     "cycles_to_vsurf_div_cs_0p8": null,
     "cycles_to_vsurf_div_cs_1p0": null
   }
