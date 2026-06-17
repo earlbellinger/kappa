@@ -62,6 +62,7 @@ REQUIRED_PROFILE_COLUMNS = {
     "ionization_he4",
 }
 MAX_PHASE_SEAM_FRACTION = 0.025
+MAX_PHASE_ADJACENT_FRACTION = 0.025
 MODEL_LOCK_POLL_SECONDS = 30
 MODEL_LOCK_STALE_SECONDS = 2 * 24 * 60 * 60
 
@@ -786,6 +787,7 @@ def phase_seam_summary(lightcurve_path: Path) -> dict[str, object]:
         "phase_first": parsed[0]["phase"],
         "phase_last": parsed[-1]["phase"],
         "max_allowed_fraction_of_amplitude": MAX_PHASE_SEAM_FRACTION,
+        "max_allowed_adjacent_fraction_of_amplitude": MAX_PHASE_ADJACENT_FRACTION,
         "metrics": {},
         "failures": [],
     }
@@ -801,6 +803,10 @@ def phase_seam_summary(lightcurve_path: Path) -> dict[str, object]:
         min_age_diff = min(age_diffs) if age_diffs else 0.0
         result["age_monotonic_by_phase"] = bool(min_age_diff >= -1.0e-9)
         result["minimum_age_step_days_by_phase"] = float(min_age_diff)
+        if min_age_diff < -1.0e-9:
+            failures.append(
+                "age is not monotonic in phase order; this indicates an internal phase wrap in the displayed cycle"
+            )
     else:
         result["age_monotonic_by_phase"] = None
     metric_results: dict[str, dict[str, float | None]] = {}
@@ -813,15 +819,24 @@ def phase_seam_summary(lightcurve_path: Path) -> dict[str, object]:
         seam = abs(values[-1] - values[0])
         amplitude = max(values) - min(values)
         fraction = seam / amplitude if amplitude > 0.0 else 0.0
+        adjacent = max((abs(values[idx + 1] - values[idx]) for idx in range(len(values) - 1)), default=0.0)
+        adjacent_fraction = adjacent / amplitude if amplitude > 0.0 else 0.0
         metric_results[key] = {
             "seam": seam,
             "amplitude": amplitude,
             "fraction_of_amplitude": fraction,
+            "max_adjacent_step": adjacent,
+            "max_adjacent_fraction_of_amplitude": adjacent_fraction,
         }
         if fraction > MAX_PHASE_SEAM_FRACTION:
             failures.append(
                 f"{key} phase seam is {fraction:.4g} of amplitude, "
                 f"expected <= {MAX_PHASE_SEAM_FRACTION:.4g}"
+            )
+        if adjacent_fraction > MAX_PHASE_ADJACENT_FRACTION:
+            failures.append(
+                f"{key} adjacent phase step is {adjacent_fraction:.4g} of amplitude, "
+                f"expected <= {MAX_PHASE_ADJACENT_FRACTION:.4g}"
             )
 
     result["metrics"] = metric_results
