@@ -6,17 +6,23 @@
   "output_dir": "<local-rre-root>/rsp_batch_runs/output/model_008_M0p6151_Z0p0004406_T6792",
   "prefix": "mesa_rsp_model_008_M0p6151_Z0p0004406_T6792",
   "product_stem": "mesa_rsp_model_008_M0p6151_Z0p0004406_T6792_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work",
-  "updated_at": "2026-06-17T08:25:29.479742+00:00",
+  "updated_at": "2026-06-17T09:50:57.866711+00:00",
   "stages": {
     "prepared": {
       "status": "complete",
       "timestamp": "2026-06-14T19:27:22.746003+00:00"
     },
     "create": {
-      "status": "running",
-      "updated_at": "2026-06-17T08:25:29.479742+00:00",
+      "status": "complete",
+      "updated_at": "2026-06-17T09:50:57.865713+00:00",
       "expected_output": "<local-rre-root>/rsp_batch_runs/runs/model_008_M0p6151_Z0p0004406_T6792/final_model_008_M0p6151_Z0p0004406_T6792_create.mod",
       "started_at": "2026-06-17T08:25:29.479742+00:00"
+    },
+    "continue_saturation": {
+      "status": "running",
+      "updated_at": "2026-06-17T09:50:57.866212+00:00",
+      "expected_output": "<local-rre-root>/rsp_batch_runs/runs/model_008_M0p6151_Z0p0004406_T6792/final_model_008_M0p6151_Z0p0004406_T6792_saturated.mod",
+      "started_at": "2026-06-17T09:50:57.866212+00:00"
     }
   },
   "validation": {
