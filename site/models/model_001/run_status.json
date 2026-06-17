@@ -6,7 +6,7 @@
   "output_dir": "<local-rre-root>/rsp_batch_runs/output/model_001_M0p5602_Z0p003592_T6824",
   "prefix": "mesa_rsp_model_001_M0p5602_Z0p003592_T6824",
   "product_stem": "mesa_rsp_model_001_M0p5602_Z0p003592_T6824_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work",
-  "updated_at": "2026-06-17T18:58:48.415854+00:00",
+  "updated_at": "2026-06-17T19:00:18.265621+00:00",
   "stages": {
     "prepared": {
       "status": "complete",
@@ -37,8 +37,8 @@
       "expected_output": "<local-rre-root>/rsp_batch_runs/runs/model_001_M0p5602_Z0p003592_T6824/final_model_001_M0p5602_Z0p003592_T6824_deep2cycles.mod"
     },
     "plot": {
-      "status": "running",
-      "updated_at": "2026-06-17T18:58:48.415353+00:00",
+      "status": "complete",
+      "updated_at": "2026-06-17T19:00:18.081027+00:00",
       "expected_output": "<local-rre-root>/rsp_batch_runs/output/model_001_M0p5602_Z0p003592_T6824/mesa_rsp_model_001_M0p5602_Z0p003592_T6824_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work.gif",
       "started_at": "2026-06-17T18:58:48.415353+00:00"
     },
@@ -77,7 +77,7 @@
     },
     "verify": {
       "status": "complete",
-      "updated_at": "2026-06-17T18:48:28.009276+00:00",
+      "updated_at": "2026-06-17T19:00:18.265116+00:00",
       "expected_output": "<local-rre-root>/rsp_batch_runs/output/model_001_M0p5602_Z0p003592_T6824/verification_summary.json",
       "result": {
         "model_id": "model_001",
@@ -89,8 +89,8 @@
         "summary_path": "<local-rre-root>/rsp_batch_runs/output/model_001_M0p5602_Z0p003592_T6824/mesa_rsp_model_001_M0p5602_Z0p003592_T6824_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work_summary.json",
         "pressure_work_mode": "gas_plus_pav",
         "heating_mode": "gas_minus_c",
-        "scaling_method_version": "model000-visible-window-v7",
-        "expected_scaling_method_version": "model000-visible-window-v7",
+        "scaling_method_version": "model000-visible-window-v8",
+        "expected_scaling_method_version": "model000-visible-window-v8",
         "panel_y_ranges": {
           "left_power": {
             "limits": [
@@ -155,7 +155,7 @@
         "opacity_scaling": {
           "method": "left-panel visible-window min and max opacity are mapped into a fixed upper band of this panel's own y-axis range",
           "panel": "left_power",
-          "panel_bottom_fraction": 0.64,
+          "panel_bottom_fraction": 0.76,
           "panel_top_fraction": 0.92,
           "reference_opacity_max_display_value": 0.7767257274249058,
           "x_field_for_scaling": "radius_rsun_plot",
@@ -168,13 +168,13 @@
             102.37564295569331
           ],
           "reference_convention": "model_000 example rule: measure opacity min and max only in the shown radius range, then map those two extrema into a reserved band of each panel's own y-axis range",
-          "display_min_value": -4.649835647804606,
-          "display_units_per_opacity_unit": 0.06530043317776735,
+          "display_min_value": -1.7848591032044894,
+          "display_units_per_opacity_unit": 0.03731453324443848,
           "opacity_min_baseline": 0.0035001471581693473,
           "opacity_max_display_value": 2.0351096229289993,
-          "opacity_display_span": 6.684945270733605,
+          "opacity_display_span": 3.8199687261334887,
           "scaled_visible_display_bounds": [
-            -4.649835647804606,
+            -1.7848591032044894,
             2.0351096229289993
           ]
         },
@@ -233,9 +233,9 @@
         "phase_seam_ok": true,
         "passed": true,
         "failures": [],
-        "verified_at": "2026-06-17T18:48:28.007769+00:00"
+        "verified_at": "2026-06-17T19:00:18.263103+00:00"
       },
-      "started_at": "2026-06-17T18:48:27.963353+00:00"
+      "started_at": "2026-06-17T19:00:18.218337+00:00"
     }
   },
   "validation": {

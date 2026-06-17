@@ -8,8 +8,8 @@
   "summary_path": "<local-rre-root>/rsp_batch_runs/output/model_005_M0p6238_Z0p00007156_T6925/mesa_rsp_model_005_M0p6238_Z0p00007156_T6925_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work_summary.json",
   "pressure_work_mode": "gas_plus_pav",
   "heating_mode": "gas_minus_c",
-  "scaling_method_version": "model000-visible-window-v7",
-  "expected_scaling_method_version": "model000-visible-window-v7",
+  "scaling_method_version": "model000-visible-window-v8",
+  "expected_scaling_method_version": "model000-visible-window-v8",
   "panel_y_ranges": {
     "left_power": {
       "limits": [
@@ -74,7 +74,7 @@
   "opacity_scaling": {
     "method": "left-panel visible-window min and max opacity are mapped into a fixed upper band of this panel's own y-axis range",
     "panel": "left_power",
-    "panel_bottom_fraction": 0.64,
+    "panel_bottom_fraction": 0.76,
     "panel_top_fraction": 0.92,
     "reference_opacity_max_display_value": 0.7767257274249058,
     "x_field_for_scaling": "radius_rsun_plot",
@@ -87,13 +87,13 @@
       75.38694169219511
     ],
     "reference_convention": "model_000 example rule: measure opacity min and max only in the shown radius range, then map those two extrema into a reserved band of each panel's own y-axis range",
-    "display_min_value": -1.0065230430318532,
-    "display_units_per_opacity_unit": 0.03145697897297967,
+    "display_min_value": 0.009726719238500436,
+    "display_units_per_opacity_unit": 0.017975416555988392,
     "opacity_min_baseline": 0.006230552250480179,
     "opacity_max_display_value": 1.3647264022656396,
-    "opacity_display_span": 2.371249445297493,
+    "opacity_display_span": 1.3549996830271391,
     "scaled_visible_display_bounds": [
-      -1.0065230430318532,
+      0.009726719238500436,
       1.3647264022656396
     ]
   },
@@ -158,5 +158,5 @@
     "radius_rsun phase seam is 0.3245 of amplitude, expected <= 0.025",
     "teff_k phase seam is 0.1056 of amplitude, expected <= 0.025"
   ],
-  "verified_at": "2026-06-17T18:54:13.204599+00:00"
+  "verified_at": "2026-06-17T19:06:00.986991+00:00"
 }
