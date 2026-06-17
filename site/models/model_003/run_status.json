@@ -6,7 +6,7 @@
   "output_dir": "<local-rre-root>/rsp_batch_runs/output/model_003_M0p7317_Z0p001405_T6745",
   "prefix": "mesa_rsp_model_003_M0p7317_Z0p001405_T6745",
   "product_stem": "mesa_rsp_model_003_M0p7317_Z0p001405_T6745_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work",
-  "updated_at": "2026-06-17T00:43:24.883480+00:00",
+  "updated_at": "2026-06-17T01:28:39.128953+00:00",
   "stages": {
     "prepared": {
       "status": "complete",
@@ -38,7 +38,7 @@
     },
     "final_cycle": {
       "status": "complete",
-      "updated_at": "2026-06-16T22:26:18.931074+00:00",
+      "updated_at": "2026-06-17T01:26:43.110130+00:00",
       "expected_output": "<local-rre-root>/rsp_batch_runs/output/model_003_M0p7317_Z0p001405_T6745/mesa_rsp_model_003_M0p7317_Z0p001405_T6745_final_cycle_summary.json",
       "summary": {
         "history_file": "<local-rre-root>/rsp_batch_runs/runs/model_003_M0p7317_Z0p001405_T6745/LOGS/history.data",
@@ -67,20 +67,20 @@
         "models_in_cycle": 1103,
         "lightcurve_csv": "<local-rre-root>/rsp_batch_runs/output/model_003_M0p7317_Z0p001405_T6745/mesa_rsp_model_003_M0p7317_Z0p001405_T6745_final_cycle_lightcurve.csv"
       },
-      "started_at": "2026-06-16T22:26:18.806737+00:00"
+      "started_at": "2026-06-17T01:26:42.981816+00:00"
     },
     "plot": {
       "status": "complete",
-      "updated_at": "2026-06-16T22:28:38.862658+00:00",
+      "updated_at": "2026-06-17T01:28:38.188163+00:00",
       "expected_output": "<local-rre-root>/rsp_batch_runs/output/model_003_M0p7317_Z0p001405_T6745/mesa_rsp_model_003_M0p7317_Z0p001405_T6745_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work.gif",
-      "started_at": "2026-06-16T22:26:49.005201+00:00"
+      "started_at": "2026-06-17T01:26:43.380100+00:00"
     },
     "verify": {
       "status": "failed",
-      "updated_at": "2026-06-17T00:43:24.882970+00:00",
+      "updated_at": "2026-06-17T01:28:39.128453+00:00",
       "error": "RuntimeError('luminosity_lsun phase seam is 0.05168 of amplitude, expected <= 0.025; radius_rsun phase seam is 0.05676 of amplitude, expected <= 0.025; teff_k phase seam is 0.0419 of amplitude, expected <= 0.025')",
       "expected_output": "<local-rre-root>/rsp_batch_runs/output/model_003_M0p7317_Z0p001405_T6745/verification_summary.json",
-      "started_at": "2026-06-17T00:43:24.844791+00:00"
+      "started_at": "2026-06-17T01:28:38.760587+00:00"
     }
   },
   "validation": {

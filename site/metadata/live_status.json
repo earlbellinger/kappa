@@ -1,6 +1,6 @@
 {
   "batch_status": {
-    "current_model": "model_007",
+    "current_model": "model_008",
     "driver_pid": 1658056,
     "ended_at": null,
     "log": "<local-rre-root>/rsp_batch_runs/output/batch_remaining_006_009.log",
@@ -19,7 +19,14 @@
         "status": "complete"
       },
       "model_007": {
+        "continuation_resume_returncode": null,
+        "ended_at": "2026-06-17T01:30:10.071411+00:00",
+        "returncode": 1,
         "started_at": "2026-06-17T01:15:43.104380+00:00",
+        "status": "failed"
+      },
+      "model_008": {
+        "started_at": "2026-06-17T01:30:10.072412+00:00",
         "status": "running"
       }
     },
@@ -29,7 +36,7 @@
     "workspace": "<local-rre-root>/rsp_batch_runs"
   },
   "completed_gif_count": 7,
-  "generated_at": "2026-06-17T01:20:56.820324+00:00",
+  "generated_at": "2026-06-17T02:48:10.965922+00:00",
   "models": [
     {
       "active_stage": null,
@@ -241,31 +248,26 @@
       "verification_passed": false
     },
     {
-      "active_stage": "create",
-      "active_stage_started_at": "2026-06-17T01:15:43.299407+00:00",
-      "estimate_basis": "linear extrapolation from active stage start time and latest period count",
-      "estimated_stage_eta": "2026-06-17T03:03:49.896904+00:00",
-      "estimated_stage_seconds_elapsed": 313.518879,
-      "estimated_stage_seconds_remaining": 6173.078617551724,
-      "estimated_stage_seconds_total": 6486.597496551724,
+      "active_stage": null,
+      "active_stage_started_at": null,
       "gif_exists": false,
       "gif_path": null,
-      "latest_history_model": "23910",
-      "latest_history_mtime": "2026-06-17T01:20:56.711403+00:00",
-      "latest_period": "29",
+      "latest_history_model": "32000",
+      "latest_history_mtime": "2026-06-17T01:30:04.652697+00:00",
+      "latest_period": "39",
       "latest_period_log": "create.log",
-      "latest_photo": "<local-rre-root>/rsp_batch_runs/runs/model_007_M0p6887_Z0p004060_T6669/photos_saturation/20000",
+      "latest_photo": "<local-rre-root>/rsp_batch_runs/runs/model_007_M0p6887_Z0p004060_T6669/photos_saturation/30000",
       "max_periods": "600",
       "model_id": "model_007",
       "output_dir": "<local-rre-root>/rsp_batch_runs/output/model_007_M0p6887_Z0p004060_T6669",
-      "period_progress_fraction": 0.04833333333333333,
-      "period_progress_percent": 4.833333333333333,
+      "period_progress_fraction": 0.065,
+      "period_progress_percent": 6.5,
       "profile_count": null,
       "registered_existing": false,
       "run_dir": "<local-rre-root>/rsp_batch_runs/runs/model_007_M0p6887_Z0p004060_T6669",
       "run_name": "model_007_M0p6887_Z0p004060_T6669",
       "stages": {
-        "create": "running",
+        "create": "failed",
         "prepared": "complete"
       },
       "verification_passed": false
@@ -288,6 +290,7 @@
       "run_dir": "<local-rre-root>/rsp_batch_runs/runs/model_008_M0p6151_Z0p0004406_T6792",
       "run_name": "model_008_M0p6151_Z0p0004406_T6792",
       "stages": {
+        "create": "failed",
         "prepared": "complete"
       },
       "verification_passed": false

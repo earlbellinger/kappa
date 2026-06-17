@@ -382,6 +382,45 @@ def phase_moving_positions(phase: float) -> np.ndarray:
     return np.asarray([phase_value - 1.0, phase_value, phase_value + 1.0, phase_value + 2.0], dtype=float)
 
 
+def repeated_phase_curve(
+    phase: np.ndarray,
+    values: np.ndarray,
+    repeat_count: int = 3,
+) -> tuple[np.ndarray, np.ndarray]:
+    phase_array = np.asarray(phase, dtype=float)
+    value_array = np.asarray(values, dtype=float)
+    if phase_array.ndim != 1 or value_array.ndim != 1 or phase_array.size != value_array.size:
+        raise ValueError("phase and values must be one-dimensional arrays of the same length.")
+
+    x_segments: list[np.ndarray] = []
+    y_segments: list[np.ndarray] = []
+    separator = np.asarray([np.nan], dtype=float)
+    for offset in range(int(repeat_count)):
+        if offset > 0:
+            x_segments.append(separator)
+            y_segments.append(separator)
+        x_segments.append(phase_array + float(offset))
+        y_segments.append(value_array)
+    return np.concatenate(x_segments), np.concatenate(y_segments)
+
+
+def repeated_phase_colors(
+    colors: np.ndarray,
+    repeat_count: int = 3,
+) -> np.ndarray:
+    color_array = np.asarray(colors, dtype=float)
+    if color_array.ndim != 2 or color_array.shape[1] != 3:
+        raise ValueError("colors must be a two-dimensional RGB array.")
+
+    segments: list[np.ndarray] = []
+    separator = np.full((1, 3), np.nan, dtype=float)
+    for offset in range(int(repeat_count)):
+        if offset > 0:
+            segments.append(separator)
+        segments.append(color_array)
+    return np.vstack(segments)
+
+
 def q_cell_widths(q_values: np.ndarray) -> np.ndarray:
     q_array = np.asarray(q_values, dtype=float)
     if q_array.ndim != 1 or q_array.size == 0:
@@ -2141,19 +2180,17 @@ def main() -> None:
         float(luminosity_sphere_center[1] - LUM_VISUAL_STACK_OFFSET_LSUN + LUM_TEFF_THERMOMETER_DY_LSUN),
     )
 
-    cycle_phase_curve = np.append(sampled_phase, 1.0)
-    cycle_luminosity_curve = np.append(sampled_photosphere_l, sampled_photosphere_l[0])
-    cycle_rv_curve = np.append(sampled_photosphere_rv, sampled_photosphere_rv[0])
-    cycle_phase_curve_two = np.concatenate([cycle_phase_curve, cycle_phase_curve[1:] + 1.0])
-    cycle_phase_curve_three = np.concatenate(
-        [cycle_phase_curve, cycle_phase_curve[1:] + 1.0, cycle_phase_curve[1:] + 2.0]
+    phase_curve_repeats = 3
+    cycle_luminosity_phase_three, cycle_luminosity_curve_three = repeated_phase_curve(
+        sampled_phase,
+        sampled_photosphere_l,
+        phase_curve_repeats,
     )
-    cycle_luminosity_curve_two = np.concatenate([cycle_luminosity_curve, cycle_luminosity_curve[1:]])
-    cycle_luminosity_curve_three = np.concatenate(
-        [cycle_luminosity_curve, cycle_luminosity_curve[1:], cycle_luminosity_curve[1:]]
+    cycle_rv_phase_three, cycle_rv_curve_three = repeated_phase_curve(
+        sampled_phase,
+        sampled_photosphere_rv,
+        phase_curve_repeats,
     )
-    cycle_rv_curve_two = np.concatenate([cycle_rv_curve, cycle_rv_curve[1:]])
-    cycle_rv_curve_three = np.concatenate([cycle_rv_curve, cycle_rv_curve[1:], cycle_rv_curve[1:]])
     photosphere_radius_series = np.asarray(
         [float(frame["photosphere_radius_rsun"]) for frame in frame_data],
         dtype=float,
@@ -2239,6 +2276,7 @@ def main() -> None:
     def setup_phase_panel(
         ax: plt.Axes,
         y_series: np.ndarray,
+        x_curve_three: np.ndarray,
         y_curve_three: np.ndarray,
         panel_ylim: tuple[float, float],
         y_label: str,
@@ -2280,10 +2318,9 @@ def main() -> None:
                     [frame["photosphere_rv_sphere_rgb"] for frame in frame_data],
                     dtype=float,
                 )
-            cycle_point_rgb = np.vstack([phase_rgb_cycle, phase_rgb_cycle[0]])
-            cycle_point_rgb_three = np.vstack([cycle_point_rgb, cycle_point_rgb[1:], cycle_point_rgb[1:]])
+            cycle_point_rgb_three = repeated_phase_colors(phase_rgb_cycle, phase_curve_repeats)
             phase_curve_x, phase_curve_y, phase_curve_rgb = add_phase_curve_breaks(
-                cycle_phase_curve_three,
+                x_curve_three,
                 y_curve_three,
                 phase_curve_break_phases,
                 cycle_point_rgb_three,
@@ -2298,7 +2335,7 @@ def main() -> None:
             )
         else:
             phase_curve_x, phase_curve_y, _ = add_phase_curve_breaks(
-                cycle_phase_curve_three,
+                x_curve_three,
                 y_curve_three,
                 phase_curve_break_phases,
             )
@@ -2599,6 +2636,7 @@ def main() -> None:
     luminosity_panel = setup_phase_panel(
         ax_lum,
         sampled_photosphere_l,
+        cycle_luminosity_phase_three,
         cycle_luminosity_curve_three,
         luminosity_ylim,
         r"Photosphere $L\ [L_\odot]$",
@@ -2608,6 +2646,7 @@ def main() -> None:
     rv_panel = setup_phase_panel(
         ax_rv,
         sampled_photosphere_rv,
+        cycle_rv_phase_three,
         cycle_rv_curve_three,
         rv_ylim,
         r"Photosphere $v_r\ [{\rm km}\,{\rm s}^{-1}]$",
@@ -3064,6 +3103,11 @@ def main() -> None:
         "cycle_profile_count": len(cycle_records),
         "frame_count": len(frame_data),
         "closing_frame_added_for_seamless_loop": False,
+        "phase_panel_repeat_mode": (
+            "repeated cycle copies are separated by NaN gaps; the plot does not connect the last "
+            "sample of one cycle to the first sample of the next"
+        ),
+        "phase_panel_repeat_count": int(phase_curve_repeats),
         "fps": int(args.fps),
         "period_days_used": float(period_days),
         "phase_reference_days_used": float(phase_reference_days),
