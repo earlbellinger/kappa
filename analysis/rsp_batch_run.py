@@ -358,11 +358,15 @@ def run_mesa_stage(
         print(f"{record['model_id']} {stage}: already complete")
         return
     if resume_from_latest_photo and stage in RESUMABLE_PHOTO_DIRS:
-        resume_photo = latest_saved_photo(run_dir / RESUMABLE_PHOTO_DIRS[stage])
-        if dry_run:
-            script = f"{RUN_SCRIPTS[stage]}_resume_{resume_photo.name}"
+        try:
+            resume_photo = latest_saved_photo(run_dir / RESUMABLE_PHOTO_DIRS[stage])
+        except FileNotFoundError as exc:
+            print(f"{record['model_id']} {stage}: no saved photo for resume ({exc}); retrying from stage start")
         else:
-            script = write_resume_files(run_dir, stage, resume_photo, resume_max_num_periods)
+            if dry_run:
+                script = f"{RUN_SCRIPTS[stage]}_resume_{resume_photo.name}"
+            else:
+                script = write_resume_files(run_dir, stage, resume_photo, resume_max_num_periods)
     if dry_run:
         if resume_photo is not None:
             print(f"would resume from photo: {resume_photo}")

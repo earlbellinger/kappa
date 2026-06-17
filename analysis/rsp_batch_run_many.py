@@ -63,6 +63,24 @@ def latest_failed_stage(workspace: Path, model: str) -> str | None:
     return None
 
 
+def has_saved_photo(workspace: Path, model: str, stage: str) -> bool:
+    manifest = json.loads((workspace / "inputs" / "manifest.json").read_text())
+    record = next((row for row in manifest if row["model_id"] == model or row["run_name"] == model), None)
+    if record is None:
+        return False
+    photo_dir_names = {
+        "create": "photos_saturation",
+        "continue_saturation": "photos_continue_saturation",
+    }
+    photo_dir_name = photo_dir_names.get(stage)
+    if photo_dir_name is None:
+        return False
+    photo_dir = Path(record["run_dir"]) / photo_dir_name
+    if not photo_dir.exists():
+        return False
+    return any(path.is_file() and path.name.isdigit() for path in photo_dir.iterdir())
+
+
 def run_command(command: list[str], log_path: Path) -> int:
     with log_path.open("ab") as log:
         header = f"\n\n[{now_iso()}] $ {' '.join(command)}\n".encode("utf-8", "replace")
@@ -132,8 +150,9 @@ def main() -> int:
                 retry_stage,
                 "--bash",
                 args.bash,
-                "--resume-from-latest-photo",
             ]
+            if has_saved_photo(workspace, model, retry_stage):
+                resume_command.append("--resume-from-latest-photo")
             retry_code = run_command(resume_command, log_path)
             if retry_code == 0:
                 returncode = run_command(command, log_path)
