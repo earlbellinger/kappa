@@ -6,7 +6,7 @@
   "output_dir": "<local-rre-root>/rsp_batch_runs/output/model_004_M0p7595_Z0p0001834_T6876",
   "prefix": "mesa_rsp_model_004_M0p7595_Z0p0001834_T6876",
   "product_stem": "mesa_rsp_model_004_M0p7595_Z0p0001834_T6876_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work",
-  "updated_at": "2026-06-17T12:30:44.606805+00:00",
+  "updated_at": "2026-06-17T12:38:51.643438+00:00",
   "stages": {
     "prepared": {
       "status": "complete",
@@ -70,136 +70,160 @@
       "started_at": "2026-06-16T22:41:03.453860+00:00"
     },
     "plot": {
-      "status": "skipped_pending_convergence",
-      "updated_at": "2026-06-17T12:30:22.450291+00:00",
+      "status": "complete",
+      "updated_at": "2026-06-17T12:38:51.455261+00:00",
       "expected_output": "<local-rre-root>/rsp_batch_runs/output/model_004_M0p7595_Z0p0001834_T6876/mesa_rsp_model_004_M0p7595_Z0p0001834_T6876_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work.gif",
-      "reason": "strict convergence pending (source=period_log_fallback, cycles=2599, Gamma_ptp=None, P_frac_ptp=0.025235680823581453, DeltaR_frac_ptp=0.1947332378758638)",
-      "convergence": {
-        "source_kind": "period_log_fallback",
-        "cycle_count": 2599,
-        "last_cycle_count_used": 100,
-        "window_start_period_number": 2501.0,
-        "window_end_period_number": 2600.0,
-        "last_period_number": 2600.0,
-        "gamma_peak_to_peak_last_window": null,
-        "gamma_median_last_window": null,
-        "gamma_first_last_window": [
-          null,
-          null
-        ],
-        "gamma_slope_per_cycle_last_window": null,
-        "period_fractional_peak_to_peak_last_window": 0.025235680823581453,
-        "period_median_days_last_window": 0.51871,
-        "period_first_last_days_window": [
-          0.51363,
-          0.51383
-        ],
-        "period_slope_days_per_cycle_last_window": 1.2679267926798464e-07,
-        "delta_r_fractional_peak_to_peak_last_window": 0.1947332378758638,
-        "delta_r_median_last_window": 0.080315,
-        "delta_r_first_last_window": [
-          0.07603,
-          0.08837
-        ],
-        "delta_r_slope_per_cycle_last_window": 0.00011512457245724573,
-        "steps_median_last_window": 1000.0,
-        "steps_min_last_window": 978.0,
-        "steps_max_last_window": 1023.0,
-        "max_vsurf_div_cs_median_last_window": 0.56036,
-        "max_vsurf_div_cs_first_last_window": [
-          0.53709,
-          0.6313
-        ],
-        "max_vsurf_div_cs_slope_per_cycle_last_window": 0.0008409931593159313,
-        "max_vsurf_div_cs_min_last_window": 0.49592,
-        "max_vsurf_div_cs_max_last_window": 0.6313,
-        "has_full_window": true,
-        "has_gamma": false,
-        "converged_gamma": false,
-        "converged_period": false,
-        "converged_delta_r": false,
-        "converged_exact": false,
-        "limit_cycle_converged": false,
-        "source": "cumulative:create+continue_saturation",
-        "source_path": "<local-rre-root>/rsp_batch_runs/output/model_004_M0p7595_Z0p0001834_T6876/logs/continue_saturation.log",
-        "gamma_status": "not recorded in history",
-        "stop_reasons": [
-          "period_number >= max_period_number",
-          "termination code: reached max number of periods"
-        ],
-        "grekm_stopped": false,
-        "period_cap_stopped": true,
-        "model_id": "model_004",
-        "run_name": "model_004_M0p7595_Z0p0001834_T6876",
-        "tolerance": 0.001,
-        "required_last_cycles": 100
-      }
+      "started_at": "2026-06-17T12:37:21.728048+00:00"
     },
     "verify": {
-      "status": "skipped_pending_convergence",
-      "updated_at": "2026-06-17T12:30:44.605799+00:00",
+      "status": "complete",
+      "updated_at": "2026-06-17T12:38:51.642932+00:00",
       "expected_output": "<local-rre-root>/rsp_batch_runs/output/model_004_M0p7595_Z0p0001834_T6876/verification_summary.json",
-      "reason": "strict convergence pending (source=period_log_fallback, cycles=2599, Gamma_ptp=None, P_frac_ptp=0.025235680823581453, DeltaR_frac_ptp=0.1947332378758638)",
-      "convergence": {
-        "source_kind": "period_log_fallback",
-        "cycle_count": 2599,
-        "last_cycle_count_used": 100,
-        "window_start_period_number": 2501.0,
-        "window_end_period_number": 2600.0,
-        "last_period_number": 2600.0,
-        "gamma_peak_to_peak_last_window": null,
-        "gamma_median_last_window": null,
-        "gamma_first_last_window": [
-          null,
-          null
-        ],
-        "gamma_slope_per_cycle_last_window": null,
-        "period_fractional_peak_to_peak_last_window": 0.025235680823581453,
-        "period_median_days_last_window": 0.51871,
-        "period_first_last_days_window": [
-          0.51363,
-          0.51383
-        ],
-        "period_slope_days_per_cycle_last_window": 1.2679267926798464e-07,
-        "delta_r_fractional_peak_to_peak_last_window": 0.1947332378758638,
-        "delta_r_median_last_window": 0.080315,
-        "delta_r_first_last_window": [
-          0.07603,
-          0.08837
-        ],
-        "delta_r_slope_per_cycle_last_window": 0.00011512457245724573,
-        "steps_median_last_window": 1000.0,
-        "steps_min_last_window": 978.0,
-        "steps_max_last_window": 1023.0,
-        "max_vsurf_div_cs_median_last_window": 0.56036,
-        "max_vsurf_div_cs_first_last_window": [
-          0.53709,
-          0.6313
-        ],
-        "max_vsurf_div_cs_slope_per_cycle_last_window": 0.0008409931593159313,
-        "max_vsurf_div_cs_min_last_window": 0.49592,
-        "max_vsurf_div_cs_max_last_window": 0.6313,
-        "has_full_window": true,
-        "has_gamma": false,
-        "converged_gamma": false,
-        "converged_period": false,
-        "converged_delta_r": false,
-        "converged_exact": false,
-        "limit_cycle_converged": false,
-        "source": "cumulative:create+continue_saturation",
-        "source_path": "<local-rre-root>/rsp_batch_runs/output/model_004_M0p7595_Z0p0001834_T6876/logs/continue_saturation.log",
-        "gamma_status": "not recorded in history",
-        "stop_reasons": [
-          "period_number >= max_period_number",
-          "termination code: reached max number of periods"
-        ],
-        "grekm_stopped": false,
-        "period_cap_stopped": true,
+      "result": {
         "model_id": "model_004",
         "run_name": "model_004_M0p7595_Z0p0001834_T6876",
-        "tolerance": 0.001,
-        "required_last_cycles": 100
-      }
+        "profile_count": 3008,
+        "first_profile": "<local-rre-root>/rsp_batch_runs/runs/model_004_M0p7595_Z0p0001834_T6876/LOGS/profile1.data",
+        "required_profile_columns_present": true,
+        "missing_profile_columns": [],
+        "summary_path": "<local-rre-root>/rsp_batch_runs/output/model_004_M0p7595_Z0p0001834_T6876/mesa_rsp_model_004_M0p7595_Z0p0001834_T6876_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work_summary.json",
+        "pressure_work_mode": "gas_plus_pav",
+        "heating_mode": "gas_minus_c",
+        "scaling_method_version": "per-panel-visible-window-v3",
+        "expected_scaling_method_version": "per-panel-visible-window-v3",
+        "panel_y_ranges": {
+          "left_power": {
+            "limits": [
+              -2.1441406221015358,
+              1.3875166664589869
+            ],
+            "visible_data_bounds": [
+              -1.9005780504766723,
+              1.1439540948341231
+            ],
+            "x_field_for_scaling": "radius_rsun_plot",
+            "x_limits_for_scaling": [
+              4.422665240370844,
+              5.604763755803331
+            ],
+            "method": "minimum and maximum of the plotted power curves within this panel's shown x range; the axis includes zero and is padded from the local visible extrema rather than using a global or symmetric fixed range"
+          },
+          "photosphere_radial_velocity": {
+            "limits": [
+              -4.697318412658337,
+              4.831087578725603
+            ],
+            "visible_data_bounds": [
+              -4.0401869649766855,
+              4.173956131043951
+            ],
+            "method": "panel-local fractional padding around the displayed photosphere radial-velocity curve"
+          },
+          "photosphere_luminosity": {
+            "limits": [
+              55.928590731689496,
+              64.50275061420645
+            ],
+            "visible_data_bounds": [
+              56.519912102897564,
+              63.91142924299839
+            ],
+            "method": "panel-local fractional padding around the displayed photosphere luminosity curve"
+          }
+        },
+        "cycle_source": "final-cycle summary age window",
+        "main_radius_xlim_used": [
+          4.422665240370844,
+          5.604763755803331
+        ],
+        "left_panel_x_limits_for_scaling": [
+          4.422665240370844,
+          5.604763755803331
+        ],
+        "left_power_visible_data_bounds": [
+          -1.9005780504766723,
+          1.1439540948341231
+        ],
+        "left_power_ylim": [
+          -2.1441406221015358,
+          1.3875166664589869
+        ],
+        "opacity_scaling": {
+          "method": "left-panel visible-window min opacity maps to zero; left-panel visible-window max opacity maps to a fixed fraction of that panel's positive y-limit",
+          "panel": "left_power",
+          "panel_top_fraction": 0.88,
+          "x_field_for_scaling": "radius_rsun_plot",
+          "x_limits_for_scaling": [
+            4.422665240370844,
+            5.604763755803331
+          ],
+          "visible_data_bounds": [
+            0.0086388156794484,
+            55.822611865807104
+          ],
+          "display_min_value": 0.0,
+          "display_units_per_opacity_unit": 0.021876505107194046,
+          "opacity_min_baseline": 0.0086388156794484,
+          "opacity_max_display_value": 1.2210146664839086
+        },
+        "photosphere_radius_rsun_range": [
+          5.422665240370844,
+          5.5047637558033315
+        ],
+        "radius_window_contains_photosphere": true,
+        "continue_saturation_stop": {
+          "log_path": "<local-rre-root>/rsp_batch_runs/output/model_004_M0p7595_Z0p0001834_T6876/logs/continue_saturation.log",
+          "exists": true,
+          "stop_reason": "period_number >= max_period_number",
+          "termination_code": "reached max number of periods",
+          "saturated_by_grekm": false,
+          "reached_max_periods": true
+        },
+        "saturated_by_grekm": false,
+        "reached_max_periods": true,
+        "phase_seam": {
+          "path": "<local-rre-root>/rsp_batch_runs/output/model_004_M0p7595_Z0p0001834_T6876/mesa_rsp_model_004_M0p7595_Z0p0001834_T6876_final_cycle_lightcurve.csv",
+          "exists": true,
+          "row_count": 995,
+          "parsed_row_count": 995,
+          "phase_first": 0.0,
+          "phase_last": 0.998994974875,
+          "max_allowed_fraction_of_amplitude": 0.025,
+          "max_allowed_adjacent_fraction_of_amplitude": 0.025,
+          "metrics": {
+            "luminosity_lsun": {
+              "seam": 0.12768064721010575,
+              "amplitude": 7.3633270434362075,
+              "fraction_of_amplitude": 0.017340075546952976,
+              "max_adjacent_step": 0.025372996844645,
+              "max_adjacent_fraction_of_amplitude": 0.003445860369228461
+            },
+            "radius_rsun": {
+              "seam": 0.0016635058499998578,
+              "amplitude": 0.09130168519999948,
+              "fraction_of_amplitude": 0.018219881115621152,
+              "max_adjacent_step": 0.0002979562299998406,
+              "max_adjacent_fraction_of_amplitude": 0.003263425306413099
+            },
+            "teff_k": {
+              "seam": 4.533189449999554,
+              "amplitude": 222.66949741999997,
+              "fraction_of_amplitude": 0.020358376439180786,
+              "max_adjacent_step": 0.7409798600001523,
+              "max_adjacent_fraction_of_amplitude": 0.0033277115571986654
+            }
+          },
+          "failures": [],
+          "age_monotonic_by_phase": true,
+          "minimum_age_step_days_by_phase": 0.0005175399999188812,
+          "ok": true
+        },
+        "phase_seam_ok": true,
+        "passed": true,
+        "failures": [],
+        "verified_at": "2026-06-17T12:38:51.641924+00:00"
+      },
+      "started_at": "2026-06-17T12:38:51.607220+00:00"
     }
   },
   "validation": {
