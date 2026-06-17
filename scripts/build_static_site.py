@@ -335,7 +335,7 @@ def card_html(model: dict[str, object]) -> str:
     progress_bits = []
     if model.get("profile_count"):
         progress_bits.append(f"{model['profile_count']} profiles")
-    if model.get("latest_period") and model.get("max_periods"):
+    if model.get("latest_period") and model.get("max_periods") and "running" in str(model.get("status")):
         progress_bits.append(f"period {model['latest_period']} / {model['max_periods']}")
     if model.get("convergence"):
         progress_bits.append(str(model["convergence"]))

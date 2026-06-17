@@ -347,6 +347,31 @@ def convergence_diagnostics(convergence: dict) -> str:
     return " | ".join(bits)
 
 
+def convergence_progress(convergence: dict) -> str:
+    if not convergence:
+        return ""
+    cycles = convergence.get("cycle_count")
+    last_period = convergence.get("last_period_number")
+    window = convergence.get("last_cycle_count_used")
+    source = convergence.get("source_kind")
+    bits: list[str] = []
+    if cycles is not None:
+        bits.append(f"saturation cycles {fmt_float(cycles, 5)}")
+    if last_period is not None:
+        bits.append(f"last saturation period {fmt_float(last_period, 5)}")
+    if window is not None:
+        bits.append(f"final-window cycles {fmt_float(window, 5)}")
+    if source:
+        bits.append(str(source))
+    return "; ".join(bits)
+
+
+def strict_convergence_passed(record: dict, convergence: dict) -> bool:
+    if record.get("registered_existing"):
+        return True
+    return bool(convergence and convergence.get("converged_exact") is True)
+
+
 def modulation_png(modulation: dict) -> Path | None:
     value = modulation.get("diagnostic_png") if isinstance(modulation, dict) else None
     if not value:
@@ -369,12 +394,20 @@ def build_card(
     model_id = str(record["model_id"])
     run_name = str(record["run_name"])
     is_verified = status_text == "verified"
+    convergence_passed = strict_convergence_passed(record, convergence)
+    trusted_animation = is_verified and convergence_passed
+    if is_verified and not convergence_passed:
+        status_text = "awaiting convergence"
+        is_verified = False
     status_class = "ok" if is_verified else "warn" if not status_text.startswith("failed") else "bad"
     mass = fmt_float(record.get("RSP_mass"), 4)
     z = fmt_float(record.get("RSP_Z"), 4)
     teff = fmt_float(record.get("RSP_Teff"), 5)
     lum = fmt_float(record.get("RSP_L"), 5)
-    progress = latest_history_progress(record, products, status_text, status)
+    if status_text == "awaiting convergence":
+        progress = convergence_progress(convergence)
+    else:
+        progress = latest_history_progress(record, products, status_text, status)
     progress_html = f'<p class="progress">{html.escape(progress)}</p>' if progress else ""
     verification = read_json(products["verification"]) if products["verification"] is not None else {}
     verification_failed = isinstance(verification, dict) and verification.get("passed") is False
@@ -387,11 +420,14 @@ def build_card(
         diagnostics = " | ".join(bit for bit in (diagnostics, convergence_checks) if bit)
     diagnostics_html = f'<p class="checks">{html.escape(diagnostics)}</p>' if diagnostics else ""
 
-    placeholder_text = "Verification failed" if verification_failed else "No animation yet"
+    if status_text == "awaiting convergence":
+        placeholder_text = "Strict convergence pending"
+    else:
+        placeholder_text = "Verification failed" if verification_failed else "No animation yet"
     image_html = f'<div class="placeholder">{html.escape(placeholder_text)}</div>'
     gif = products["gif"]
     png = products["png"]
-    if gif is not None and gif.exists() and not verification_failed:
+    if gif is not None and gif.exists() and trusted_animation:
         src_path = png if png is not None and png.exists() else gif
         src = html.escape(rel_or_uri(src_path, output_root))
         gif_src = html.escape(rel_or_uri(gif, output_root))
@@ -403,8 +439,8 @@ def build_card(
 
     links = " ".join(
         [
-            link(None if verification_failed else products["gif"], "GIF", output_root),
-            link(None if verification_failed else products["png"], "PNG", output_root),
+            link(products["gif"] if trusted_animation else None, "GIF", output_root),
+            link(products["png"] if trusted_animation else None, "PNG", output_root),
             link(products["summary"], "animation summary", output_root),
             link(products["final_cycle"], "cycle summary", output_root),
             link(products["verification"], "verification", output_root),
