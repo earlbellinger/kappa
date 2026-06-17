@@ -8,6 +8,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.patches import Patch
 
 from rsp_batch_run import read_history
 
@@ -357,6 +359,129 @@ def write_csv(path: Path, models: list[dict[str, object]]) -> None:
             writer.writerow({field: row.get(field) for field in fields})
 
 
+def as_float(value: object) -> float | None:
+    if value is None:
+        return None
+    try:
+        result = float(value)
+    except (TypeError, ValueError):
+        return None
+    if not np.isfinite(result):
+        return None
+    return result
+
+
+def plot_summary(path: Path, models: list[dict[str, object]], tolerance: float) -> None:
+    shown = [model for model in models if model.get("model_id") != "model_000"]
+    labels = [str(model.get("model_id", "?")).replace("model_", "m") for model in shown]
+    x = np.arange(len(shown), dtype=float)
+
+    colors = []
+    hatches = []
+    for model in shown:
+        if bool(model.get("converged_exact")):
+            colors.append("#2A9D8F")
+            hatches.append("")
+        elif model.get("source_kind") == "history_exact_rsp_columns":
+            colors.append("#F4A261")
+            hatches.append("")
+        else:
+            colors.append("#C1121F")
+            hatches.append("//")
+
+    fig, axes = plt.subplots(4, 1, figsize=(12, 10.5), sharex=True, constrained_layout=True)
+    fig.suptitle("Strict limit-cycle convergence over final 100 recorded cycles", fontsize=16)
+
+    panels = [
+        (
+            axes[0],
+            "period_fractional_peak_to_peak_last_window",
+            "P variation",
+            "fractional peak-to-peak",
+            True,
+        ),
+        (
+            axes[1],
+            "delta_r_fractional_peak_to_peak_last_window",
+            "Delta R variation",
+            "fractional peak-to-peak",
+            True,
+        ),
+        (
+            axes[2],
+            "gamma_peak_to_peak_last_window",
+            "Gamma variation",
+            "absolute peak-to-peak",
+            True,
+        ),
+        (
+            axes[3],
+            "steps_median_last_window",
+            "time resolution",
+            "median steps per cycle",
+            False,
+        ),
+    ]
+
+    for ax, key, title, ylabel, use_tolerance in panels:
+        values = [as_float(model.get(key)) for model in shown]
+        finite_values = [value for value in values if value is not None and value > 0.0]
+        heights = [value if value is not None and value > 0.0 else np.nan for value in values]
+        bars = ax.bar(x, heights, color=colors, edgecolor="0.15", linewidth=0.6)
+        for bar, hatch in zip(bars, hatches):
+            bar.set_hatch(hatch)
+        ax.set_ylabel(ylabel)
+        ax.set_title(title, loc="left", fontsize=12)
+        ax.grid(axis="y", color="0.88", lw=0.7)
+        ax.set_axisbelow(True)
+
+        if use_tolerance:
+            ax.axhline(tolerance, color="0.1", ls="--", lw=1.1, label="1e-3 criterion")
+            ax.set_yscale("log")
+            ymax = max(finite_values + [tolerance]) * 2.5
+            ymin = min(finite_values + [tolerance]) / 4.0
+            ax.set_ylim(max(ymin, 1e-5), ymax)
+        else:
+            ax.axhline(1000.0, color="0.1", ls=":", lw=1.1, label="1000 steps/cycle")
+            ymax = max(finite_values + [1000.0]) * 1.2
+            ax.set_ylim(0.0, ymax)
+
+        for xi, value, model in zip(x, values, shown):
+            if value is None:
+                ax.text(
+                    xi,
+                    0.45,
+                    "missing",
+                    ha="center",
+                    va="center",
+                    rotation=90,
+                    fontsize=8,
+                    color="0.35",
+                    transform=ax.get_xaxis_transform(),
+                )
+            elif use_tolerance and value <= tolerance and bool(model.get("converged_exact")):
+                ax.text(xi, value * 1.35, "ok", ha="center", va="bottom", fontsize=8, color="#1B4332")
+
+        ax.legend(frameon=False, fontsize=8, loc="upper left")
+
+    axes[-1].set_xticks(x)
+    axes[-1].set_xticklabels(labels)
+    axes[-1].set_xlabel("batch model")
+    axes[-1].legend(
+        handles=[
+            Patch(facecolor="#2A9D8F", edgecolor="0.15", label="strictly converged"),
+            Patch(facecolor="#F4A261", edgecolor="0.15", label="exact columns, not converged"),
+            Patch(facecolor="#C1121F", edgecolor="0.15", hatch="//", label="period-log fallback"),
+        ],
+        frameon=False,
+        fontsize=8,
+        loc="upper right",
+    )
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(path, dpi=180)
+    plt.close(fig)
+
+
 def main() -> int:
     args = parse_args()
     workspace = args.workspace.resolve()
@@ -383,10 +508,13 @@ def main() -> int:
     }
     json_path = output_dir / "convergence_summary_last100.json"
     csv_path = output_dir / "convergence_summary_last100.csv"
+    png_path = output_dir / "convergence_summary_last100.png"
     json_path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
     write_csv(csv_path, models)
+    plot_summary(png_path, models, float(args.tolerance))
     print(json_path)
     print(csv_path)
+    print(png_path)
     return 0
 
 

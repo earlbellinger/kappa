@@ -458,6 +458,7 @@ def main() -> int:
     live_status_path = output_root / "live_status.json"
     modulation_path = output_root / "cycle_modulation_summary.json"
     convergence_path = output_root / "convergence_summary_last100.json"
+    convergence_png_path = output_root / "convergence_summary_last100.png"
     finished_viewer_path = output_root / "finished_visualizer.html"
     live_status = read_json(live_status_path)
     modulation_data = read_json(modulation_path)
@@ -492,6 +493,16 @@ def main() -> int:
                 product_text += f" Registered baseline GIFs: {baseline}."
 
     cards = "\n".join(build_card(row, output_root, modulation_by_model, convergence_by_model) for row in manifest)
+    convergence_panel = ""
+    if convergence_png_path.exists():
+        convergence_panel = f"""
+    <section class="diagnostic-panel">
+      <h2>Limit-Cycle Convergence</h2>
+      <a href="{html.escape(rel_or_uri(convergence_png_path, output_root))}">
+        <img src="{html.escape(rel_or_uri(convergence_png_path, output_root))}" alt="Strict limit-cycle convergence summary">
+      </a>
+    </section>
+"""
     generated = now_iso()
     html_text = f"""<!doctype html>
 <html lang="en">
@@ -558,6 +569,28 @@ def main() -> int:
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
       gap: 20px;
+    }}
+    .diagnostic-panel {{
+      margin: 0 0 24px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      border-radius: 8px;
+    }}
+    .diagnostic-panel h2 {{
+      margin: 0 0 12px;
+      font-size: 22px;
+    }}
+    .diagnostic-panel a {{
+      display: block;
+      border: 0;
+    }}
+    .diagnostic-panel img {{
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: 6px;
+      background: #fff;
     }}
     .card {{
       display: grid;
@@ -698,8 +731,11 @@ def main() -> int:
       {link(supervisor_log_path if supervisor_log_path.exists() else None, "supervisor log", output_root)}
       {link(quality_extension_status_path if quality_extension_status_path.exists() else None, "quality extension status", output_root)}
       {link(quality_extension_log_path if quality_extension_log_path.exists() else None, "quality extension log", output_root)}
+      {link(convergence_path if convergence_path.exists() else None, "convergence JSON", output_root)}
+      {link(convergence_png_path if convergence_png_path.exists() else None, "convergence plot", output_root)}
       {link(manifest_path, "manifest", output_root)}
     </p>
+{convergence_panel}
     <section class="grid">
 {cards}
     </section>

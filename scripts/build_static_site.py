@@ -228,6 +228,7 @@ def copy_batch_assets(rre_root: Path, output_dir: Path) -> dict[str, str | None]
         "cycle_modulation_summary.csv",
         "convergence_summary_last100.json",
         "convergence_summary_last100.csv",
+        "convergence_summary_last100.png",
         "quality_extension_status.json",
     ):
         source = batch_source_dir / name
@@ -342,6 +343,15 @@ def write_index(output_dir: Path, models: list[dict[str, object]], metadata_link
     completed = sum(1 for model in models if model["assets"].get("gif"))
     verified = sum(1 for model in models if model.get("verification_passed") is True or model["status"] == "verified")
     cards = "\n".join(card_html(model) for model in models)
+    convergence_figure = ""
+    convergence_png = metadata_links.get("convergence_summary_last100.png")
+    if convergence_png:
+        convergence_figure = f"""
+    <section class="diagnostic">
+      <h2>Limit-Cycle Convergence</h2>
+      <a href="{html.escape(str(convergence_png))}"><img src="{html.escape(str(convergence_png))}" alt="Strict limit-cycle convergence summary"></a>
+    </section>
+"""
     meta_links = []
     for label, href in (
         ("live status", metadata_links.get("live_status.json")),
@@ -349,6 +359,7 @@ def write_index(output_dir: Path, models: list[dict[str, object]], metadata_link
         ("manifest", metadata_links.get("manifest.json")),
         ("cycle modulation", metadata_links.get("cycle_modulation_summary.json")),
         ("convergence", metadata_links.get("convergence_summary_last100.json")),
+        ("convergence plot", convergence_png),
         ("models CSV", "metadata/models.csv"),
     ):
         if href:
@@ -371,6 +382,10 @@ def write_index(output_dir: Path, models: list[dict[str, object]], metadata_link
     .toolbar {{ display:flex; flex-wrap:wrap; gap:12px; margin:0 0 24px; color:var(--muted); }}
     a {{ color:#d9edf8; text-decoration:none; border-bottom:1px solid rgba(217,237,248,.38); }}
     a:hover {{ border-bottom-color:#d9edf8; }}
+    .diagnostic {{ margin:0 0 24px; padding:16px; background:var(--panel); border:1px solid var(--line); border-radius:8px; }}
+    .diagnostic h2 {{ margin:0 0 12px; font-size:24px; }}
+    .diagnostic a {{ display:block; border:0; }}
+    .diagnostic img {{ width:100%; height:auto; border-radius:6px; background:#fff; }}
     .grid {{ display:grid; grid-template-columns: repeat(auto-fit, minmax(480px, 1fr)); gap:22px; align-items:start; }}
     .card {{ background:var(--panel); border:1px solid var(--line); border-radius:8px; overflow:hidden; }}
     .card-head {{ display:flex; justify-content:space-between; gap:16px; align-items:start; padding:16px 18px 12px; background:var(--panel2); border-bottom:1px solid var(--line); }}
@@ -401,6 +416,7 @@ def write_index(output_dir: Path, models: list[dict[str, object]], metadata_link
   </header>
   <main>
     <nav class="toolbar">{" ".join(meta_links)}</nav>
+{convergence_figure}
     <section class="grid">
 {cards}
     </section>
