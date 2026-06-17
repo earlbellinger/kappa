@@ -41,8 +41,66 @@ def read_active_batch_status(output_dir: Path) -> dict | list:
         return {}
     running = [item for item in candidates if isinstance(item[2], dict) and item[2].get("status") == "running"]
     if running:
-        return max(running, key=lambda item: item[0])[2]
-    return max(candidates, key=lambda item: item[0])[2]
+        return normalize_batch_status(output_dir, max(running, key=lambda item: item[0])[2])
+    return normalize_batch_status(output_dir, max(candidates, key=lambda item: item[0])[2])
+
+
+def manifest_by_model(output_dir: Path) -> dict[str, dict]:
+    manifest = read_json(output_dir.parent / "inputs" / "manifest.json")
+    if not isinstance(manifest, list):
+        return {}
+    result: dict[str, dict] = {}
+    for row in manifest:
+        if not isinstance(row, dict):
+            continue
+        for key in (row.get("model_id"), row.get("run_name")):
+            if key:
+                result[str(key)] = row
+    return result
+
+
+def has_pending_convergence_stage(record: dict) -> bool:
+    status = read_json(Path(str(record.get("output_dir", ""))) / "run_status.json")
+    stages = status.get("stages", {}) if isinstance(status, dict) else {}
+    return any(
+        isinstance(stage, dict) and stage.get("status") == "skipped_pending_convergence"
+        for stage in stages.values()
+    )
+
+
+def normalize_batch_status(output_dir: Path, status: dict | list) -> dict | list:
+    if not isinstance(status, dict):
+        return status
+    normalized = json.loads(json.dumps(status))
+    records = manifest_by_model(output_dir)
+    results = normalized.get("results")
+    if not isinstance(results, dict):
+        return normalized
+
+    for model_id, result in results.items():
+        if not isinstance(result, dict) or result.get("status") != "failed":
+            continue
+        record = records.get(str(model_id))
+        if record and has_pending_convergence_stage(record):
+            result["status"] = "skipped_pending_convergence"
+            result["pending_convergence"] = True
+            result["effective_returncode"] = 0
+            result.setdefault("raw_status", "failed")
+
+    terminal = normalized.get("ended_at") is not None and normalized.get("status") == "failed"
+    if terminal:
+        real_failures = [
+            item
+            for item in results.values()
+            if isinstance(item, dict)
+            and item.get("status") == "failed"
+            and item.get("pending_convergence") is not True
+        ]
+        if not real_failures:
+            normalized["status"] = "complete"
+            normalized["raw_status"] = "failed"
+            normalized["pending_convergence"] = True
+    return normalized
 
 
 def parse_iso_datetime(value: object) -> datetime | None:
