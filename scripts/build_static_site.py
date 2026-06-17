@@ -103,6 +103,14 @@ def normalized_trend_row(row: dict[str, object]) -> dict[str, object]:
         "steps_median_last_window": row.get("steps_median"),
         "steps_min_last_window": row.get("steps_min"),
         "steps_max_last_window": row.get("steps_max"),
+        "max_vsurf_div_cs_median_last_window": row.get("max_vsurf_div_cs_median"),
+        "max_vsurf_div_cs_first_last_window": [
+            row.get("max_vsurf_div_cs_first"),
+            row.get("max_vsurf_div_cs_last"),
+        ],
+        "max_vsurf_div_cs_slope_per_cycle_last_window": row.get("max_vsurf_div_cs_slope_per_cycle"),
+        "max_vsurf_div_cs_min_last_window": row.get("max_vsurf_div_cs_min"),
+        "max_vsurf_div_cs_max_last_window": row.get("max_vsurf_div_cs_max"),
         "has_full_window": row.get("window_cycles") is not None,
         "converged_gamma": row.get("converged_gamma"),
         "converged_period": row.get("converged_period"),
@@ -203,6 +211,7 @@ def convergence_text(convergence: dict[str, object] | None) -> str:
     gamma = convergence.get("gamma_peak_to_peak_last_window")
     period = convergence.get("period_fractional_peak_to_peak_last_window")
     delta_r = convergence.get("delta_r_fractional_peak_to_peak_last_window")
+    max_vsurf = convergence.get("max_vsurf_div_cs_max_last_window")
     bits = [f"strict convergence pending", f"{source}", f"{cycles} cycles"]
     if gamma is None:
         bits.append("Gamma not recorded")
@@ -212,6 +221,8 @@ def convergence_text(convergence: dict[str, object] | None) -> str:
         bits.append(f"P frac {float(period):.3g}")
     if delta_r is not None:
         bits.append(f"DeltaR frac {float(delta_r):.3g}")
+    if max_vsurf is not None:
+        bits.append(f"max v_surf/c_s {float(max_vsurf):.3g}")
     return " | ".join(bits)
 
 
@@ -299,6 +310,11 @@ def copy_model_assets(
         "gif_mb": file_size_mb(source_map["gif"]) if trusted_animation else None,
         "profile_count": live_record.get("profile_count") if live_record else None,
         "latest_period": live_record.get("latest_period") if live_record else None,
+        "latest_period_days": live_record.get("latest_period_days") if live_record else None,
+        "latest_delta_r": live_record.get("latest_delta_r") if live_record else None,
+        "latest_steps": live_record.get("latest_steps") if live_record else None,
+        "latest_max_vsurf_div_cs": live_record.get("latest_max_vsurf_div_cs") if live_record else None,
+        "latest_surface_velocity_status": live_record.get("latest_surface_velocity_status") if live_record else None,
         "max_periods": live_record.get("max_periods") if live_record else None,
         "retry_pending": live_record.get("retry_pending") if live_record else None,
         "retry_pending_stages": live_record.get("retry_pending_stages") if live_record else None,
@@ -428,6 +444,13 @@ def card_html(model: dict[str, object]) -> str:
         progress_bits.append(f"{model['profile_count']} profiles")
     if model.get("latest_period") and model.get("max_periods") and "running" in str(model.get("status")):
         progress_bits.append(f"period {model['latest_period']} / {model['max_periods']}")
+    if model.get("latest_max_vsurf_div_cs") is not None:
+        velocity_text = f"max v_surf/c_s {fmt_float(model.get('latest_max_vsurf_div_cs'), 3)}"
+        if model.get("latest_surface_velocity_status"):
+            velocity_text += f" ({model['latest_surface_velocity_status']})"
+        progress_bits.append(velocity_text)
+    if model.get("latest_steps") is not None and "running" in str(model.get("status")):
+        progress_bits.append(f"{model['latest_steps']} steps/cycle")
     if model.get("convergence"):
         progress_bits.append(str(model["convergence"]))
     if model.get("gif_mb") is not None:

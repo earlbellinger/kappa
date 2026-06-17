@@ -98,11 +98,19 @@ def status_signature(rre_root: Path) -> dict[str, object]:
                 period = int(float(str(model.get("latest_period"))))
             except (TypeError, ValueError):
                 period = None
+            try:
+                max_vsurf = float(str(model.get("latest_max_vsurf_div_cs")))
+            except (TypeError, ValueError):
+                max_vsurf = None
             live_models.append(
                 {
                     "model_id": model.get("model_id"),
                     "active_stage": model.get("active_stage"),
                     "period_progress_bucket_50": period // 50 if period is not None else None,
+                    "max_vsurf_div_cs_bucket_0p02": (
+                        int(max_vsurf / 0.02) if max_vsurf is not None else None
+                    ),
+                    "latest_surface_velocity_status": model.get("latest_surface_velocity_status"),
                     "gif_exists": bool(model.get("gif_exists")),
                     "trusted_animation": bool(model.get("trusted_animation")),
                     "verification_passed": bool(model.get("verification_passed")),
@@ -122,6 +130,7 @@ def status_signature(rre_root: Path) -> dict[str, object]:
                     "last_period_number": model.get("last_period_number"),
                     "has_full_window": model.get("has_full_window"),
                     "converged_exact": model.get("converged_exact"),
+                    "max_vsurf_div_cs_max_last_window": model.get("max_vsurf_div_cs_max_last_window"),
                 }
             )
     convergence_trend_models = []
@@ -137,6 +146,7 @@ def status_signature(rre_root: Path) -> dict[str, object]:
                         "source_kind": model.get("source_kind"),
                         "window_end_period": model.get("window_end_period"),
                         "converged_exact": model.get("converged_exact"),
+                        "max_vsurf_div_cs_max": model.get("max_vsurf_div_cs_max"),
                     }
                 )
     return {

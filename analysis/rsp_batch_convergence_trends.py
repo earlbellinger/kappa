@@ -13,6 +13,7 @@ from rsp_batch_convergence import (
     absolute_peak_to_peak,
     attach_steps_from_period_log,
     fractional_peak_to_peak,
+    linear_slope_per_cycle,
     median_value,
     read_json,
     select_exact_source,
@@ -108,6 +109,7 @@ def rolling_rows(
         period = np.asarray([row["period_days"] for row in tail], dtype=float)
         delta_r = np.asarray([row["delta_r"] for row in tail], dtype=float)
         steps = np.asarray([row.get("steps", np.nan) for row in tail], dtype=float)
+        max_vsurf = np.asarray([row.get("max_vsurf_div_cs", np.nan) for row in tail], dtype=float)
         gamma_ptp = absolute_peak_to_peak(gamma)
         period_frac = fractional_peak_to_peak(period)
         delta_r_frac = fractional_peak_to_peak(delta_r)
@@ -130,6 +132,20 @@ def rolling_rows(
                 "steps_median": median_value(steps),
                 "steps_min": float(np.nanmin(steps)) if np.any(np.isfinite(steps)) else None,
                 "steps_max": float(np.nanmax(steps)) if np.any(np.isfinite(steps)) else None,
+                "max_vsurf_div_cs_median": median_value(max_vsurf),
+                "max_vsurf_div_cs_first": (
+                    float(max_vsurf[0]) if np.isfinite(max_vsurf[0]) else None
+                ),
+                "max_vsurf_div_cs_last": (
+                    float(max_vsurf[-1]) if np.isfinite(max_vsurf[-1]) else None
+                ),
+                "max_vsurf_div_cs_slope_per_cycle": linear_slope_per_cycle(max_vsurf),
+                "max_vsurf_div_cs_min": (
+                    float(np.nanmin(max_vsurf)) if np.any(np.isfinite(max_vsurf)) else None
+                ),
+                "max_vsurf_div_cs_max": (
+                    float(np.nanmax(max_vsurf)) if np.any(np.isfinite(max_vsurf)) else None
+                ),
                 "converged_gamma": converged_gamma,
                 "converged_period": converged_period,
                 "converged_delta_r": converged_delta_r,
@@ -154,6 +170,12 @@ def write_csv(path: Path, rows: list[dict[str, object]]) -> None:
         "steps_median",
         "steps_min",
         "steps_max",
+        "max_vsurf_div_cs_median",
+        "max_vsurf_div_cs_first",
+        "max_vsurf_div_cs_last",
+        "max_vsurf_div_cs_slope_per_cycle",
+        "max_vsurf_div_cs_min",
+        "max_vsurf_div_cs_max",
         "converged_gamma",
         "converged_period",
         "converged_delta_r",

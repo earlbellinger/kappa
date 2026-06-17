@@ -9,6 +9,13 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 DEFAULT_WORKSPACE = ROOT / "rsp_batch_runs"
+PERIOD_LINE_RE = re.compile(
+    r"^\s*period\s+(?P<n>\d+)\s+(?P<period>[+\-0-9.EeDd]+)\s+"
+    r"delta R\s+(?P<delta_r>[+\-0-9.EeDd]+)\s+"
+    r"(?:max\s+vsurf/cs\s+(?P<max_vsurf_div_cs>[+\-0-9.EeDd]+)\s+)?"
+    r".*?"
+    r"steps\s+(?P<steps>\d+)"
+)
 
 
 def now_iso() -> str:
@@ -124,6 +131,23 @@ def parse_int(value: object) -> int | None:
         return None
 
 
+def fortran_float(text: object) -> float:
+    return float(str(text).replace("D", "E").replace("d", "e"))
+
+
+def surface_velocity_status(value: object) -> str | None:
+    parsed = parse_float(value)
+    if parsed is None:
+        return None
+    if parsed >= 1.0:
+        return "supersonic"
+    if parsed >= 0.8:
+        return "near-shock"
+    if parsed >= 0.5:
+        return "watch"
+    return "ok"
+
+
 def latest_numeric_file(directory: Path) -> str | None:
     if not directory.exists() or not directory.is_dir():
         return None
@@ -162,20 +186,47 @@ def latest_history_model(run_dir: Path) -> tuple[str | None, str | None]:
     return None, datetime.fromtimestamp(history.stat().st_mtime, timezone.utc).isoformat()
 
 
-def latest_period(output_dir: Path) -> tuple[str | None, str | None]:
+def parse_period_line(line: str) -> dict[str, object] | None:
+    match = PERIOD_LINE_RE.search(line)
+    if not match:
+        return None
+    result: dict[str, object] = {
+        "latest_period": match.group("n"),
+        "latest_period_days": fortran_float(match.group("period")),
+        "latest_delta_r": fortran_float(match.group("delta_r")),
+        "latest_steps": int(match.group("steps")),
+    }
+    max_vsurf = match.group("max_vsurf_div_cs")
+    if max_vsurf is not None:
+        parsed_vsurf = fortran_float(max_vsurf)
+        result["latest_max_vsurf_div_cs"] = parsed_vsurf
+        result["latest_surface_velocity_status"] = surface_velocity_status(parsed_vsurf)
+    return result
+
+
+def latest_period_metrics(output_dir: Path) -> dict[str, object]:
     logs_dir = output_dir / "logs"
     if not logs_dir.exists():
-        return None, None
+        return {}
     for log_file in sorted(logs_dir.glob("*.log"), key=lambda path: path.stat().st_mtime, reverse=True):
         try:
             lines = log_file.read_text(errors="ignore").splitlines()
         except OSError:
             continue
         for line in reversed(lines):
-            match = re.search(r"^\s*period\s+(\d+)\b", line)
-            if match:
-                return match.group(1), log_file.name
-    return None, None
+            parsed = parse_period_line(line)
+            if parsed is not None:
+                parsed["latest_period_log"] = log_file.name
+                return parsed
+    return {}
+
+
+def latest_period(output_dir: Path) -> tuple[str | None, str | None]:
+    metrics = latest_period_metrics(output_dir)
+    return (
+        str(metrics.get("latest_period")) if metrics.get("latest_period") is not None else None,
+        str(metrics.get("latest_period_log")) if metrics.get("latest_period_log") is not None else None,
+    )
 
 
 def stage_inlist_candidates(stage: str | None, period_log: str | None) -> tuple[str, ...]:
@@ -247,6 +298,14 @@ def normalized_trend_row(row: dict[str, object]) -> dict[str, object]:
         "steps_median_last_window": row.get("steps_median"),
         "steps_min_last_window": row.get("steps_min"),
         "steps_max_last_window": row.get("steps_max"),
+        "max_vsurf_div_cs_median_last_window": row.get("max_vsurf_div_cs_median"),
+        "max_vsurf_div_cs_first_last_window": [
+            row.get("max_vsurf_div_cs_first"),
+            row.get("max_vsurf_div_cs_last"),
+        ],
+        "max_vsurf_div_cs_slope_per_cycle_last_window": row.get("max_vsurf_div_cs_slope_per_cycle"),
+        "max_vsurf_div_cs_min_last_window": row.get("max_vsurf_div_cs_min"),
+        "max_vsurf_div_cs_max_last_window": row.get("max_vsurf_div_cs_max"),
         "has_full_window": row.get("window_cycles") is not None,
         "converged_gamma": row.get("converged_gamma"),
         "converged_period": row.get("converged_period"),
@@ -360,7 +419,13 @@ def model_summary(record: dict, convergence_by_id: dict[str, dict[str, object]] 
     verification = read_json(output_dir / "verification_summary.json")
     run_status = read_run_status(output_dir)
     hist_model, hist_mtime = latest_history_model(run_dir)
-    period, period_log = latest_period(output_dir)
+    period_metrics = latest_period_metrics(output_dir)
+    period = str(period_metrics.get("latest_period")) if period_metrics.get("latest_period") is not None else None
+    period_log = (
+        str(period_metrics.get("latest_period_log"))
+        if period_metrics.get("latest_period_log") is not None
+        else None
+    )
     running_stage, running_stage_started_at = active_stage(run_status)
     max_period = max_periods(run_dir, running_stage, period_log)
     convergence = (convergence_by_id or {}).get(str(record["model_id"]), {})
@@ -403,6 +468,7 @@ def model_summary(record: dict, convergence_by_id: dict[str, dict[str, object]] 
         "verification_passed": verification_passed,
         "profile_count": verification.get("profile_count") if isinstance(verification, dict) else None,
     }
+    summary.update(period_metrics)
     if convergence:
         summary.update(
             {
@@ -419,6 +485,13 @@ def model_summary(record: dict, convergence_by_id: dict[str, dict[str, object]] 
                 "delta_r_first_last_window": convergence.get("delta_r_first_last_window"),
                 "delta_r_slope_per_cycle_last_window": convergence.get("delta_r_slope_per_cycle_last_window"),
                 "steps_median_last_window": convergence.get("steps_median_last_window"),
+                "max_vsurf_div_cs_median_last_window": convergence.get("max_vsurf_div_cs_median_last_window"),
+                "max_vsurf_div_cs_first_last_window": convergence.get("max_vsurf_div_cs_first_last_window"),
+                "max_vsurf_div_cs_slope_per_cycle_last_window": convergence.get(
+                    "max_vsurf_div_cs_slope_per_cycle_last_window"
+                ),
+                "max_vsurf_div_cs_min_last_window": convergence.get("max_vsurf_div_cs_min_last_window"),
+                "max_vsurf_div_cs_max_last_window": convergence.get("max_vsurf_div_cs_max_last_window"),
                 "converged_gamma": convergence.get("converged_gamma"),
                 "converged_period": convergence.get("converged_period"),
                 "converged_delta_r": convergence.get("converged_delta_r"),
