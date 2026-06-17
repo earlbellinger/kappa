@@ -15,6 +15,7 @@ from rsp_batch_convergence_trends import source_rows
 
 ROOT = Path(__file__).resolve().parent
 DEFAULT_WORKSPACE = ROOT / "rsp_batch_runs"
+CONVERGENCE_TOLERANCE = 1.0e-3
 
 
 def now_iso() -> str:
@@ -121,11 +122,58 @@ def safe_array(rows: list[dict[str, float]], key: str) -> tuple[np.ndarray, np.n
     return x[mask], y[mask]
 
 
+def growth_outlook(
+    fits: dict[str, dict[str, dict[str, object]]],
+    rolling: list[dict[str, object]],
+    *,
+    tolerance: float = CONVERGENCE_TOLERANCE,
+) -> dict[str, object]:
+    preferred_fit = fits.get("100", {}).get("delta_r")
+    if not (isinstance(preferred_fit, dict) and preferred_fit.get("available")):
+        available = [
+            fit.get("delta_r", {})
+            for _window, fit in sorted(fits.items(), key=lambda item: int(item[0]))
+            if isinstance(fit.get("delta_r"), dict) and fit["delta_r"].get("available")
+        ]
+        preferred_fit = available[-1] if available else {}
+    latest = rolling[-1] if rolling else {}
+    delta_metric = latest.get("delta_r_fractional_peak_to_peak") if isinstance(latest, dict) else None
+    criterion_factor = None
+    if delta_metric is not None and tolerance > 0.0:
+        criterion_factor = float(delta_metric) / float(tolerance)
+    log_slope = preferred_fit.get("log_slope_per_cycle") if isinstance(preferred_fit, dict) else None
+    efolding_cycles = preferred_fit.get("efolding_cycles") if isinstance(preferred_fit, dict) else None
+    doubling_cycles = None
+    status = "insufficient amplitude-growth fit"
+    if log_slope is not None:
+        log_slope = float(log_slope)
+        if log_slope > 0.0:
+            doubling_cycles = float(math.log(2.0) / log_slope)
+            status = "amplitude still growing"
+        elif log_slope < 0.0:
+            status = "amplitude declining"
+        else:
+            status = "amplitude nearly flat"
+    if criterion_factor is not None and criterion_factor <= 1.0:
+        status = "DeltaR convergence term is within tolerance"
+    return {
+        "status": status,
+        "tolerance": float(tolerance),
+        "delta_r_fractional_peak_to_peak": None if delta_metric is None else float(delta_metric),
+        "delta_r_criterion_factor": criterion_factor,
+        "log_slope_per_cycle": log_slope,
+        "efolding_cycles": None if efolding_cycles is None else float(efolding_cycles),
+        "doubling_cycles": doubling_cycles,
+        "fit_window_cycles": preferred_fit.get("window_cycles") if isinstance(preferred_fit, dict) else None,
+    }
+
+
 def plot_diagnostic(
     path: Path,
     rows: list[dict[str, float]],
     fits: dict[str, dict[str, dict[str, object]]],
     rolling: list[dict[str, object]],
+    outlook: dict[str, object],
     *,
     model_id: str,
     plot_tail: int,
@@ -149,16 +197,33 @@ def plot_diagnostic(
         y_fit = y0 * np.exp(slope * (x_fit - start))
         axes[0].plot(x_fit, y_fit, color="#FFB703", lw=1.4, ls="--")
         efold = delta_fit.get("efolding_cycles")
+        fit_text = (
+            f"last {int(delta_fit['window_cycles'])} cycles: e-fold {float(efold):.0f} cycles"
+            if efold is not None
+            else f"last {int(delta_fit['window_cycles'])} cycles: fitted log-slope {slope:.3g}/cycle"
+        )
         axes[0].text(
             0.02,
             0.94,
-            f"last {int(delta_fit['window_cycles'])} cycles: e-fold {efold:.0f} cycles",
+            fit_text,
             transform=axes[0].transAxes,
             va="top",
             ha="left",
             fontsize=10,
             color="0.15",
         )
+        doubling_cycles = outlook.get("doubling_cycles")
+        if doubling_cycles is not None:
+            axes[0].text(
+                0.02,
+                0.84,
+                f"amplitude doubles in {float(doubling_cycles):.0f} cycles if this rate persists",
+                transform=axes[0].transAxes,
+                va="top",
+                ha="left",
+                fontsize=10,
+                color="0.15",
+            )
 
     x_gamma, y_gamma = safe_array(shown_rows, "gamma")
     gamma_mask = y_gamma > 0.0
@@ -189,6 +254,18 @@ def plot_diagnostic(
     axes[2].set_xlabel("cumulative cycle")
     axes[2].set_title("Strict convergence terms", loc="left", fontsize=11)
     axes[2].legend(ncol=4, frameon=False, loc="upper right")
+    criterion_factor = outlook.get("delta_r_criterion_factor")
+    if criterion_factor is not None:
+        axes[2].text(
+            0.02,
+            0.94,
+            f"Delta R term is {float(criterion_factor):.0f}x the 1e-3 criterion",
+            transform=axes[2].transAxes,
+            va="top",
+            ha="left",
+            fontsize=10,
+            color="0.15",
+        )
     if shown_rows:
         axes[2].set_xlim(float(shown_rows[0]["period_number"]), float(shown_rows[-1]["period_number"]))
 
@@ -225,6 +302,10 @@ def main() -> int:
             "rolling_window": int(args.rolling_window),
             "fits": {},
             "latest_rolling": None,
+            "growth_outlook": {
+                "status": "no convergence rows available yet",
+                "tolerance": CONVERGENCE_TOLERANCE,
+            },
             "status": "no convergence rows available yet",
         }
         json_path = output_prefix.with_suffix(".json")
@@ -240,6 +321,7 @@ def main() -> int:
             for key in ("delta_r", "period_days", "gamma")
         }
     rolling = rolling_rows(rows, int(args.rolling_window))
+    outlook = growth_outlook(fits, rolling)
     payload = {
         "generated_at": now_iso(),
         "workspace": str(workspace),
@@ -253,6 +335,7 @@ def main() -> int:
         "rolling_window": int(args.rolling_window),
         "fits": fits,
         "latest_rolling": rolling[-1] if rolling else None,
+        "growth_outlook": outlook,
     }
     json_path = output_prefix.with_suffix(".json")
     png_path = output_prefix.with_suffix(".png")
@@ -263,6 +346,7 @@ def main() -> int:
         rows,
         fits,
         rolling,
+        outlook,
         model_id=model_id,
         plot_tail=int(args.plot_tail),
     )
