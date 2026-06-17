@@ -110,7 +110,7 @@ PLOT_SCALE_FACTORS = {
     "pdv_power": 1.0,
 }
 DISPLAY_POWER_SCALE = 1.0e9
-ANIMATION_SCALING_VERSION = "model000-visible-window-v8"
+ANIMATION_SCALING_VERSION = "model000-visible-window-v9"
 ZONE_LABEL_COLOR = "#2B2B2B"
 ZONE_LABEL_FONT_SIZE = 9.2
 ZONE_LABEL_STROKE_WIDTH = 1.3
@@ -655,6 +655,7 @@ def load_scaling_reference(summary_path: Path | None) -> dict[str, object]:
     opacity_scaling = summary.get("opacity_scaling", {})
     opacity_display_max: float | None = None
     opacity_visible_bounds: tuple[float, float] | None = None
+    opacity_band_fractions: tuple[float, float] | None = None
     if isinstance(opacity_scaling, dict):
         try:
             candidate = float(opacity_scaling.get("opacity_max_display_value"))
@@ -663,6 +664,56 @@ def load_scaling_reference(summary_path: Path | None) -> dict[str, object]:
         if np.isfinite(candidate) and candidate > 0.0:
             opacity_display_max = candidate
         opacity_visible_bounds = finite_pair(opacity_scaling.get("visible_data_bounds"))
+        try:
+            bottom_candidate = float(opacity_scaling.get("panel_bottom_fraction"))
+            top_candidate = float(opacity_scaling.get("panel_top_fraction"))
+        except (TypeError, ValueError):
+            bottom_candidate = float("nan")
+            top_candidate = float("nan")
+        if (
+            np.isfinite(bottom_candidate)
+            and np.isfinite(top_candidate)
+            and 0.0 <= bottom_candidate < top_candidate <= 1.0
+        ):
+            opacity_band_fractions = (bottom_candidate, top_candidate)
+
+    if opacity_band_fractions is None and y_limits is not None and isinstance(opacity_scaling, dict):
+        try:
+            display_min = float(opacity_scaling.get("display_min_value"))
+            display_max = float(opacity_scaling.get("opacity_max_display_value"))
+        except (TypeError, ValueError):
+            display_min = float("nan")
+            display_max = float("nan")
+        y_span = float(y_limits[1] - y_limits[0])
+        if (
+            np.isfinite(display_min)
+            and np.isfinite(display_max)
+            and np.isfinite(y_span)
+            and y_span > 0.0
+            and display_max > display_min
+        ):
+            bottom_candidate = (display_min - float(y_limits[0])) / y_span
+            top_candidate = (display_max - float(y_limits[0])) / y_span
+            if 0.0 <= bottom_candidate < top_candidate <= 1.0:
+                opacity_band_fractions = (float(bottom_candidate), float(top_candidate))
+
+    power_pad_fraction: float | None = None
+    if y_limits is not None and visible_bounds is not None:
+        ref_data_min = float(visible_bounds[0])
+        ref_data_max = float(visible_bounds[1])
+        ref_y_min = float(y_limits[0])
+        ref_y_max = float(y_limits[1])
+        lower_scale = max(abs(min(ref_data_min, 0.0)), POWER_PANEL_MIN_HALF_RANGE)
+        upper_scale = max(abs(max(ref_data_max, 0.0)), POWER_PANEL_MIN_HALF_RANGE)
+        lower_pad = (min(ref_data_min, 0.0) - ref_y_min) / lower_scale
+        upper_pad = (ref_y_max - max(ref_data_max, 0.0)) / upper_scale
+        candidates = [
+            float(value)
+            for value in (lower_pad, upper_pad)
+            if np.isfinite(value) and 0.0 < value < 0.5
+        ]
+        if candidates:
+            power_pad_fraction = float(np.nanmedian(candidates))
 
     loaded = y_limits is not None or opacity_display_max is not None
     return {
@@ -671,7 +722,11 @@ def load_scaling_reference(summary_path: Path | None) -> dict[str, object]:
         "scaling_method_version": summary.get("scaling_method_version"),
         "left_power_ylim_reference": list(y_limits) if y_limits is not None else None,
         "left_power_visible_data_bounds": list(visible_bounds) if visible_bounds is not None else None,
+        "power_panel_pad_fraction_reference": power_pad_fraction,
         "opacity_visible_data_bounds": list(opacity_visible_bounds) if opacity_visible_bounds is not None else None,
+        "opacity_band_fractions_reference": (
+            list(opacity_band_fractions) if opacity_band_fractions is not None else None
+        ),
         "opacity_display_max_reference": opacity_display_max,
         "reason": None if loaded else "reference summary lacks finite y-limit or opacity calibration metadata",
     }
@@ -680,6 +735,7 @@ def load_scaling_reference(summary_path: Path | None) -> dict[str, object]:
 def power_panel_limits_from_visible_bounds(
     data_bounds: tuple[float, float],
     reference_limits: tuple[float, float] | None = None,
+    pad_fraction: float = POWER_PANEL_PAD_FRACTION,
 ) -> tuple[float, float]:
     data_min = float(data_bounds[0])
     data_max = float(data_bounds[1])
@@ -688,8 +744,11 @@ def power_panel_limits_from_visible_bounds(
 
     y_min = min(data_min, 0.0)
     y_max = max(data_max, 0.0)
-    lower_pad = POWER_PANEL_PAD_FRACTION * max(abs(y_min), POWER_PANEL_MIN_HALF_RANGE)
-    upper_pad = POWER_PANEL_PAD_FRACTION * max(abs(y_max), POWER_PANEL_MIN_HALF_RANGE)
+    pad = float(pad_fraction)
+    if not np.isfinite(pad) or pad < 0.0:
+        pad = POWER_PANEL_PAD_FRACTION
+    lower_pad = pad * max(abs(y_min), POWER_PANEL_MIN_HALF_RANGE)
+    upper_pad = pad * max(abs(y_max), POWER_PANEL_MIN_HALF_RANGE)
     y_min -= lower_pad
     y_max += upper_pad
 
@@ -712,12 +771,26 @@ def power_panel_limits_from_visible_bounds(
 def opacity_display_mapping(
     opacity_bounds: tuple[float, float],
     panel_limits: tuple[float, float],
+    *,
+    bottom_fraction: float = OPACITY_PANEL_BOTTOM_FRACTION,
+    top_fraction: float = OPACITY_PANEL_TOP_FRACTION,
 ) -> dict[str, float]:
     y_min = float(panel_limits[0])
     y_max = float(panel_limits[1])
     y_span = y_max - y_min
-    display_min = y_min + float(OPACITY_PANEL_BOTTOM_FRACTION) * y_span
-    display_max = y_min + float(OPACITY_PANEL_TOP_FRACTION) * y_span
+    lower_fraction = float(bottom_fraction)
+    upper_fraction = float(top_fraction)
+    if (
+        not np.isfinite(lower_fraction)
+        or not np.isfinite(upper_fraction)
+        or lower_fraction < 0.0
+        or upper_fraction > 1.0
+        or upper_fraction <= lower_fraction
+    ):
+        lower_fraction = float(OPACITY_PANEL_BOTTOM_FRACTION)
+        upper_fraction = float(OPACITY_PANEL_TOP_FRACTION)
+    display_min = y_min + lower_fraction * y_span
+    display_max = y_min + upper_fraction * y_span
     if not all(np.isfinite(value) for value in (y_min, y_max, y_span, display_min, display_max)):
         return {
             "display_min_value": 0.0,
@@ -2379,6 +2452,8 @@ def main() -> None:
     scaling_reference = load_scaling_reference(args.scaling_reference_summary)
     reference_power_ylim: tuple[float, float] | None = None
     reference_opacity_display_max: float | None = None
+    reference_power_pad_fraction = float(POWER_PANEL_PAD_FRACTION)
+    reference_opacity_band_fractions = (float(OPACITY_PANEL_BOTTOM_FRACTION), float(OPACITY_PANEL_TOP_FRACTION))
     reference_limits_value = scaling_reference.get("left_power_ylim_reference")
     if reference_limits_value is None:
         reference_limits_value = scaling_reference.get("left_power_ylim_floor")
@@ -2400,6 +2475,26 @@ def main() -> None:
         candidate_opacity_display = float("nan")
     if np.isfinite(candidate_opacity_display) and candidate_opacity_display > 0.0:
         reference_opacity_display_max = candidate_opacity_display
+    try:
+        candidate_power_pad = float(scaling_reference.get("power_panel_pad_fraction_reference"))
+    except (TypeError, ValueError):
+        candidate_power_pad = float("nan")
+    if np.isfinite(candidate_power_pad) and 0.0 <= candidate_power_pad < 0.5:
+        reference_power_pad_fraction = candidate_power_pad
+    candidate_opacity_band = scaling_reference.get("opacity_band_fractions_reference")
+    if isinstance(candidate_opacity_band, (list, tuple)) and len(candidate_opacity_band) == 2:
+        try:
+            candidate_bottom = float(candidate_opacity_band[0])
+            candidate_top = float(candidate_opacity_band[1])
+        except (TypeError, ValueError):
+            candidate_bottom = float("nan")
+            candidate_top = float("nan")
+        if (
+            np.isfinite(candidate_bottom)
+            and np.isfinite(candidate_top)
+            and 0.0 <= candidate_bottom < candidate_top <= 1.0
+        ):
+            reference_opacity_band_fractions = (candidate_bottom, candidate_top)
 
     if args.ymin is not None and args.ymax is not None:
         left_power_ylim_raw = (float(args.ymin), float(args.ymax))
@@ -2410,7 +2505,10 @@ def main() -> None:
     elif args.ymin is not None or args.ymax is not None:
         raise RuntimeError("Please provide both --ymin and --ymax when overriding the left-panel y-axis limits.")
     else:
-        left_power_ylim = power_panel_limits_from_visible_bounds(visible_power_bounds)
+        left_power_ylim = power_panel_limits_from_visible_bounds(
+            visible_power_bounds,
+            pad_fraction=reference_power_pad_fraction,
+        )
         left_power_ylim_raw = (
             float(left_power_ylim[0]) * DISPLAY_POWER_SCALE,
             float(left_power_ylim[1]) * DISPLAY_POWER_SCALE,
@@ -2421,6 +2519,8 @@ def main() -> None:
     opacity_display = opacity_display_mapping(
         scaled_diagnostic_bounds["opacity"],
         left_power_ylim,
+        bottom_fraction=reference_opacity_band_fractions[0],
+        top_fraction=reference_opacity_band_fractions[1],
     )
     opacity_scale_display = float(opacity_display["display_units_per_opacity_unit"])
     opacity_display_min = float(opacity_display["display_min_value"])
@@ -3407,10 +3507,11 @@ def main() -> None:
                     if reference_power_ylim is not None
                     else None
                 ),
+                "pad_fraction": float(reference_power_pad_fraction),
                 "method": (
                     "minimum and maximum of the plotted power curves within this panel's shown x range; "
                     "the axis includes zero and pads the lower and upper sides from their own local "
-                    "visible extrema"
+                    "visible extrema using the model_000 reference padding convention"
                 ),
             },
             "photosphere_radial_velocity": {
@@ -3444,12 +3545,12 @@ def main() -> None:
         },
         "opacity_scaling": {
             "method": (
-                "left-panel visible-window min and max opacity are mapped into a fixed upper band of "
-                "this panel's own y-axis range"
+                "left-panel visible-window min and max opacity are mapped into the same fractional "
+                "band used by the model_000 reference, but inside this panel's own y-axis range"
             ),
             "panel": "left_power",
-            "panel_bottom_fraction": float(OPACITY_PANEL_BOTTOM_FRACTION),
-            "panel_top_fraction": float(OPACITY_PANEL_TOP_FRACTION),
+            "panel_bottom_fraction": float(reference_opacity_band_fractions[0]),
+            "panel_top_fraction": float(reference_opacity_band_fractions[1]),
             "reference_opacity_max_display_value": (
                 float(reference_opacity_display_max)
                 if reference_opacity_display_max is not None
