@@ -53,6 +53,9 @@ def load_json(path: Path) -> object | None:
 
 
 def stable_animation_summary(summary: dict[str, object]) -> dict[str, object]:
+    pdv_generation = summary.get("pdv_generation", {})
+    if not isinstance(pdv_generation, dict):
+        pdv_generation = {}
     opacity_scaling = summary.get("opacity_scaling", {})
     if not isinstance(opacity_scaling, dict):
         opacity_scaling = {}
@@ -69,7 +72,7 @@ def stable_animation_summary(summary: dict[str, object]) -> dict[str, object]:
     return {
         "scaling_method_version": summary.get("scaling_method_version"),
         "coordinate": summary.get("coordinate"),
-        "pressure_work_mode": summary.get("pressure_work_mode"),
+        "pressure_work_mode": summary.get("pressure_work_mode") or pdv_generation.get("pressure_work_mode"),
         "heating_mode": summary.get("heating_mode"),
         "main_terms_only": summary.get("main_terms_only"),
         "x_limits": summary.get("x_limits"),
