@@ -320,9 +320,11 @@ def copy_batch_assets(rre_root: Path, output_dir: Path) -> dict[str, str | None]
         rre_root,
     )
     for diagnostic in (batch_source_dir / "cycle_diagnostics").glob("*.png"):
-        copy_if_exists(diagnostic, diagnostics_dir / diagnostic.name, output_dir)
+        copied[diagnostic.name] = copy_if_exists(diagnostic, diagnostics_dir / diagnostic.name, output_dir)
     for diagnostic in batch_source_dir.glob("*diagnostic*.png"):
-        copy_if_exists(diagnostic, diagnostics_dir / diagnostic.name, output_dir)
+        copied[diagnostic.name] = copy_if_exists(diagnostic, diagnostics_dir / diagnostic.name, output_dir)
+    for diagnostic in batch_source_dir.glob("*growth_diagnostic*.json"):
+        copied[diagnostic.name] = copy_json_if_exists(diagnostic, metadata_dir / diagnostic.name, output_dir, rre_root)
     return copied
 
 
@@ -459,6 +461,36 @@ def write_index(output_dir: Path, models: list[dict[str, object]], metadata_link
       <a href="{html.escape(str(convergence_trends_exact_png))}"><img src="{html.escape(str(convergence_trends_exact_png))}" alt="Rolling final-100-cycle convergence trends for exact-history runs"></a>
     </section>
 """
+    growth_diagnostic_figures = ""
+    growth_items = []
+    for name, href in sorted(metadata_links.items()):
+        if not href or not name.endswith("_growth_diagnostic.png"):
+            continue
+        label = name.removesuffix("_growth_diagnostic.png").replace("_", " ")
+        json_name = name.removesuffix(".png") + ".json"
+        json_href = metadata_links.get(json_name)
+        json_link = (
+            f' <a class="caption-link" href="{html.escape(str(json_href))}">JSON</a>'
+            if json_href
+            else ""
+        )
+        growth_items.append(
+            f"""
+        <figure>
+          <a href="{html.escape(str(href))}"><img src="{html.escape(str(href))}" alt="{html.escape(label)} active amplitude growth diagnostic"></a>
+          <figcaption>{html.escape(label)} active amplitude growth{json_link}</figcaption>
+        </figure>
+"""
+        )
+    if growth_items:
+        growth_diagnostic_figures = f"""
+    <section class="diagnostic">
+      <h2>Active Amplitude Growth</h2>
+      <div class="diagnostic-grid">
+{''.join(growth_items)}
+      </div>
+    </section>
+"""
     meta_links = []
     for label, href in (
         ("live status", metadata_links.get("live_status.json")),
@@ -496,6 +528,10 @@ def write_index(output_dir: Path, models: list[dict[str, object]], metadata_link
     .diagnostic h2 {{ margin:0 0 12px; font-size:24px; }}
     .diagnostic a {{ display:block; border:0; }}
     .diagnostic img {{ width:100%; height:auto; border-radius:6px; background:#fff; }}
+    .diagnostic-grid {{ display:grid; grid-template-columns:repeat(auto-fit,minmax(420px,1fr)); gap:16px; }}
+    figure {{ margin:0; }}
+    figcaption {{ margin-top:8px; color:var(--muted); }}
+    .caption-link {{ display:inline; margin-left:8px; border-bottom:1px solid rgba(217,237,248,.38); }}
     .grid {{ display:grid; grid-template-columns: repeat(auto-fit, minmax(480px, 1fr)); gap:22px; align-items:start; }}
     .card {{ background:var(--panel); border:1px solid var(--line); border-radius:8px; overflow:hidden; }}
     .card-head {{ display:flex; justify-content:space-between; gap:16px; align-items:start; padding:16px 18px 12px; background:var(--panel2); border-bottom:1px solid var(--line); }}
@@ -529,6 +565,7 @@ def write_index(output_dir: Path, models: list[dict[str, object]], metadata_link
 {convergence_figure}
 {convergence_trends_figure}
 {convergence_trends_exact_figure}
+{growth_diagnostic_figures}
     <section class="grid">
 {cards}
     </section>
