@@ -139,24 +139,36 @@ def exact_cycle_rows(history_path: Path) -> list[dict[str, float]]:
 
 
 def parse_period_log(path: Path) -> tuple[list[dict[str, float]], list[str]]:
+    segments: list[tuple[list[dict[str, float]], list[str]]] = []
     rows: list[dict[str, float]] = []
     stops: list[str] = []
+    last_period_number: int | None = None
     if not path.exists():
         return rows, stops
     for line in path.read_text(errors="replace").splitlines():
         match = PERIOD_LINE_RE.match(line)
         if match:
+            period_number = int(match.group("n"))
+            if last_period_number is not None and period_number <= last_period_number and rows:
+                segments.append((rows, stops))
+                rows = []
+                stops = []
             rows.append(
                 {
-                    "period_number": float(int(match.group("n"))),
+                    "period_number": float(period_number),
                     "period_days": fortran_float(match.group("period")),
                     "delta_r": fortran_float(match.group("delta_r")),
                     "steps": float(int(match.group("steps"))),
                 }
             )
+            last_period_number = period_number
         stop = STOP_RE.search(line)
         if stop:
             stops.append(stop.group("reason").strip())
+    if rows or stops:
+        segments.append((rows, stops))
+    if segments:
+        return segments[-1]
     return rows, stops
 
 
