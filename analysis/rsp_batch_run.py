@@ -53,7 +53,7 @@ EXPECTED_MODEL_FIELD = {
     "restart": "restart_model",
     "deep2cycles": "deep_model",
 }
-EXPECTED_ANIMATION_SCALING_VERSION = "per-panel-visible-window-v4"
+EXPECTED_ANIMATION_SCALING_VERSION = "model000-visible-window-v5"
 REQUIRED_PROFILE_COLUMNS = {
     "rsp_Pvsc",
     "rsp_src_snk",
@@ -70,6 +70,21 @@ MAX_PHASE_ADJACENT_FRACTION = 0.025
 MODEL_LOCK_POLL_SECONDS = 30
 MODEL_LOCK_STALE_SECONDS = 2 * 24 * 60 * 60
 OUTPUT_FRESHNESS_TOLERANCE_SECONDS = 2.0
+
+
+def expected_opacity_display_top(
+    panel_top: float,
+    panel_top_fraction: float,
+    reference_display_max: object,
+) -> float:
+    target = float(panel_top_fraction) * max(float(panel_top), 0.0)
+    try:
+        reference_target = float(reference_display_max)
+    except (TypeError, ValueError):
+        reference_target = float("nan")
+    if math.isfinite(reference_target) and reference_target > 0.0:
+        target = min(target, reference_target)
+    return float(target)
 
 
 def parse_rsp_stop_reason(log_path: Path) -> dict[str, object]:
@@ -606,6 +621,7 @@ def write_resume_files(
 
 def run_plot_stage(
     record: dict[str, object],
+    records: list[dict[str, object]],
     python_exe: Path,
     status: dict[str, object],
     output_dir: Path,
@@ -633,6 +649,11 @@ def run_plot_stage(
         "--heating-mode",
         "gas_minus_c",
     ]
+    reference_record = next((item for item in records if item.get("model_id") == "model_000"), None)
+    if reference_record is not None:
+        reference_summary = Path(str(reference_record["output_dir"])) / f"{reference_record['product_stem']}_summary.json"
+        if reference_summary.exists():
+            command.extend(["--scaling-reference-summary", str(reference_summary)])
     if BLACKBODY_TABLE.exists():
         command.extend(["--blackbody-color-file", str(BLACKBODY_TABLE)])
     if dry_run:
@@ -875,6 +896,7 @@ def animation_summary_scaling_status(summary: dict[str, object]) -> tuple[bool, 
         opacity_max_display = float(opacity_scaling["opacity_max_display_value"])
         opacity_min_display = float(opacity_scaling["display_min_value"])
         opacity_panel_top_fraction = float(opacity_scaling["panel_top_fraction"])
+        reference_opacity_max_display = opacity_scaling.get("reference_opacity_max_display_value")
         opacity_scaled_visible = opacity_scaling["scaled_visible_display_bounds"]
         opacity_x_limits = opacity_scaling["x_limits_for_scaling"]
         opacity_visible = opacity_scaling["visible_data_bounds"]
@@ -923,14 +945,18 @@ def animation_summary_scaling_status(summary: dict[str, object]) -> tuple[bool, 
         return False, "left-power panel y-range metadata does not match the plotted limits"
     if opacity_units <= 0.0 or opacity_max_display <= 0.0:
         return False, "opacity display scale is not positive"
-    expected_opacity_max_display = opacity_panel_top_fraction * max(panel_top, 0.0)
+    expected_opacity_max_display = expected_opacity_display_top(
+        panel_top,
+        opacity_panel_top_fraction,
+        reference_opacity_max_display,
+    )
     if not math.isclose(
         opacity_max_display,
         expected_opacity_max_display,
         rel_tol=1.0e-8,
         abs_tol=1.0e-8,
     ):
-        return False, "opacity scaling is not tied to this panel's positive y-limit"
+        return False, "opacity scaling is not tied to the model_000 reference or this panel's positive y-limit"
     if not math.isclose(float(opacity_scaled_visible[0]), opacity_min_display, abs_tol=1.0e-12) or not math.isclose(
         float(opacity_scaled_visible[1]), opacity_max_display, rel_tol=1.0e-8, abs_tol=1.0e-8
     ):
@@ -1183,6 +1209,7 @@ def verify_model(record: dict[str, object], output_dir: Path) -> dict[str, objec
         opacity_max_display = float(opacity_scaling["opacity_max_display_value"])
         opacity_min_display = float(opacity_scaling["display_min_value"])
         opacity_panel_top_fraction = float(opacity_scaling["panel_top_fraction"])
+        reference_opacity_max_display = opacity_scaling.get("reference_opacity_max_display_value")
         opacity_scaled_visible = opacity_scaling["scaled_visible_display_bounds"]
         opacity_x_limits = opacity_scaling["x_limits_for_scaling"]
         opacity_visible = opacity_scaling["visible_data_bounds"]
@@ -1194,7 +1221,11 @@ def verify_model(record: dict[str, object], output_dir: Path) -> dict[str, objec
             )
         if abs(opacity_min_display) > 1.0e-12:
             failures.append(f"opacity display baseline is {opacity_min_display!r}, expected 0")
-        expected_opacity_max_display = opacity_panel_top_fraction * max(float(left_power_ylim[1]), 0.0)
+        expected_opacity_max_display = expected_opacity_display_top(
+            float(left_power_ylim[1]),
+            opacity_panel_top_fraction,
+            reference_opacity_max_display,
+        )
         if not math.isclose(
             opacity_max_display,
             expected_opacity_max_display,
@@ -1202,7 +1233,7 @@ def verify_model(record: dict[str, object], output_dir: Path) -> dict[str, objec
             abs_tol=1.0e-8,
         ):
             failures.append(
-                "opacity display maximum is not tied to the panel-local positive y-limit: "
+                "opacity display maximum is not tied to the model_000 reference or panel-local positive y-limit: "
                 f"opacity_max_display={opacity_max_display:.6g}, "
                 f"expected={expected_opacity_max_display:.6g}"
             )
@@ -1380,7 +1411,7 @@ def main() -> None:
             elif stage == "final_cycle":
                 run_final_cycle_stage(record, status, output_dir, args.force, args.dry_run)
             elif stage == "plot":
-                run_plot_stage(record, args.python, status, output_dir, args.force, args.dry_run)
+                run_plot_stage(record, records, args.python, status, output_dir, args.force, args.dry_run)
             elif stage == "verify":
                 run_verify_stage(record, status, output_dir, args.force, args.dry_run)
             else:
