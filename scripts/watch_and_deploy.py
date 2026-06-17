@@ -124,6 +124,49 @@ def animation_artifacts_signature(rre_root: Path) -> list[dict[str, object]]:
     return artifacts
 
 
+def cycle_modulation_signature(rre_root: Path) -> dict[str, object]:
+    output_dir = rre_root / "rsp_batch_runs" / "output"
+    cycle_path = output_dir / "cycle_modulation_summary.json"
+    data = load_json(cycle_path)
+    rows = data.get("models", []) if isinstance(data, dict) else []
+    models = []
+    for row in rows:
+        if not isinstance(row, dict) or not row.get("model_id"):
+            continue
+        diagnostic_png = Path(str(row["diagnostic_png"])) if row.get("diagnostic_png") else None
+        models.append(
+            {
+                "model_id": row.get("model_id"),
+                "history_source": row.get("history_source"),
+                "cycle_count": row.get("cycle_count"),
+                "last_cycle_count_used": row.get("last_cycle_count_used"),
+                "max_l_modulation_fraction": row.get("max_l_modulation_fraction"),
+                "min_v_modulation_mag": row.get("min_v_modulation_mag"),
+                "period_modulation_fraction": row.get("period_modulation_fraction"),
+                "radius_amplitude_modulation_fraction": row.get("radius_amplitude_modulation_fraction"),
+                "history_candidate_cycle_counts": row.get("history_candidate_cycle_counts"),
+                "diagnostic_png_exists": diagnostic_png.exists() if diagnostic_png is not None else False,
+                "diagnostic_png_size_bytes": (
+                    diagnostic_png.stat().st_size if diagnostic_png is not None and diagnostic_png.exists() else None
+                ),
+                "diagnostic_png_mtime_bucket_60s": (
+                    int(diagnostic_png.stat().st_mtime // 60)
+                    if diagnostic_png is not None and diagnostic_png.exists()
+                    else None
+                ),
+            }
+        )
+    overview = output_dir / "cycle_diagnostics" / "cycle_modulation_overview.png"
+    return {
+        "summary_exists": isinstance(data, dict),
+        "generated_at": data.get("generated_at") if isinstance(data, dict) else None,
+        "overview_png_exists": overview.exists(),
+        "overview_png_size_bytes": overview.stat().st_size if overview.exists() else None,
+        "overview_png_mtime_bucket_60s": int(overview.stat().st_mtime // 60) if overview.exists() else None,
+        "models": models,
+    }
+
+
 def write_json(path: Path, value: object) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(value, indent=2) + "\n", encoding="utf-8")
@@ -269,6 +312,7 @@ def status_signature(rre_root: Path) -> dict[str, object]:
         "convergence_trend_models": convergence_trend_models,
         "growth_diagnostics": growth_diagnostics,
         "animation_artifacts": animation_artifacts_signature(rre_root),
+        "cycle_modulation": cycle_modulation_signature(rre_root),
         "models": live_models,
     }
 

@@ -157,6 +157,45 @@ def modulation_metrics(cycles: list[dict[str, float]], last_cycles: int) -> dict
     }
 
 
+def choose_history_cycles(
+    run_dir: Path,
+    last_cycles: int,
+) -> tuple[str, Path, list[dict[str, float]], list[dict[str, object]]] | None:
+    usable: list[tuple[str, Path, list[dict[str, float]]]] = []
+    diagnostics: list[dict[str, object]] = []
+    for source, path in history_candidates(run_dir):
+        if not path.exists():
+            continue
+        try:
+            cycles = cycle_table(path)
+        except Exception as exc:
+            diagnostics.append(
+                {
+                    "history_source": source,
+                    "history_path": str(path),
+                    "cycle_count": None,
+                    "error": repr(exc),
+                }
+            )
+            continue
+        diagnostics.append(
+            {
+                "history_source": source,
+                "history_path": str(path),
+                "cycle_count": len(cycles),
+            }
+        )
+        usable.append((source, path, cycles))
+    if not usable:
+        return None
+
+    for source, path, cycles in usable:
+        if len(cycles) >= int(last_cycles):
+            return source, path, cycles, diagnostics
+    source, path, cycles = max(usable, key=lambda item: len(item[2]))
+    return source, path, cycles, diagnostics
+
+
 def deep_lightcurve_data(run_dir: Path) -> dict[str, np.ndarray] | None:
     path = run_dir / "LOGS" / "history.data"
     if not path.exists():
@@ -314,6 +353,7 @@ def write_outputs(rows: list[dict[str, object]], output_dir: Path) -> tuple[Path
         "last_min_abs_mag_v",
         "last_period_days",
         "diagnostic_png",
+        "history_candidate_cycle_counts",
     ]
     with csv_path.open("w", newline="") as handle:
         writer = csv.DictWriter(handle, fieldnames=fieldnames)
@@ -343,11 +383,7 @@ def main() -> None:
         if not isinstance(record, dict) or "model_id" not in record:
             continue
         run_dir = Path(str(record["run_dir"]))
-        chosen: tuple[str, Path] | None = None
-        for source, path in history_candidates(run_dir):
-            if path.exists():
-                chosen = (source, path)
-                break
+        chosen = choose_history_cycles(run_dir, int(args.last_cycles))
         if chosen is None:
             rows.append(
                 {
@@ -358,12 +394,12 @@ def main() -> None:
                     "cycle_count": 0,
                     "last_cycle_count_used": 0,
                     "diagnostic_png": None,
+                    "history_candidate_cycle_counts": [],
                 }
             )
             continue
-        source, path = chosen
+        source, path, cycles, candidate_diagnostics = chosen
         try:
-            cycles = cycle_table(path)
             metrics = modulation_metrics(cycles, int(args.last_cycles))
             png_path = plot_model_diagnostic(record, cycles, source, path, diagnostic_dir, int(args.last_cycles))
             row = {
@@ -372,6 +408,7 @@ def main() -> None:
                 "history_source": source,
                 "history_path": str(path),
                 "diagnostic_png": str(png_path),
+                "history_candidate_cycle_counts": candidate_diagnostics,
                 **metrics,
             }
         except Exception as exc:
@@ -384,6 +421,7 @@ def main() -> None:
                 "last_cycle_count_used": 0,
                 "diagnostic_png": None,
                 "error": repr(exc),
+                "history_candidate_cycle_counts": candidate_diagnostics,
             }
         rows.append(row)
 
