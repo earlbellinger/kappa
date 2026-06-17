@@ -204,7 +204,11 @@ def plot_trends(
                 ymax = max(finite_values + [line_value]) * 2.5
                 ax.set_ylim(ymin, ymax)
         else:
-            ax.set_ylim(bottom=0)
+            finite_values = []
+            for line in ax.lines:
+                finite_values.extend([value for value in line.get_ydata() if np.isfinite(value)])
+            ymax = max(finite_values + [line_value]) * 1.15 if finite_values else line_value * 1.15
+            ax.set_ylim(0, ymax)
     axes[-1].set_xlabel("window end period")
     handles, labels = axes[1].get_legend_handles_labels()
     if handles:
