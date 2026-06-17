@@ -53,7 +53,7 @@ EXPECTED_MODEL_FIELD = {
     "restart": "restart_model",
     "deep2cycles": "deep_model",
 }
-EXPECTED_ANIMATION_SCALING_VERSION = "per-panel-visible-window-v3"
+EXPECTED_ANIMATION_SCALING_VERSION = "per-panel-visible-window-v4"
 REQUIRED_PROFILE_COLUMNS = {
     "rsp_Pvsc",
     "rsp_src_snk",
@@ -832,6 +832,8 @@ def animation_summary_scaling_status(summary: dict[str, object]) -> tuple[bool, 
         opacity_units = float(opacity_scaling["display_units_per_opacity_unit"])
         opacity_max_display = float(opacity_scaling["opacity_max_display_value"])
         opacity_min_display = float(opacity_scaling["display_min_value"])
+        opacity_panel_top_fraction = float(opacity_scaling["panel_top_fraction"])
+        opacity_scaled_visible = opacity_scaling["scaled_visible_display_bounds"]
         opacity_x_limits = opacity_scaling["x_limits_for_scaling"]
         opacity_visible = opacity_scaling["visible_data_bounds"]
         left_power_limits = left_power_panel["limits"]
@@ -856,6 +858,9 @@ def animation_summary_scaling_status(summary: dict[str, object]) -> tuple[bool, 
         opacity_units,
         opacity_max_display,
         opacity_min_display,
+        opacity_panel_top_fraction,
+        float(opacity_scaled_visible[0]),
+        float(opacity_scaled_visible[1]),
         float(opacity_x_limits[0]),
         float(opacity_x_limits[1]),
         float(opacity_visible[0]),
@@ -876,6 +881,18 @@ def animation_summary_scaling_status(summary: dict[str, object]) -> tuple[bool, 
         return False, "left-power panel y-range metadata does not match the plotted limits"
     if opacity_units <= 0.0 or opacity_max_display <= 0.0:
         return False, "opacity display scale is not positive"
+    expected_opacity_max_display = opacity_panel_top_fraction * max(panel_top, 0.0)
+    if not math.isclose(
+        opacity_max_display,
+        expected_opacity_max_display,
+        rel_tol=1.0e-8,
+        abs_tol=1.0e-8,
+    ):
+        return False, "opacity scaling is not tied to this panel's positive y-limit"
+    if not math.isclose(float(opacity_scaled_visible[0]), opacity_min_display, abs_tol=1.0e-12) or not math.isclose(
+        float(opacity_scaled_visible[1]), opacity_max_display, rel_tol=1.0e-8, abs_tol=1.0e-8
+    ):
+        return False, "opacity scaled visible-display bounds do not match the plotted opacity range"
     if abs(opacity_min_display) > 1.0e-12:
         return False, "opacity display baseline is not zero"
     if opacity_max_display > panel_top + 1.0e-8:
@@ -1123,6 +1140,8 @@ def verify_model(record: dict[str, object], output_dir: Path) -> dict[str, objec
         opacity_units = float(opacity_scaling["display_units_per_opacity_unit"])
         opacity_max_display = float(opacity_scaling["opacity_max_display_value"])
         opacity_min_display = float(opacity_scaling["display_min_value"])
+        opacity_panel_top_fraction = float(opacity_scaling["panel_top_fraction"])
+        opacity_scaled_visible = opacity_scaling["scaled_visible_display_bounds"]
         opacity_x_limits = opacity_scaling["x_limits_for_scaling"]
         opacity_visible = opacity_scaling["visible_data_bounds"]
         if not math.isfinite(opacity_units) or opacity_units <= 0.0:
@@ -1133,6 +1152,22 @@ def verify_model(record: dict[str, object], output_dir: Path) -> dict[str, objec
             )
         if abs(opacity_min_display) > 1.0e-12:
             failures.append(f"opacity display baseline is {opacity_min_display!r}, expected 0")
+        expected_opacity_max_display = opacity_panel_top_fraction * max(float(left_power_ylim[1]), 0.0)
+        if not math.isclose(
+            opacity_max_display,
+            expected_opacity_max_display,
+            rel_tol=1.0e-8,
+            abs_tol=1.0e-8,
+        ):
+            failures.append(
+                "opacity display maximum is not tied to the panel-local positive y-limit: "
+                f"opacity_max_display={opacity_max_display:.6g}, "
+                f"expected={expected_opacity_max_display:.6g}"
+            )
+        if not math.isclose(float(opacity_scaled_visible[0]), opacity_min_display, abs_tol=1.0e-12) or not math.isclose(
+            float(opacity_scaled_visible[1]), opacity_max_display, rel_tol=1.0e-8, abs_tol=1.0e-8
+        ):
+            failures.append("opacity scaled visible-display bounds do not match the plotted opacity range")
         if not math.isfinite(opacity_max_display) or opacity_max_display > float(left_power_ylim[1]) + 1.0e-8:
             failures.append("opacity display maximum falls outside the positive plotted y-limit")
         if opacity_scaling.get("x_field_for_scaling") != summary.get("left_panel_x_field_for_scaling"):

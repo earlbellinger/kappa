@@ -9,13 +9,13 @@
   "stages": {
     "plot": {
       "status": "complete",
-      "updated_at": "2026-06-17T12:27:46.464370+00:00",
+      "updated_at": "2026-06-17T13:39:09.339087+00:00",
       "expected_output": "<local-rre-root>/output/combined_14507_full_pressure_minus_eq/mesa_rsp_combined_14507_full_pressure_minus_eq_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work.gif",
-      "started_at": "2026-06-17T12:26:15.925351+00:00"
+      "started_at": "2026-06-17T13:37:40.594091+00:00"
     },
     "verify": {
       "status": "complete",
-      "updated_at": "2026-06-17T12:27:46.650033+00:00",
+      "updated_at": "2026-06-17T13:39:17.706273+00:00",
       "expected_output": "<local-rre-root>/output/combined_14507_full_pressure_minus_eq/verification_summary.json",
       "result": {
         "model_id": "model_000",
@@ -27,13 +27,13 @@
         "summary_path": "<local-rre-root>/output/combined_14507_full_pressure_minus_eq/mesa_rsp_combined_14507_full_pressure_minus_eq_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work_summary.json",
         "pressure_work_mode": "gas_plus_pav",
         "heating_mode": "gas_minus_c",
-        "scaling_method_version": "per-panel-visible-window-v3",
-        "expected_scaling_method_version": "per-panel-visible-window-v3",
+        "scaling_method_version": "per-panel-visible-window-v4",
+        "expected_scaling_method_version": "per-panel-visible-window-v4",
         "panel_y_ranges": {
           "left_power": {
             "limits": [
-              -1.123214688906579,
-              1.0139753167184697
+              -1.0538880567035844,
+              0.9359095347404265
             ],
             "visible_data_bounds": [
               -0.9758222747255412,
@@ -44,7 +44,7 @@
               5.387294668462144,
               6.995969579647836
             ],
-            "method": "minimum and maximum of the plotted power curves within this panel's shown x range; the axis includes zero and is padded from the local visible extrema rather than using a global or symmetric fixed range"
+            "method": "minimum and maximum of the plotted power curves within this panel's shown x range; the axis includes zero and pads the lower and upper sides from their own local visible extrema rather than using a global, symmetric, or opposite-side-dominated range"
           },
           "photosphere_radial_velocity": {
             "limits": [
@@ -83,11 +83,11 @@
           0.866582902537432
         ],
         "left_power_ylim": [
-          -1.123214688906579,
-          1.0139753167184697
+          -1.0538880567035844,
+          0.9359095347404265
         ],
         "opacity_scaling": {
-          "method": "left-panel visible-window min opacity maps to zero; left-panel visible-window max opacity maps to a fixed fraction of that panel's positive y-limit",
+          "method": "left-panel visible-window min opacity maps to zero; left-panel visible-window max opacity maps to a fixed fraction of that same panel's positive y-limit",
           "panel": "left_power",
           "panel_top_fraction": 0.88,
           "x_field_for_scaling": "radius_rsun_plot",
@@ -99,10 +99,15 @@
             0.0020449198640830274,
             149.03239726657318
           ],
+          "reference_convention": "model_000-inspired per-panel rule: measure opacity min and max only in the shown radius range, subtract the shown minimum, and scale the shown maximum to a fixed fraction of the panel's positive specific-power axis",
           "display_min_value": 0.0,
-          "display_units_per_opacity_unit": 0.005987359384592888,
+          "display_units_per_opacity_unit": 0.0055263936346035365,
           "opacity_min_baseline": 0.0020449198640830274,
-          "opacity_max_display_value": 0.8922982787122534
+          "opacity_max_display_value": 0.8236003905715753,
+          "scaled_visible_display_bounds": [
+            0.0,
+            0.8236003905715753
+          ]
         },
         "photosphere_radius_rsun_range": [
           6.387294668462144,
@@ -159,10 +164,10 @@
         "phase_seam_ok": true,
         "passed": true,
         "failures": [],
-        "verified_at": "2026-06-17T12:27:46.649026+00:00"
+        "verified_at": "2026-06-17T13:39:17.704760+00:00"
       },
-      "started_at": "2026-06-17T12:27:46.609274+00:00"
+      "started_at": "2026-06-17T13:39:17.675537+00:00"
     }
   },
-  "updated_at": "2026-06-17T12:27:46.650534+00:00"
+  "updated_at": "2026-06-17T13:39:17.706273+00:00"
 }
