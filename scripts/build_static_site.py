@@ -213,6 +213,10 @@ def convergence_text(convergence: dict[str, object] | None) -> str:
     delta_r = convergence.get("delta_r_fractional_peak_to_peak_last_window")
     max_vsurf = convergence.get("max_vsurf_div_cs_max_last_window")
     bits = [f"strict convergence pending", f"{source}", f"{cycles} cycles"]
+    if convergence.get("has_full_window") is not True:
+        used = convergence.get("last_cycle_count_used") or cycles or 0
+        bits.append(f"{used}/100-cycle window")
+        return " | ".join(bits)
     if gamma is None:
         bits.append("Gamma not recorded")
     else:
