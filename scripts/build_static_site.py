@@ -447,9 +447,12 @@ def card_html(model: dict[str, object]) -> str:
             progress_bits.append(f"queued retry for {', '.join(retry_names)}")
     if model.get("profile_count"):
         progress_bits.append(f"{model['profile_count']} profiles")
-    if model.get("latest_period") and model.get("max_periods") and "running" in str(model.get("status")):
+    status_text = str(model.get("status"))
+    if model.get("latest_period") and model.get("max_periods") and "running" in status_text:
         progress_bits.append(f"period {model['latest_period']} / {model['max_periods']}")
-    elif model.get("latest_history_model") and "running" in str(model.get("status")):
+    if model.get("latest_history_model") and (
+        ("running: create" in status_text) or not model.get("latest_period")
+    ):
         progress_bits.append(f"model {model['latest_history_model']}")
     if model.get("latest_max_vsurf_div_cs") is not None:
         velocity_text = f"max v_surf/c_s {fmt_float(model.get('latest_max_vsurf_div_cs'), 3)}"
