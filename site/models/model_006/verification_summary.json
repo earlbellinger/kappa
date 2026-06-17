@@ -8,13 +8,13 @@
   "summary_path": "<local-rre-root>/rsp_batch_runs/output/model_006_M0p7194_Z0p001620_T6711/mesa_rsp_model_006_M0p7194_Z0p001620_T6711_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work_summary.json",
   "pressure_work_mode": "gas_plus_pav",
   "heating_mode": "gas_minus_c",
-  "scaling_method_version": "per-panel-visible-window-v3",
-  "expected_scaling_method_version": "per-panel-visible-window-v3",
+  "scaling_method_version": "per-panel-visible-window-v4",
+  "expected_scaling_method_version": "per-panel-visible-window-v4",
   "panel_y_ranges": {
     "left_power": {
       "limits": [
-        -5.552036924784829,
-        3.5291605583810357
+        -5.3198072386421575,
+        3.135100762926061
       ],
       "visible_data_bounds": [
         -4.925747443187183,
@@ -25,7 +25,7 @@
         4.245867840406669,
         5.571861508695286
       ],
-      "method": "minimum and maximum of the plotted power curves within this panel's shown x range; the axis includes zero and is padded from the local visible extrema rather than using a global or symmetric fixed range"
+      "method": "minimum and maximum of the plotted power curves within this panel's shown x range; the axis includes zero and pads the lower and upper sides from their own local visible extrema rather than using a global, symmetric, or opposite-side-dominated range"
     },
     "photosphere_radial_velocity": {
       "limits": [
@@ -64,11 +64,11 @@
     2.9028710767833896
   ],
   "left_power_ylim": [
-    -5.552036924784829,
-    3.5291605583810357
+    -5.3198072386421575,
+    3.135100762926061
   ],
   "opacity_scaling": {
-    "method": "left-panel visible-window min opacity maps to zero; left-panel visible-window max opacity maps to a fixed fraction of that panel's positive y-limit",
+    "method": "left-panel visible-window min opacity maps to zero; left-panel visible-window max opacity maps to a fixed fraction of that same panel's positive y-limit",
     "panel": "left_power",
     "panel_top_fraction": 0.88,
     "x_field_for_scaling": "radius_rsun_plot",
@@ -80,10 +80,15 @@
       0.004567606159741239,
       90.94985853380467
     ],
+    "reference_convention": "model_000-inspired per-panel rule: measure opacity min and max only in the shown radius range, subtract the shown minimum, and scale the shown maximum to a fixed fraction of the panel's positive specific-power axis",
     "display_min_value": 0.0,
-    "display_units_per_opacity_unit": 0.03414867619529791,
+    "display_units_per_opacity_unit": 0.030335695704903236,
     "opacity_min_baseline": 0.004567606159741239,
-    "opacity_max_display_value": 3.105661291375312
+    "opacity_max_display_value": 2.7588886713749337,
+    "scaled_visible_display_bounds": [
+      0.0,
+      2.7588886713749337
+    ]
   },
   "photosphere_radius_rsun_range": [
     5.245867840406669,
@@ -146,5 +151,5 @@
     "luminosity_lsun phase seam is 0.05396 of amplitude, expected <= 0.025",
     "radius_rsun phase seam is 0.08457 of amplitude, expected <= 0.025"
   ],
-  "verified_at": "2026-06-17T12:41:46.098550+00:00"
+  "verified_at": "2026-06-17T13:50:49.319697+00:00"
 }
