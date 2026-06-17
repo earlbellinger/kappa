@@ -56,6 +56,19 @@ def read_json(path: Path) -> dict | list:
         return {"_json_error": repr(exc)}
 
 
+def read_active_batch_status_path(output_dir: Path) -> Path | None:
+    candidates: list[tuple[float, Path, dict]] = []
+    for path in output_dir.glob("batch*_status.json"):
+        data = read_json(path)
+        if isinstance(data, dict):
+            candidates.append((path.stat().st_mtime, path, data))
+    if not candidates:
+        return None
+    running = [item for item in candidates if item[2].get("status") == "running"]
+    selected = max(running, key=lambda item: item[0]) if running else max(candidates, key=lambda item: item[0])
+    return selected[1]
+
+
 def file_check(path: Path) -> dict[str, object]:
     return {
         "path": str(path),
@@ -391,7 +404,7 @@ def main() -> int:
         if model.get("quality_warnings")
     ]
     live_status_path = output_dir / "live_status.json"
-    batch_status_path = output_dir / "batch_remaining_006_009_status.json"
+    batch_status_path = read_active_batch_status_path(output_dir) or output_dir / "batch_remaining_006_009_status.json"
     quality_extension_status_path = output_dir / "quality_extension_status.json"
     quality_extension_status = read_json(quality_extension_status_path)
     quality_extension_required = bool(quality_warnings) or quality_extension_status_path.exists()
