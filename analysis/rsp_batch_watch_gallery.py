@@ -152,6 +152,20 @@ def rebuild(args: argparse.Namespace, log_path: Path) -> int:
         if convergence_trends_completed.stderr.strip():
             append_log(log_path, convergence_trends_completed.stderr.strip())
 
+        final_status_completed = subprocess.run(status_command, cwd=ROOT, capture_output=True, text=True)
+        append_log(log_path, f"[{now_iso()}] final live status returncode={final_status_completed.returncode}")
+        if final_status_completed.stdout.strip():
+            append_log(log_path, final_status_completed.stdout.strip())
+        if final_status_completed.stderr.strip():
+            append_log(log_path, final_status_completed.stderr.strip())
+
+        final_audit_completed = subprocess.run(audit_command, cwd=ROOT, capture_output=True, text=True)
+        append_log(log_path, f"[{now_iso()}] final audit returncode={final_audit_completed.returncode}")
+        if final_audit_completed.stdout.strip():
+            append_log(log_path, final_audit_completed.stdout.strip())
+        if final_audit_completed.stderr.strip():
+            append_log(log_path, final_audit_completed.stderr.strip())
+
         command = [
             str(args.python),
             str(GALLERY_SCRIPT),
@@ -185,6 +199,8 @@ def rebuild(args: argparse.Namespace, log_path: Path) -> int:
             or cycle_completed.returncode
             or convergence_completed.returncode
             or convergence_trends_completed.returncode
+            or final_status_completed.returncode
+            or final_audit_completed.returncode
             or completed.returncode
             or viewer_completed.returncode
         )

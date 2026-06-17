@@ -84,6 +84,7 @@ def analysis_refresh(args: argparse.Namespace, log_path: Path, allow_incomplete:
         [str(args.python), str(CYCLE_DIAGNOSTICS), "--workspace", str(args.workspace)],
         [str(args.python), str(CONVERGENCE), "--workspace", str(args.workspace)],
         [str(args.python), str(CONVERGENCE_TRENDS), "--workspace", str(args.workspace)],
+        [str(args.python), str(LIVE_STATUS), "--workspace", str(args.workspace)],
         [
             str(args.python),
             str(AUDIT),
