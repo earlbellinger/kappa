@@ -22,6 +22,7 @@ PERIOD_LINE_RE = re.compile(
     r"steps\s+(?P<steps>\d+)"
 )
 STOP_RE = re.compile(r"stop because\s+(?P<reason>.+)")
+TERMINATION_RE = re.compile(r"termination code:\s+(?P<reason>.+)")
 EXACT_COLUMNS = ("rsp_GREKM", "rsp_DeltaR", "rsp_num_periods", "rsp_period_in_days")
 
 
@@ -76,6 +77,19 @@ def median_value(values: list[float] | np.ndarray) -> float | None:
     if array.size == 0:
         return None
     return float(np.nanmedian(array))
+
+
+def linear_slope_per_cycle(values: list[float] | np.ndarray) -> float | None:
+    array = finite_array(values)
+    if array.size < 2:
+        return None
+    x = np.arange(array.size, dtype=float)
+    x -= float(np.nanmean(x))
+    y = array - float(np.nanmean(array))
+    denominator = float(np.nansum(x * x))
+    if denominator <= 0.0:
+        return None
+    return float(np.nansum(x * y) / denominator)
 
 
 def history_candidates(run_dir: Path) -> list[tuple[str, Path]]:
@@ -167,6 +181,9 @@ def parse_period_log(path: Path) -> tuple[list[dict[str, float]], list[str]]:
         stop = STOP_RE.search(line)
         if stop:
             stops.append(stop.group("reason").strip())
+        termination = TERMINATION_RE.search(line)
+        if termination:
+            stops.append(f"termination code: {termination.group('reason').strip()}")
     if rows or stops:
         segments.append((rows, stops))
     if segments:
@@ -274,13 +291,24 @@ def summarize_rows(
         "source_kind": source_kind,
         "cycle_count": len(rows),
         "last_cycle_count_used": len(tail),
+        "window_start_period_number": float(tail[0]["period_number"]),
+        "window_end_period_number": float(tail[-1]["period_number"]),
         "last_period_number": float(rows[-1]["period_number"]),
         "gamma_peak_to_peak_last_window": gamma_ptp,
         "gamma_median_last_window": median_value(gamma),
+        "gamma_first_last_window": [
+            float(gamma[0]) if np.isfinite(gamma[0]) else None,
+            float(gamma[-1]) if np.isfinite(gamma[-1]) else None,
+        ],
+        "gamma_slope_per_cycle_last_window": linear_slope_per_cycle(gamma),
         "period_fractional_peak_to_peak_last_window": period_fraction,
         "period_median_days_last_window": median_value(period),
+        "period_first_last_days_window": [float(period[0]), float(period[-1])],
+        "period_slope_days_per_cycle_last_window": linear_slope_per_cycle(period),
         "delta_r_fractional_peak_to_peak_last_window": delta_r_fraction,
         "delta_r_median_last_window": median_value(delta_r),
+        "delta_r_first_last_window": [float(delta_r[0]), float(delta_r[-1])],
+        "delta_r_slope_per_cycle_last_window": linear_slope_per_cycle(delta_r),
         "steps_median_last_window": median_value(steps),
         "steps_min_last_window": float(np.nanmin(steps)) if np.any(np.isfinite(steps)) else None,
         "steps_max_last_window": float(np.nanmax(steps)) if np.any(np.isfinite(steps)) else None,
@@ -291,6 +319,7 @@ def summarize_rows(
         "converged_delta_r": converged_delta_r,
         "converged_exact": bool(converged_gamma and converged_period and converged_delta_r),
     }
+    result["limit_cycle_converged"] = result["converged_exact"]
     return result
 
 
@@ -342,9 +371,14 @@ def summarize_model(record: dict[str, object], last_cycles: int, tolerance: floa
                 ),
                 "stop_reasons": stops[-3:],
                 "grekm_stopped": grekm_stopped,
-                "period_cap_stopped": any("period_number >= max_period_number" in reason for reason in stops),
+                "period_cap_stopped": any(
+                    "period_number >= max_period_number" in reason
+                    or "reached max number of periods" in reason
+                    for reason in stops
+                ),
                 "converged_gamma": False,
                 "converged_exact": False,
+                "limit_cycle_converged": False,
             }
         )
     summary.update(

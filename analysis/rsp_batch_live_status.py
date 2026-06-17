@@ -159,6 +159,16 @@ def read_run_status(output_dir: Path) -> dict:
     return status
 
 
+def convergence_by_model(output_dir: Path) -> dict[str, dict[str, object]]:
+    convergence = read_json(output_dir / "convergence_summary_last100.json")
+    rows = convergence.get("models", []) if isinstance(convergence, dict) else []
+    return {
+        str(row.get("model_id")): row
+        for row in rows
+        if isinstance(row, dict) and row.get("model_id")
+    }
+
+
 def stage_summary(status: dict) -> dict[str, str]:
     stages = status.get("stages", {})
     if not isinstance(stages, dict):
@@ -206,7 +216,7 @@ def progress_estimate(period: str | None, max_period: str | None, started_at: st
     return estimate
 
 
-def model_summary(record: dict) -> dict:
+def model_summary(record: dict, convergence_by_id: dict[str, dict[str, object]] | None = None) -> dict:
     run_dir = Path(str(record["run_dir"]))
     output_dir = Path(str(record["output_dir"]))
     product_stem = str(record["product_stem"])
@@ -217,6 +227,7 @@ def model_summary(record: dict) -> dict:
     period, period_log = latest_period(output_dir)
     running_stage, running_stage_started_at = active_stage(run_status)
     max_period = max_periods(run_dir, running_stage, period_log)
+    convergence = (convergence_by_id or {}).get(str(record["model_id"]), {})
     summary = {
         "model_id": record["model_id"],
         "registered_existing": bool(record.get("registered_existing")),
@@ -237,6 +248,27 @@ def model_summary(record: dict) -> dict:
         "verification_passed": isinstance(verification, dict) and verification.get("passed") is True,
         "profile_count": verification.get("profile_count") if isinstance(verification, dict) else None,
     }
+    if convergence:
+        summary.update(
+            {
+                "convergence_source_kind": convergence.get("source_kind"),
+                "convergence_cycle_count": convergence.get("cycle_count"),
+                "convergence_last_period_number": convergence.get("last_period_number"),
+                "convergence_window_start_period_number": convergence.get("window_start_period_number"),
+                "convergence_window_end_period_number": convergence.get("window_end_period_number"),
+                "gamma_peak_to_peak_last_window": convergence.get("gamma_peak_to_peak_last_window"),
+                "period_fractional_peak_to_peak_last_window": convergence.get("period_fractional_peak_to_peak_last_window"),
+                "delta_r_fractional_peak_to_peak_last_window": convergence.get("delta_r_fractional_peak_to_peak_last_window"),
+                "delta_r_first_last_window": convergence.get("delta_r_first_last_window"),
+                "delta_r_slope_per_cycle_last_window": convergence.get("delta_r_slope_per_cycle_last_window"),
+                "steps_median_last_window": convergence.get("steps_median_last_window"),
+                "converged_gamma": convergence.get("converged_gamma"),
+                "converged_period": convergence.get("converged_period"),
+                "converged_delta_r": convergence.get("converged_delta_r"),
+                "converged_exact": convergence.get("converged_exact"),
+                "limit_cycle_converged": convergence.get("limit_cycle_converged", convergence.get("converged_exact")),
+            }
+        )
     summary.update(progress_estimate(period, max_period, running_stage_started_at))
     return summary
 
@@ -249,7 +281,8 @@ def main() -> int:
     if not isinstance(manifest, list):
         raise RuntimeError(f"Missing manifest under {workspace}")
     workspace_output = workspace / "output"
-    models = [model_summary(row) for row in manifest]
+    convergence = convergence_by_model(workspace_output)
+    models = [model_summary(row, convergence) for row in manifest]
     registered_existing_gif_count = sum(1 for row in models if row["registered_existing"] and row["gif_exists"])
     new_batch_gif_count = sum(1 for row in models if not row["registered_existing"] and row["gif_exists"])
     new_batch_model_count = sum(1 for row in models if not row["registered_existing"])
@@ -263,6 +296,7 @@ def main() -> int:
         "new_batch_gif_count": new_batch_gif_count,
         "new_batch_model_count": new_batch_model_count,
         "verified_model_count": sum(1 for row in models if row["verification_passed"]),
+        "limit_cycle_converged_model_count": sum(1 for row in models if row.get("limit_cycle_converged") is True),
         "models": models,
     }
     output.write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n")
