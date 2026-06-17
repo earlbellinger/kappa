@@ -6,7 +6,7 @@
   "output_dir": "<local-rre-root>/rsp_batch_runs/output/model_002_M0p5753_Z0p00707_T6044",
   "prefix": "mesa_rsp_model_002_M0p5753_Z0p00707_T6044",
   "product_stem": "mesa_rsp_model_002_M0p5753_Z0p00707_T6044_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work",
-  "updated_at": "2026-06-17T16:24:12.831697+00:00",
+  "updated_at": "2026-06-17T16:25:45.570938+00:00",
   "stages": {
     "prepared": {
       "status": "complete",
@@ -70,14 +70,14 @@
       "started_at": "2026-06-16T22:39:18.951518+00:00"
     },
     "plot": {
-      "status": "running",
-      "updated_at": "2026-06-17T16:24:12.831697+00:00",
+      "status": "complete",
+      "updated_at": "2026-06-17T16:25:36.139606+00:00",
       "expected_output": "<local-rre-root>/rsp_batch_runs/output/model_002_M0p5753_Z0p00707_T6044/mesa_rsp_model_002_M0p5753_Z0p00707_T6044_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work.gif",
       "started_at": "2026-06-17T16:24:12.831697+00:00"
     },
     "verify": {
       "status": "complete",
-      "updated_at": "2026-06-17T15:39:50.706852+00:00",
+      "updated_at": "2026-06-17T16:25:45.570430+00:00",
       "expected_output": "<local-rre-root>/rsp_batch_runs/output/model_002_M0p5753_Z0p00707_T6044/verification_summary.json",
       "result": {
         "model_id": "model_002",
@@ -89,13 +89,13 @@
         "summary_path": "<local-rre-root>/rsp_batch_runs/output/model_002_M0p5753_Z0p00707_T6044/mesa_rsp_model_002_M0p5753_Z0p00707_T6044_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work_summary.json",
         "pressure_work_mode": "gas_plus_pav",
         "heating_mode": "gas_minus_c",
-        "scaling_method_version": "model000-visible-window-v5",
-        "expected_scaling_method_version": "model000-visible-window-v5",
+        "scaling_method_version": "model000-visible-window-v6",
+        "expected_scaling_method_version": "model000-visible-window-v6",
         "panel_y_ranges": {
           "left_power": {
             "limits": [
-              -1.0538880567035844,
-              0.9359095347404265
+              -0.07213813331083715,
+              0.07414103881529135
             ],
             "visible_data_bounds": [
               -0.06679456788040478,
@@ -106,11 +106,11 @@
               4.711042152452866,
               5.865910760003436
             ],
-            "reference_floor_limits": [
+            "reference_example_limits": [
               -1.0538880567035844,
               0.9359095347404265
             ],
-            "method": "minimum and maximum of the plotted power curves within this panel's shown x range; the axis includes zero and pads the lower and upper sides from their own local visible extrema, then applies the model_000 y-limit floor if available"
+            "method": "minimum and maximum of the plotted power curves within this panel's shown x range; the axis includes zero and pads the lower and upper sides from their own local visible extrema"
           },
           "photosphere_radial_velocity": {
             "limits": [
@@ -149,11 +149,11 @@
           0.06864911001415866
         ],
         "left_power_ylim": [
-          -1.0538880567035844,
-          0.9359095347404265
+          -0.07213813331083715,
+          0.07414103881529135
         ],
         "opacity_scaling": {
-          "method": "left-panel visible-window min opacity maps to zero; left-panel visible-window max opacity maps to the model_000 reference display height when available, otherwise to a fixed fraction of this panel's positive y-limit",
+          "method": "left-panel visible-window min opacity maps to zero; left-panel visible-window max opacity maps to a fixed fraction of this panel's positive y-limit",
           "panel": "left_power",
           "panel_top_fraction": 0.88,
           "reference_opacity_max_display_value": 0.8236003905715753,
@@ -166,14 +166,14 @@
             0.00269378555828959,
             169.65719431396022
           ],
-          "reference_convention": "model_000-calibrated per-panel rule: measure opacity min and max only in the shown radius range, subtract the shown minimum, and scale the shown maximum to the same display height used in the model_000 reference, unless no reference is available",
+          "reference_convention": "model_000 example rule: measure opacity min and max only in the shown radius range, subtract the shown minimum, and scale the shown maximum to a consistent fraction of the positive y-axis in each panel",
           "display_min_value": 0.0,
-          "display_units_per_opacity_unit": 0.004854574373249214,
+          "display_units_per_opacity_unit": 0.0003845704885767757,
           "opacity_min_baseline": 0.00269378555828959,
-          "opacity_max_display_value": 0.8236003905715753,
+          "opacity_max_display_value": 0.06524411415745639,
           "scaled_visible_display_bounds": [
             0.0,
-            0.8236003905715753
+            0.06524411415745639
           ]
         },
         "photosphere_radius_rsun_range": [
@@ -231,9 +231,9 @@
         "phase_seam_ok": true,
         "passed": true,
         "failures": [],
-        "verified_at": "2026-06-17T15:39:50.705345+00:00"
+        "verified_at": "2026-06-17T16:25:45.569425+00:00"
       },
-      "started_at": "2026-06-17T15:39:50.673573+00:00"
+      "started_at": "2026-06-17T16:25:45.541230+00:00"
     }
   },
   "validation": {
