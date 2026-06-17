@@ -50,6 +50,9 @@ CONVECTION_KEYS = (
 PARAMETER_KEYS = ("Zbase", *STELLAR_KEYS, *CONVECTION_KEYS)
 ALLOWED_DIFF_KEYS = {
     *PARAMETER_KEYS,
+    "RSP_GREKM_avg_abs_limit",
+    "RSP_max_num_periods",
+    "RSP_target_steps_per_cycle",
     "save_model_filename",
     "load_model_filename",
     "history_columns_file",
@@ -289,6 +292,8 @@ def generate_run_scripts(run_dir: Path) -> None:
 def stage_replacements(stage: str, params: dict[str, str], record: ModelRecord) -> dict[str, str]:
     replacements = {key: params[key] for key in PARAMETER_KEYS}
     replacements["history_columns_file"] = "'history_columns_batch.list'"
+    replacements["RSP_GREKM_avg_abs_limit"] = "-1"
+    replacements["RSP_target_steps_per_cycle"] = "1000"
     replacements["log_directory"] = {
         "create": "'LOGS_saturation'",
         "continue_saturation": "'LOGS_continue_saturation'",
@@ -309,6 +314,7 @@ def stage_replacements(stage: str, params: dict[str, str], record: ModelRecord) 
     }[stage]
     if stage == "continue_saturation":
         replacements["load_model_filename"] = f"'{record.create_model}'"
+        replacements["RSP_max_num_periods"] = "5000"
     elif stage == "restart":
         replacements["load_model_filename"] = f"'{record.saturated_model}'"
     elif stage == "deep2cycles":
