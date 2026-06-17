@@ -256,6 +256,8 @@ def model_summary(record: dict, convergence_by_id: dict[str, dict[str, object]] 
                 "convergence_last_period_number": convergence.get("last_period_number"),
                 "convergence_window_start_period_number": convergence.get("window_start_period_number"),
                 "convergence_window_end_period_number": convergence.get("window_end_period_number"),
+                "window_start_period_number": convergence.get("window_start_period_number"),
+                "window_end_period_number": convergence.get("window_end_period_number"),
                 "gamma_peak_to_peak_last_window": convergence.get("gamma_peak_to_peak_last_window"),
                 "period_fractional_peak_to_peak_last_window": convergence.get("period_fractional_peak_to_peak_last_window"),
                 "delta_r_fractional_peak_to_peak_last_window": convergence.get("delta_r_fractional_peak_to_peak_last_window"),
