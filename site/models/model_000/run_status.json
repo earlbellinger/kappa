@@ -9,18 +9,150 @@
   "stages": {
     "plot": {
       "status": "complete",
-      "updated_at": "2026-06-17T09:20:53.134380+00:00",
-      "skipped": true,
+      "updated_at": "2026-06-17T09:40:38.949246+00:00",
       "expected_output": "<local-rre-root>/output/combined_14507_full_pressure_minus_eq/mesa_rsp_combined_14507_full_pressure_minus_eq_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work.gif",
-      "current_product_reason": "visible-window scaling metadata is current"
+      "started_at": "2026-06-17T09:39:11.734376+00:00"
     },
     "verify": {
       "status": "complete",
-      "updated_at": "2026-06-17T09:20:59.237422+00:00",
-      "skipped": true,
+      "updated_at": "2026-06-17T09:40:46.992972+00:00",
       "expected_output": "<local-rre-root>/output/combined_14507_full_pressure_minus_eq/verification_summary.json",
-      "current_product_reason": "visible-window scaling metadata is current"
+      "result": {
+        "model_id": "model_000",
+        "run_name": "model_000_combined_14507_full_pressure_minus_eq",
+        "profile_count": 3184,
+        "first_profile": "<local-rre-root>/mesa_rsp_combined_14507_full_pressure_minus_eq/LOGS/profile1.data",
+        "required_profile_columns_present": true,
+        "missing_profile_columns": [],
+        "summary_path": "<local-rre-root>/output/combined_14507_full_pressure_minus_eq/mesa_rsp_combined_14507_full_pressure_minus_eq_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work_summary.json",
+        "pressure_work_mode": "gas_plus_pav",
+        "heating_mode": "gas_minus_c",
+        "scaling_method_version": "per-panel-visible-window-v2",
+        "expected_scaling_method_version": "per-panel-visible-window-v2",
+        "panel_y_ranges": {
+          "left_power": {
+            "limits": [
+              -1.0538880567035844,
+              1.0538880567035844
+            ],
+            "visible_data_bounds": [
+              -0.9758222747255412,
+              0.866582902537432
+            ],
+            "x_field_for_scaling": "radius_rsun_plot",
+            "x_limits_for_scaling": [
+              5.387294668462144,
+              6.995969579647836
+            ],
+            "method": "minimum and maximum of the plotted power curves within this panel's shown x range; the axis is padded symmetrically about zero using the larger absolute extremum"
+          },
+          "photosphere_radial_velocity": {
+            "limits": [
+              -20.398046362584534,
+              21.584253780794004
+            ],
+            "visible_data_bounds": [
+              -17.5027153182136,
+              18.68892273642307
+            ],
+            "method": "panel-local fractional padding around the displayed photosphere radial-velocity curve"
+          },
+          "photosphere_luminosity": {
+            "limits": [
+              52.70136849322856,
+              67.48656812068334
+            ],
+            "visible_data_bounds": [
+              53.72103743305303,
+              66.46689918085887
+            ],
+            "method": "panel-local fractional padding around the displayed photosphere luminosity curve"
+          }
+        },
+        "cycle_source": "final-cycle summary age window",
+        "main_radius_xlim_used": [
+          5.387294668462144,
+          6.995969579647836
+        ],
+        "left_panel_x_limits_for_scaling": [
+          5.387294668462144,
+          6.995969579647836
+        ],
+        "left_power_visible_data_bounds": [
+          -0.9758222747255412,
+          0.866582902537432
+        ],
+        "left_power_ylim": [
+          -1.0538880567035844,
+          1.0538880567035844
+        ],
+        "opacity_scaling": {
+          "method": "left-panel visible-window min opacity maps to zero; left-panel visible-window max opacity maps to a fixed fraction of that panel's positive y-limit",
+          "panel": "left_power",
+          "panel_top_fraction": 0.88,
+          "display_units_per_opacity_unit": 0.006223037624856248,
+          "opacity_min_baseline": 0.0020449198640830274,
+          "opacity_max_display_value": 0.9274214898991544
+        },
+        "photosphere_radius_rsun_range": [
+          6.387294668462144,
+          6.895969579647836
+        ],
+        "radius_window_contains_photosphere": true,
+        "continue_saturation_stop": {
+          "log_path": "<local-rre-root>/output/combined_14507_full_pressure_minus_eq/logs/continue_saturation.log",
+          "exists": false,
+          "stop_reason": null,
+          "termination_code": null,
+          "saturated_by_grekm": null,
+          "reached_max_periods": null
+        },
+        "saturated_by_grekm": null,
+        "reached_max_periods": null,
+        "phase_seam": {
+          "path": "<local-rre-root>/output/combined_14507_full_pressure_minus_eq/mesa_rsp_combined_14507_full_pressure_minus_eq_final_cycle_lightcurve.csv",
+          "exists": true,
+          "row_count": 1061,
+          "parsed_row_count": 1061,
+          "phase_first": 0.0,
+          "phase_last": 0.9989997949,
+          "max_allowed_fraction_of_amplitude": 0.025,
+          "max_allowed_adjacent_fraction_of_amplitude": 0.025,
+          "metrics": {
+            "luminosity_lsun": {
+              "seam": 0.019268115810049835,
+              "amplitude": 12.57043593912266,
+              "fraction_of_amplitude": 0.0015328120602470237,
+              "max_adjacent_step": 0.12290548945934177,
+              "max_adjacent_fraction_of_amplitude": 0.009777345038355116
+            },
+            "radius_rsun": {
+              "seam": 0.00011220087999941342,
+              "amplitude": 0.5710537041299997,
+              "fraction_of_amplitude": 0.0001964804346560565,
+              "max_adjacent_step": 0.001803931570000472,
+              "max_adjacent_fraction_of_amplitude": 0.0031589525765335184
+            },
+            "teff_k": {
+              "seam": 0.47449307999977464,
+              "amplitude": 506.7422390900001,
+              "fraction_of_amplitude": 0.0009363598362194199,
+              "max_adjacent_step": 3.598866639999869,
+              "max_adjacent_fraction_of_amplitude": 0.007101966961472678
+            }
+          },
+          "failures": [],
+          "age_monotonic_by_phase": true,
+          "minimum_age_step_days_by_phase": 0.000605179999865868,
+          "ok": true
+        },
+        "phase_seam_ok": true,
+        "passed": true,
+        "failures": [],
+        "verified_at": "2026-06-17T09:40:46.991974+00:00"
+      },
+      "started_at": "2026-06-17T09:40:46.962852+00:00"
     }
   },
-  "updated_at": "2026-06-17T09:20:59.237922+00:00"
+  "updated_at": "2026-06-17T09:40:46.992972+00:00"
 }

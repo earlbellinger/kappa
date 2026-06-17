@@ -110,6 +110,7 @@ PLOT_SCALE_FACTORS = {
     "pdv_power": 1.0,
 }
 DISPLAY_POWER_SCALE = 1.0e9
+ANIMATION_SCALING_VERSION = "per-panel-visible-window-v2"
 ZONE_LABEL_COLOR = "#2B2B2B"
 ZONE_LABEL_FONT_SIZE = 9.2
 ZONE_LABEL_STROKE_WIDTH = 1.3
@@ -603,6 +604,10 @@ def symmetric_power_panel_limits(data_bounds: tuple[float, float]) -> tuple[floa
     max_abs = max(abs(float(data_bounds[0])), abs(float(data_bounds[1])), POWER_PANEL_MIN_HALF_RANGE)
     half_range = max_abs * (1.0 + POWER_PANEL_PAD_FRACTION)
     return -float(half_range), float(half_range)
+
+
+def power_panel_limits_from_visible_bounds(data_bounds: tuple[float, float]) -> tuple[float, float]:
+    return symmetric_power_panel_limits(data_bounds)
 
 
 def opacity_display_scale(
@@ -2258,7 +2263,7 @@ def main() -> None:
     elif args.ymin is not None or args.ymax is not None:
         raise RuntimeError("Please provide both --ymin and --ymax when overriding the left-panel y-axis limits.")
     else:
-        left_power_ylim = symmetric_power_panel_limits(visible_power_bounds)
+        left_power_ylim = power_panel_limits_from_visible_bounds(visible_power_bounds)
         left_power_ylim_raw = (
             float(left_power_ylim[0]) * DISPLAY_POWER_SCALE,
             float(left_power_ylim[1]) * DISPLAY_POWER_SCALE,
@@ -3156,6 +3161,7 @@ def main() -> None:
         "frame_generation": "fixed-q linear interpolation between bracketing nonlinear profiles on a uniform phase grid",
         "coordinate": coordinate,
         "main_terms_only": main_terms_only,
+        "scaling_method_version": ANIMATION_SCALING_VERSION,
         "layout": (
             "left panel: phase-local power diagnostics versus temperature; right column top: photosphere radial velocity curve; right column bottom: photosphere luminosity curve"
             if coordinate == "temperature"
@@ -3229,6 +3235,39 @@ def main() -> None:
             float(left_panel_x_limits[0]),
             float(left_panel_x_limits[1]),
         ],
+        "left_panel_scaling_method": (
+            "per-panel visible-window extrema; power y-limits use the maximum absolute "
+            "specific-power value between the minimum and maximum shown x coordinate, "
+            "matching the model_000 reference convention"
+        ),
+        "panel_y_ranges": {
+            "left_power": {
+                "limits": [float(left_power_ylim[0]), float(left_power_ylim[1])],
+                "visible_data_bounds": [float(visible_power_bounds[0]), float(visible_power_bounds[1])],
+                "x_field_for_scaling": left_panel_x_field,
+                "x_limits_for_scaling": [float(left_panel_x_limits[0]), float(left_panel_x_limits[1])],
+                "method": (
+                    "minimum and maximum of the plotted power curves within this panel's shown x range; "
+                    "the axis is padded symmetrically about zero using the larger absolute extremum"
+                ),
+            },
+            "photosphere_radial_velocity": {
+                "limits": [float(rv_ylim[0]), float(rv_ylim[1])],
+                "visible_data_bounds": [
+                    float(np.nanmin(sampled_photosphere_rv)),
+                    float(np.nanmax(sampled_photosphere_rv)),
+                ],
+                "method": "panel-local fractional padding around the displayed photosphere radial-velocity curve",
+            },
+            "photosphere_luminosity": {
+                "limits": [float(luminosity_ylim[0]), float(luminosity_ylim[1])],
+                "visible_data_bounds": [
+                    float(np.nanmin(sampled_photosphere_l)),
+                    float(np.nanmax(sampled_photosphere_l)),
+                ],
+                "method": "panel-local fractional padding around the displayed photosphere luminosity curve",
+            },
+        },
         "left_power_visible_data_bounds": [
             float(visible_power_bounds[0]),
             float(visible_power_bounds[1]),
@@ -3242,7 +3281,8 @@ def main() -> None:
             ],
         },
         "opacity_scaling": {
-            "method": "visible-window min opacity maps to zero; visible-window max opacity maps to a fixed fraction of the positive left-panel y-limit",
+            "method": "left-panel visible-window min opacity maps to zero; left-panel visible-window max opacity maps to a fixed fraction of that panel's positive y-limit",
+            "panel": "left_power",
             "panel_top_fraction": float(OPACITY_PANEL_TOP_FRACTION),
             "display_units_per_opacity_unit": float(opacity_scale_display),
             "opacity_min_baseline": float(scaled_diagnostic_bounds["opacity"][0]),

@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import math
 import os
 import re
 import shutil
@@ -52,6 +53,7 @@ EXPECTED_MODEL_FIELD = {
     "restart": "restart_model",
     "deep2cycles": "deep_model",
 }
+EXPECTED_ANIMATION_SCALING_VERSION = "per-panel-visible-window-v2"
 REQUIRED_PROFILE_COLUMNS = {
     "rsp_Pvsc",
     "rsp_src_snk",
@@ -588,10 +590,20 @@ def run_plot_stage(
         run_logged(command, ROOT, output_dir / "logs" / "plot.log", dry_run)
         return
     if expected.exists() and not force:
-        mark_stage(status, "plot", "complete", skipped=True, expected_output=str(expected))
-        save_status(output_dir, status)
-        print(f"{record['model_id']} plot: already complete")
-        return
+        current, current_reason = animation_product_is_current(record, output_dir)
+        if current:
+            mark_stage(
+                status,
+                "plot",
+                "complete",
+                skipped=True,
+                expected_output=str(expected),
+                current_product_reason=current_reason,
+            )
+            save_status(output_dir, status)
+            print(f"{record['model_id']} plot: already complete")
+            return
+        print(f"{record['model_id']} plot: regenerating stale product ({current_reason})")
 
     started_at = now_iso()
     mark_stage(status, "plot", "running", started_at=started_at, expected_output=str(expected))
@@ -792,6 +804,83 @@ def run_final_cycle_stage(
     save_status(output_dir, status)
 
 
+def animation_summary_scaling_status(summary: dict[str, object]) -> tuple[bool, str]:
+    try:
+        scaling_version = str(summary["scaling_method_version"])
+        main_radius_xlim = summary["main_radius_xlim_used"]
+        scaling_x_limits = summary["left_panel_x_limits_for_scaling"]
+        visible_power_bounds = summary["left_power_visible_data_bounds"]
+        left_power_ylim = summary["left_power_ylim"]
+        opacity_scaling = summary["opacity_scaling"]
+        panel_y_ranges = summary["panel_y_ranges"]
+        left_power_panel = panel_y_ranges["left_power"]
+        scale_left = float(scaling_x_limits[0])
+        scale_right = float(scaling_x_limits[1])
+        radius_left = float(main_radius_xlim[0])
+        radius_right = float(main_radius_xlim[1])
+        visible_min = float(visible_power_bounds[0])
+        visible_max = float(visible_power_bounds[1])
+        panel_bottom = float(left_power_ylim[0])
+        panel_top = float(left_power_ylim[1])
+        opacity_units = float(opacity_scaling["display_units_per_opacity_unit"])
+        opacity_max_display = float(opacity_scaling["opacity_max_display_value"])
+        left_power_limits = left_power_panel["limits"]
+        left_power_visible = left_power_panel["visible_data_bounds"]
+    except (KeyError, TypeError, ValueError, IndexError):
+        return False, "visible-window scaling metadata is missing"
+
+    if scaling_version != EXPECTED_ANIMATION_SCALING_VERSION:
+        return False, (
+            f"animation scaling version is {scaling_version!r}, "
+            f"expected {EXPECTED_ANIMATION_SCALING_VERSION!r}"
+        )
+    finite_values = (
+        scale_left,
+        scale_right,
+        radius_left,
+        radius_right,
+        visible_min,
+        visible_max,
+        panel_bottom,
+        panel_top,
+        opacity_units,
+        opacity_max_display,
+    )
+    if not all(math.isfinite(value) for value in finite_values):
+        return False, "visible-window scaling metadata contains non-finite values"
+    if abs(scale_left - radius_left) > 1.0e-6 or abs(scale_right - radius_right) > 1.0e-6:
+        return False, "left-panel scaling limits do not match the displayed radius range"
+    if visible_min < panel_bottom - 1.0e-8 or visible_max > panel_top + 1.0e-8:
+        return False, "visible power extrema fall outside the plotted y-limits"
+    if (
+        abs(float(left_power_limits[0]) - panel_bottom) > 1.0e-8
+        or abs(float(left_power_limits[1]) - panel_top) > 1.0e-8
+        or abs(float(left_power_visible[0]) - visible_min) > 1.0e-8
+        or abs(float(left_power_visible[1]) - visible_max) > 1.0e-8
+    ):
+        return False, "left-power panel y-range metadata does not match the plotted limits"
+    if opacity_units <= 0.0 or opacity_max_display <= 0.0:
+        return False, "opacity display scale is not positive"
+    return True, "per-panel visible-window scaling metadata is current"
+
+
+def load_animation_summary(record: dict[str, object], output_dir: Path) -> dict[str, object]:
+    summary_path = output_dir / f"{record['product_stem']}_summary.json"
+    if not summary_path.exists():
+        return {}
+    try:
+        return json.loads(summary_path.read_text())
+    except json.JSONDecodeError:
+        return {}
+
+
+def animation_product_is_current(record: dict[str, object], output_dir: Path) -> tuple[bool, str]:
+    summary = load_animation_summary(record, output_dir)
+    if not summary:
+        return False, "animation summary is missing or unreadable"
+    return animation_summary_scaling_status(summary)
+
+
 def profile_header_columns(profile_path: Path) -> set[str]:
     lines = profile_path.read_text(errors="replace").splitlines()
     if len(lines) < 6:
@@ -934,6 +1023,12 @@ def verify_model(record: dict[str, object], output_dir: Path) -> dict[str, objec
     heating_mode = summary.get("heating_mode")
     cycle_source = summary.get("cycle_source")
     main_radius_xlim = summary.get("main_radius_xlim_used")
+    scaling_x_limits = summary.get("left_panel_x_limits_for_scaling")
+    visible_power_bounds = summary.get("left_power_visible_data_bounds")
+    left_power_ylim = summary.get("left_power_ylim")
+    opacity_scaling = summary.get("opacity_scaling")
+    scaling_version = summary.get("scaling_method_version")
+    panel_y_ranges = summary.get("panel_y_ranges")
     photosphere_visualization = summary.get("photosphere_visualization", {})
     photosphere_radius_min = photosphere_visualization.get("sphere_radius_min_rsun")
     photosphere_radius_max = photosphere_visualization.get("sphere_radius_max_rsun")
@@ -949,6 +1044,65 @@ def verify_model(record: dict[str, object], output_dir: Path) -> dict[str, objec
         failures.append(f"heating_mode is {heating_mode!r}, expected 'gas_minus_c'")
     if cycle_source != "final-cycle summary age window":
         failures.append(f"cycle_source is {cycle_source!r}, expected 'final-cycle summary age window'")
+    if scaling_version != EXPECTED_ANIMATION_SCALING_VERSION:
+        failures.append(
+            f"scaling_method_version is {scaling_version!r}, expected {EXPECTED_ANIMATION_SCALING_VERSION!r}"
+        )
+    try:
+        scale_left = float(scaling_x_limits[0])
+        scale_right = float(scaling_x_limits[1])
+        radius_left_for_scaling = float(main_radius_xlim[0])
+        radius_right_for_scaling = float(main_radius_xlim[1])
+        if (
+            abs(scale_left - radius_left_for_scaling) > 1.0e-6
+            or abs(scale_right - radius_right_for_scaling) > 1.0e-6
+        ):
+            failures.append(
+                "left-panel scaling limits do not match the displayed radius range: "
+                f"scaling=[{scale_left:.6g}, {scale_right:.6g}], "
+                f"displayed=[{radius_left_for_scaling:.6g}, {radius_right_for_scaling:.6g}]"
+            )
+    except (TypeError, ValueError, IndexError):
+        failures.append("left-panel visible-window scaling metadata is missing")
+    try:
+        visible_min = float(visible_power_bounds[0])
+        visible_max = float(visible_power_bounds[1])
+        panel_bottom = float(left_power_ylim[0])
+        panel_top = float(left_power_ylim[1])
+        if not all(math.isfinite(value) for value in (visible_min, visible_max, panel_bottom, panel_top)):
+            raise ValueError("non-finite power scaling values")
+        if visible_min < panel_bottom - 1.0e-8 or visible_max > panel_top + 1.0e-8:
+            failures.append(
+                "visible power extrema fall outside the plotted y-limits: "
+                f"visible=[{visible_min:.6g}, {visible_max:.6g}], "
+                f"ylim=[{panel_bottom:.6g}, {panel_top:.6g}]"
+            )
+        try:
+            left_power_panel = panel_y_ranges["left_power"]  # type: ignore[index]
+            left_panel_limits = left_power_panel["limits"]
+            left_panel_visible = left_power_panel["visible_data_bounds"]
+            if (
+                abs(float(left_panel_limits[0]) - panel_bottom) > 1.0e-8
+                or abs(float(left_panel_limits[1]) - panel_top) > 1.0e-8
+                or abs(float(left_panel_visible[0]) - visible_min) > 1.0e-8
+                or abs(float(left_panel_visible[1]) - visible_max) > 1.0e-8
+            ):
+                failures.append("left-power panel y-range metadata does not match the plotted limits")
+        except (TypeError, ValueError, KeyError, IndexError):
+            failures.append("panel-local y-range metadata is missing")
+    except (TypeError, ValueError, IndexError):
+        failures.append("visible power extrema metadata is missing")
+    try:
+        opacity_units = float(opacity_scaling["display_units_per_opacity_unit"])
+        opacity_max_display = float(opacity_scaling["opacity_max_display_value"])
+        if not math.isfinite(opacity_units) or opacity_units <= 0.0:
+            failures.append(f"opacity display scale is {opacity_units!r}, expected a positive finite value")
+        if not math.isfinite(opacity_max_display) or opacity_max_display <= 0.0:
+            failures.append(
+                f"opacity_max_display_value is {opacity_max_display!r}, expected a positive finite value"
+            )
+    except (TypeError, ValueError, KeyError):
+        failures.append("visible-window opacity scaling metadata is missing")
     try:
         radius_left = float(main_radius_xlim[0])
         radius_right = float(main_radius_xlim[1])
@@ -979,8 +1133,15 @@ def verify_model(record: dict[str, object], output_dir: Path) -> dict[str, objec
         "summary_path": str(summary_path),
         "pressure_work_mode": pressure_mode,
         "heating_mode": heating_mode,
+        "scaling_method_version": scaling_version,
+        "expected_scaling_method_version": EXPECTED_ANIMATION_SCALING_VERSION,
+        "panel_y_ranges": panel_y_ranges,
         "cycle_source": cycle_source,
         "main_radius_xlim_used": main_radius_xlim,
+        "left_panel_x_limits_for_scaling": scaling_x_limits,
+        "left_power_visible_data_bounds": visible_power_bounds,
+        "left_power_ylim": left_power_ylim,
+        "opacity_scaling": opacity_scaling,
         "photosphere_radius_rsun_range": [photosphere_radius_min, photosphere_radius_max],
         "radius_window_contains_photosphere": radius_window_contains_photosphere,
         "continue_saturation_stop": continue_stop,
@@ -1007,10 +1168,20 @@ def run_verify_stage(
 ) -> None:
     expected = expected_path(record, "verify")
     if expected.exists() and not force:
-        mark_stage(status, "verify", "complete", skipped=True, expected_output=str(expected))
-        save_status(output_dir, status)
-        print(f"{record['model_id']} verify: already complete")
-        return
+        current, current_reason = animation_product_is_current(record, output_dir)
+        if current:
+            mark_stage(
+                status,
+                "verify",
+                "complete",
+                skipped=True,
+                expected_output=str(expected),
+                current_product_reason=current_reason,
+            )
+            save_status(output_dir, status)
+            print(f"{record['model_id']} verify: already complete")
+            return
+        print(f"{record['model_id']} verify: regenerating stale verification ({current_reason})")
     if dry_run:
         print(f"verify {record['model_id']}")
         return
