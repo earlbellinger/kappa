@@ -21,7 +21,7 @@
     "workspace": "<local-rre-root>/rsp_batch_runs"
   },
   "completed_gif_count": 7,
-  "generated_at": "2026-06-17T08:05:42.458924+00:00",
+  "generated_at": "2026-06-17T08:14:15.876737+00:00",
   "limit_cycle_converged_model_count": 0,
   "models": [
     {
@@ -61,7 +61,9 @@
         "verify": "complete"
       },
       "steps_median_last_window": null,
-      "verification_passed": true
+      "verification_passed": true,
+      "window_end_period_number": null,
+      "window_start_period_number": null
     },
     {
       "active_stage": null,
@@ -111,7 +113,9 @@
         "verify": "complete"
       },
       "steps_median_last_window": 1235.0,
-      "verification_passed": true
+      "verification_passed": true,
+      "window_end_period_number": 1909.0,
+      "window_start_period_number": 1810.0
     },
     {
       "active_stage": null,
@@ -161,7 +165,9 @@
         "verify": "complete"
       },
       "steps_median_last_window": 1000.0,
-      "verification_passed": true
+      "verification_passed": true,
+      "window_end_period_number": 2000.0,
+      "window_start_period_number": 1901.0
     },
     {
       "active_stage": null,
@@ -211,7 +217,9 @@
         "verify": "failed"
       },
       "steps_median_last_window": 1039.0,
-      "verification_passed": false
+      "verification_passed": false,
+      "window_end_period_number": 2000.0,
+      "window_start_period_number": 1901.0
     },
     {
       "active_stage": null,
@@ -261,7 +269,9 @@
         "verify": "complete"
       },
       "steps_median_last_window": 1000.0,
-      "verification_passed": true
+      "verification_passed": true,
+      "window_end_period_number": 2000.0,
+      "window_start_period_number": 1901.0
     },
     {
       "active_stage": null,
@@ -311,7 +321,9 @@
         "verify": "failed"
       },
       "steps_median_last_window": 1058.0,
-      "verification_passed": false
+      "verification_passed": false,
+      "window_end_period_number": 2000.0,
+      "window_start_period_number": 1901.0
     },
     {
       "active_stage": null,
@@ -361,7 +373,9 @@
         "verify": "failed"
       },
       "steps_median_last_window": 1025.5,
-      "verification_passed": false
+      "verification_passed": false,
+      "window_end_period_number": 2000.0,
+      "window_start_period_number": 1901.0
     },
     {
       "active_stage": "continue_saturation",
@@ -370,37 +384,37 @@
       "converged_exact": false,
       "converged_gamma": false,
       "converged_period": true,
-      "convergence_cycle_count": 1470,
-      "convergence_last_period_number": 1470.0,
+      "convergence_cycle_count": 1510,
+      "convergence_last_period_number": 1510.0,
       "convergence_source_kind": "history_exact_rsp_columns",
-      "convergence_window_end_period_number": 1470.0,
-      "convergence_window_start_period_number": 1371.0,
+      "convergence_window_end_period_number": 1510.0,
+      "convergence_window_start_period_number": 1411.0,
       "delta_r_first_last_window": [
-        0.47664674474119106,
-        0.5598228719131129
+        0.5131688850095122,
+        0.5846772041536497
       ],
-      "delta_r_fractional_peak_to_peak_last_window": 0.15953806068841658,
-      "delta_r_slope_per_cycle_last_window": 0.0008429321639510893,
+      "delta_r_fractional_peak_to_peak_last_window": 0.12931364835722434,
+      "delta_r_slope_per_cycle_last_window": 0.0007248275483462296,
       "estimate_basis": "linear extrapolation from active stage start time and latest period count",
-      "estimated_stage_eta": "2026-06-17T17:34:07.015730+00:00",
-      "estimated_stage_seconds_elapsed": 14298.164659,
-      "estimated_stage_seconds_remaining": 34104.559305116454,
-      "estimated_stage_seconds_total": 48402.723964116456,
-      "gamma_peak_to_peak_last_window": 0.0013787556005500337,
+      "estimated_stage_eta": "2026-06-17T17:41:35.155697+00:00",
+      "estimated_stage_seconds_elapsed": 14811.581944,
+      "estimated_stage_seconds_remaining": 34039.28198739842,
+      "estimated_stage_seconds_total": 48850.86393139842,
+      "gamma_peak_to_peak_last_window": 0.001316870706996031,
       "gif_exists": false,
       "gif_path": null,
-      "latest_history_model": "2068860",
-      "latest_history_mtime": "2026-06-17T08:05:42.296981+00:00",
-      "latest_period": "1477",
+      "latest_history_model": "2121050",
+      "latest_history_mtime": "2026-06-17T08:14:15.691910+00:00",
+      "latest_period": "1516",
       "latest_period_log": "continue_saturation.log",
-      "latest_photo": "<local-rre-root>/rsp_batch_runs/runs/model_007_M0p6887_Z0p004060_T6669/photos_continue_saturation/2060000",
+      "latest_photo": "<local-rre-root>/rsp_batch_runs/runs/model_007_M0p6887_Z0p004060_T6669/photos_continue_saturation/2120000",
       "limit_cycle_converged": false,
       "max_periods": "5000",
       "model_id": "model_007",
       "output_dir": "<local-rre-root>/rsp_batch_runs/output/model_007_M0p6887_Z0p004060_T6669",
-      "period_fractional_peak_to_peak_last_window": 0.000999722186584618,
-      "period_progress_fraction": 0.2954,
-      "period_progress_percent": 29.54,
+      "period_fractional_peak_to_peak_last_window": 0.0009996372273787186,
+      "period_progress_fraction": 0.3032,
+      "period_progress_percent": 30.32,
       "profile_count": null,
       "registered_existing": false,
       "run_dir": "<local-rre-root>/rsp_batch_runs/runs/model_007_M0p6887_Z0p004060_T6669",
@@ -410,8 +424,10 @@
         "create": "complete",
         "prepared": "complete"
       },
-      "steps_median_last_window": 1294.5,
-      "verification_passed": false
+      "steps_median_last_window": 1308.0,
+      "verification_passed": false,
+      "window_end_period_number": 1510.0,
+      "window_start_period_number": 1411.0
     },
     {
       "active_stage": null,
@@ -450,7 +466,9 @@
         "prepared": "complete"
       },
       "steps_median_last_window": null,
-      "verification_passed": false
+      "verification_passed": false,
+      "window_end_period_number": null,
+      "window_start_period_number": null
     },
     {
       "active_stage": null,
@@ -489,7 +507,9 @@
         "prepared": "complete"
       },
       "steps_median_last_window": null,
-      "verification_passed": false
+      "verification_passed": false,
+      "window_end_period_number": null,
+      "window_start_period_number": null
     }
   ],
   "new_batch_gif_count": 6,

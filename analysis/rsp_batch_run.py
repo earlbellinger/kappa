@@ -19,9 +19,11 @@ DEFAULT_WORKSPACE = ROOT / "rsp_batch_runs"
 DEFAULT_PYTHON = Path(r"C:\Program Files\Python311\python.exe")
 PLOT_SCRIPT = ROOT / "plot_work_logT_phase_cycle_gif.py"
 BLACKBODY_TABLE = ROOT / "bbr_color.txt"
+CONVERGENCE_SCRIPT = ROOT / "rsp_batch_convergence.py"
 
 STAGE_ORDER = ("create", "continue_saturation", "restart", "deep2cycles", "final_cycle", "plot", "verify")
 MESA_STAGES = ("create", "continue_saturation", "restart", "deep2cycles")
+DOWNSTREAM_PRODUCT_STAGES = ("restart", "deep2cycles", "final_cycle", "plot", "verify")
 RUN_SCRIPTS = {
     "create": "rn_create",
     "continue_saturation": "rn_continue_saturation",
@@ -123,6 +125,11 @@ def parse_args() -> argparse.Namespace:
         type=int,
         default=7 * 24 * 60 * 60,
         help="Maximum time to wait for another runner's model lock before failing.",
+    )
+    parser.add_argument(
+        "--allow-unconverged-products",
+        action="store_true",
+        help="Allow restart/deep-profile/plot products even when strict limit-cycle convergence has not passed.",
     )
     return parser.parse_args()
 
@@ -299,6 +306,67 @@ def expected_path(record: dict[str, object], stage: str) -> Path:
     if stage == "verify":
         return output_dir / "verification_summary.json"
     raise ValueError(stage)
+
+
+def convergence_summary_path(workspace: Path) -> Path:
+    return workspace / "output" / "convergence_summary_last100.json"
+
+
+def refresh_convergence(workspace: Path, python_exe: Path, dry_run: bool) -> None:
+    command = [str(python_exe), str(CONVERGENCE_SCRIPT), "--workspace", str(workspace)]
+    print(" ".join(command))
+    if dry_run:
+        return
+    subprocess.run(command, cwd=str(ROOT), check=True)
+
+
+def convergence_row(workspace: Path, model_id: object) -> dict[str, object]:
+    path = convergence_summary_path(workspace)
+    if not path.exists():
+        return {}
+    try:
+        data = json.loads(path.read_text())
+    except json.JSONDecodeError:
+        return {}
+    rows = data.get("models", []) if isinstance(data, dict) else []
+    for row in rows:
+        if isinstance(row, dict) and row.get("model_id") == model_id:
+            return row
+    return {}
+
+
+def convergence_gate_reason(row: dict[str, object]) -> str:
+    if not row:
+        return "strict convergence summary is missing"
+    return (
+        "strict convergence pending "
+        f"(source={row.get('source_kind')}, "
+        f"cycles={row.get('cycle_count')}, "
+        f"Gamma_ptp={row.get('gamma_peak_to_peak_last_window')}, "
+        f"P_frac_ptp={row.get('period_fractional_peak_to_peak_last_window')}, "
+        f"DeltaR_frac_ptp={row.get('delta_r_fractional_peak_to_peak_last_window')})"
+    )
+
+
+def mark_downstream_pending_convergence(
+    record: dict[str, object],
+    status: dict[str, object],
+    stages: tuple[str, ...],
+    start_index: int,
+    reason: str,
+    convergence: dict[str, object],
+) -> None:
+    for pending_stage in stages[start_index:]:
+        if pending_stage not in DOWNSTREAM_PRODUCT_STAGES:
+            continue
+        mark_stage(
+            status,
+            pending_stage,
+            "skipped_pending_convergence",
+            expected_output=str(expected_path(record, pending_stage)),
+            reason=reason,
+            convergence=convergence,
+        )
 
 
 def mark_stage(
