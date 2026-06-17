@@ -74,10 +74,15 @@ def status_signature(rre_root: Path) -> dict[str, object]:
         for model in live.get("models", []):
             if not isinstance(model, dict):
                 continue
+            try:
+                period = int(float(str(model.get("latest_period"))))
+            except (TypeError, ValueError):
+                period = None
             live_models.append(
                 {
                     "model_id": model.get("model_id"),
                     "active_stage": model.get("active_stage"),
+                    "period_progress_bucket_50": period // 50 if period is not None else None,
                     "gif_exists": bool(model.get("gif_exists")),
                     "verification_passed": bool(model.get("verification_passed")),
                     "stages": model.get("stages", {}),
