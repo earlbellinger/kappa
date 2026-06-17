@@ -222,7 +222,7 @@ def convergence_text(convergence: dict[str, object] | None) -> str:
     if delta_r is not None:
         bits.append(f"DeltaR frac {float(delta_r):.3g}")
     if max_vsurf is not None:
-        bits.append(f"max v_surf/c_s {float(max_vsurf):.3g}")
+        bits.append(f"window max v_surf/c_s {float(max_vsurf):.3g}")
     return " | ".join(bits)
 
 
