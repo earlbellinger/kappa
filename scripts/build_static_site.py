@@ -450,7 +450,7 @@ def card_html(model: dict[str, object]) -> str:
     status_text = str(model.get("status"))
     if model.get("latest_period") and model.get("max_periods") and "running" in status_text:
         progress_bits.append(f"period {model['latest_period']} / {model['max_periods']}")
-    if model.get("latest_history_model") and (
+    if model.get("latest_history_model") and "running" in status_text and (
         ("running: create" in status_text) or not model.get("latest_period")
     ):
         progress_bits.append(f"model {model['latest_history_model']}")
