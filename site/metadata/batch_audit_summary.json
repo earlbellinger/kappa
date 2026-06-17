@@ -3,14 +3,14 @@
   "complete": false,
   "complete_model_count": 1,
   "failures": [
-    "model_003: stages not complete: plot, verify; verification_summary did not pass; phase_seam_ok=False",
+    "model_003: stages not complete: verify; verification_summary did not pass; phase_seam_ok=False",
     "model_005: stages not complete: verify; verification_summary did not pass; phase_seam_ok=False",
     "model_006: stages not complete: verify; verification_summary did not pass; phase_seam_ok=False",
     "model_007: stages not complete: continue_saturation",
     "model_008: stages not complete: continue_saturation, restart, deep2cycles, final_cycle, plot, verify; missing files: saturated_model, restart_model, deep_model, final_cycle_summary, final_cycle_lightcurve, gif, png, animation_summary, verification_summary; verification_summary did not pass; pressure_work_mode=None; heating_mode=None; cycle_source=None; radius_window_contains_photosphere=None; phase_seam_ok=None; missing profile columns: cp, gamma1, ionization_he4, rsp_Lc, rsp_Lr, rsp_Lt, rsp_Pvsc, rsp_src_snk, tau",
     "model_009: stages not complete: create, continue_saturation, restart, deep2cycles, final_cycle, plot, verify; missing files: create_model, saturated_model, restart_model, deep_model, final_cycle_summary, final_cycle_lightcurve, gif, png, animation_summary, verification_summary; verification_summary did not pass; pressure_work_mode=None; heating_mode=None; cycle_source=None; radius_window_contains_photosphere=None; phase_seam_ok=None; missing profile columns: cp, gamma1, ionization_he4, rsp_Lc, rsp_Lr, rsp_Lt, rsp_Pvsc, rsp_src_snk, tau"
   ],
-  "generated_at": "2026-06-17T16:27:49.641452+00:00",
+  "generated_at": "2026-06-17T16:35:04.270924+00:00",
   "incomplete_models": [
     "model_001",
     "model_002",
@@ -702,13 +702,13 @@
       },
       "cycle_source": "final-cycle summary age window",
       "failures": [
-        "stages not complete: plot, verify",
+        "stages not complete: verify",
         "verification_summary did not pass",
         "phase_seam_ok=False"
       ],
       "files": {
         "animation_summary": {
-          "bytes": 73343,
+          "bytes": 73131,
           "exists": true,
           "path": "<local-rre-root>/rsp_batch_runs/output/model_003_M0p7317_Z0p001405_T6745/mesa_rsp_model_003_M0p7317_Z0p001405_T6745_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work_summary.json"
         },
@@ -733,12 +733,12 @@
           "path": "<local-rre-root>/rsp_batch_runs/output/model_003_M0p7317_Z0p001405_T6745/mesa_rsp_model_003_M0p7317_Z0p001405_T6745_final_cycle_summary.json"
         },
         "gif": {
-          "bytes": 16119351,
+          "bytes": 16049138,
           "exists": true,
           "path": "<local-rre-root>/rsp_batch_runs/output/model_003_M0p7317_Z0p001405_T6745/mesa_rsp_model_003_M0p7317_Z0p001405_T6745_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work.gif"
         },
         "png": {
-          "bytes": 172426,
+          "bytes": 174223,
           "exists": true,
           "path": "<local-rre-root>/rsp_batch_runs/output/model_003_M0p7317_Z0p001405_T6745/mesa_rsp_model_003_M0p7317_Z0p001405_T6745_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work.png"
         },
@@ -825,12 +825,12 @@
         "create": "complete",
         "deep2cycles": "complete",
         "final_cycle": "complete",
-        "plot": "running",
+        "plot": "complete",
         "restart": "complete",
         "verify": "failed"
       },
       "stale_completed_stage_outputs": [],
-      "status": "running",
+      "status": "incomplete",
       "validation_passed": true,
       "verification_passed": false
     },
@@ -940,7 +940,7 @@
       "failures": [],
       "files": {
         "animation_summary": {
-          "bytes": 73697,
+          "bytes": 73486,
           "exists": true,
           "path": "<local-rre-root>/rsp_batch_runs/output/model_004_M0p7595_Z0p0001834_T6876/mesa_rsp_model_004_M0p7595_Z0p0001834_T6876_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work_summary.json"
         },
@@ -965,12 +965,12 @@
           "path": "<local-rre-root>/rsp_batch_runs/output/model_004_M0p7595_Z0p0001834_T6876/mesa_rsp_model_004_M0p7595_Z0p0001834_T6876_final_cycle_summary.json"
         },
         "gif": {
-          "bytes": 13737467,
+          "bytes": 13629181,
           "exists": true,
           "path": "<local-rre-root>/rsp_batch_runs/output/model_004_M0p7595_Z0p0001834_T6876/mesa_rsp_model_004_M0p7595_Z0p0001834_T6876_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work.gif"
         },
         "png": {
-          "bytes": 176489,
+          "bytes": 177486,
           "exists": true,
           "path": "<local-rre-root>/rsp_batch_runs/output/model_004_M0p7595_Z0p0001834_T6876/mesa_rsp_model_004_M0p7595_Z0p0001834_T6876_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work.png"
         },
@@ -1169,7 +1169,7 @@
       ],
       "files": {
         "animation_summary": {
-          "bytes": 74076,
+          "bytes": 73865,
           "exists": true,
           "path": "<local-rre-root>/rsp_batch_runs/output/model_005_M0p6238_Z0p00007156_T6925/mesa_rsp_model_005_M0p6238_Z0p00007156_T6925_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work_summary.json"
         },
@@ -1194,12 +1194,12 @@
           "path": "<local-rre-root>/rsp_batch_runs/output/model_005_M0p6238_Z0p00007156_T6925/mesa_rsp_model_005_M0p6238_Z0p00007156_T6925_final_cycle_summary.json"
         },
         "gif": {
-          "bytes": 15726440,
+          "bytes": 15805187,
           "exists": true,
           "path": "<local-rre-root>/rsp_batch_runs/output/model_005_M0p6238_Z0p00007156_T6925/mesa_rsp_model_005_M0p6238_Z0p00007156_T6925_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work.gif"
         },
         "png": {
-          "bytes": 177032,
+          "bytes": 178597,
           "exists": true,
           "path": "<local-rre-root>/rsp_batch_runs/output/model_005_M0p6238_Z0p00007156_T6925/mesa_rsp_model_005_M0p6238_Z0p00007156_T6925_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work.png"
         },
@@ -1404,7 +1404,7 @@
       ],
       "files": {
         "animation_summary": {
-          "bytes": 73349,
+          "bytes": 73139,
           "exists": true,
           "path": "<local-rre-root>/rsp_batch_runs/output/model_006_M0p7194_Z0p001620_T6711/mesa_rsp_model_006_M0p7194_Z0p001620_T6711_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work_summary.json"
         },
@@ -1429,12 +1429,12 @@
           "path": "<local-rre-root>/rsp_batch_runs/output/model_006_M0p7194_Z0p001620_T6711/mesa_rsp_model_006_M0p7194_Z0p001620_T6711_final_cycle_summary.json"
         },
         "gif": {
-          "bytes": 16075531,
+          "bytes": 16092820,
           "exists": true,
           "path": "<local-rre-root>/rsp_batch_runs/output/model_006_M0p7194_Z0p001620_T6711/mesa_rsp_model_006_M0p7194_Z0p001620_T6711_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work.gif"
         },
         "png": {
-          "bytes": 178462,
+          "bytes": 181047,
           "exists": true,
           "path": "<local-rre-root>/rsp_batch_runs/output/model_006_M0p7194_Z0p001620_T6711/mesa_rsp_model_006_M0p7194_Z0p001620_T6711_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work.png"
         },
@@ -1781,11 +1781,11 @@
         "window_start_period_number": 1434.0
       },
       "cycle_modulation": {
-        "cycle_count": 933,
+        "cycle_count": 934,
         "diagnostic_png": "<local-rre-root>/rsp_batch_runs/output/cycle_diagnostics/model_008_M0p6151_Z0p0004406_T6792_cycle_modulation_diagnostic.png",
         "history_candidate_cycle_counts": [
           {
-            "cycle_count": 933,
+            "cycle_count": 934,
             "history_path": "<local-rre-root>/rsp_batch_runs/runs/model_008_M0p6151_Z0p0004406_T6792/LOGS_continue_saturation/history.data",
             "history_source": "continue_saturation"
           },
@@ -1798,14 +1798,14 @@
         "history_path": "<local-rre-root>/rsp_batch_runs/runs/model_008_M0p6151_Z0p0004406_T6792/LOGS_continue_saturation/history.data",
         "history_source": "continue_saturation",
         "last_cycle_count_used": 80,
-        "last_max_l_lsun": 62.52524168119038,
-        "last_min_abs_mag_v": 0.2735471136998674,
-        "last_period_days": 0.6316222453874616,
-        "max_l_modulation_fraction": 0.004613048905573794,
-        "min_v_modulation_mag": 0.005714100879138484,
+        "last_max_l_lsun": 62.529232278407676,
+        "last_min_abs_mag_v": 0.2734680352298777,
+        "last_period_days": 0.5558274563384202,
+        "max_l_modulation_fraction": 0.004623393842277411,
+        "min_v_modulation_mag": 0.005726888463887969,
         "model_id": "model_008",
-        "period_modulation_fraction": 8.222500321858462e-06,
-        "radius_amplitude_modulation_fraction": 0.16194885525264668,
+        "period_modulation_fraction": 0.1200079261416053,
+        "radius_amplitude_modulation_fraction": 0.1609244568917016,
         "run_name": "model_008_M0p6151_Z0p0004406_T6792"
       },
       "cycle_source": null,
@@ -1891,6 +1891,7 @@
       "pressure_work_mode": null,
       "profile_count": null,
       "quality_warnings": [
+        "strong period modulation 0.12 > 0.05",
         "DeltaR fractional peak-to-peak 0.2030031189160113 > 0.001"
       ],
       "radius_window_contains_photosphere": null,
@@ -1986,10 +1987,10 @@
         "history_path": "<local-rre-root>/rsp_batch_runs/runs/model_009_M0p6668_Z0p0001120_T6852/LOGS_saturation/history.data",
         "history_source": "saturation",
         "last_cycle_count_used": 47,
-        "last_max_l_lsun": 51.244415926863226,
-        "last_min_abs_mag_v": 0.5088198432807098,
-        "last_period_days": 0.30572441376091675,
-        "max_l_modulation_fraction": 0.0030209838357389135,
+        "last_max_l_lsun": 51.26265261063271,
+        "last_min_abs_mag_v": 0.5084113305987347,
+        "last_period_days": 0.49310389316276826,
+        "max_l_modulation_fraction": 0.0030209784863434604,
         "min_v_modulation_mag": 0.003736815618592959,
         "model_id": "model_009",
         "period_modulation_fraction": 0.9073095236907801,
@@ -2110,7 +2111,7 @@
     "batch_status": "running",
     "current_model": "model_008",
     "status": "waiting_for_batch",
-    "updated_at": "2026-06-17T16:27:24.637971+00:00"
+    "updated_at": "2026-06-17T16:32:24.640040+00:00"
   },
   "quality_extension_complete": false,
   "quality_extension_required": true,
@@ -2122,7 +2123,7 @@
     "model_005: strong max-L cycle modulation 0.197 > 0.05; strong min-V cycle modulation 0.258 mag > 0.05 mag; strong period modulation 0.2449 > 0.05; exact Gamma/P/DeltaR convergence unavailable from source='period_log_fallback'; Gamma peak-to-peak None > 0.001; P fractional peak-to-peak 0.2380971853063449 > 0.001; DeltaR fractional peak-to-peak 1.0838292045313083 > 0.001",
     "model_006: strong max-L cycle modulation 0.08684 > 0.05; strong min-V cycle modulation 0.1106 mag > 0.05 mag; strong period modulation 0.09743 > 0.05; exact Gamma/P/DeltaR convergence unavailable from source='period_log_fallback'; Gamma peak-to-peak None > 0.001; P fractional peak-to-peak 0.09132408511069967 > 0.001; DeltaR fractional peak-to-peak 0.378029031155749 > 0.001",
     "model_007: DeltaR fractional peak-to-peak 0.07827411959837964 > 0.001",
-    "model_008: DeltaR fractional peak-to-peak 0.2030031189160113 > 0.001",
+    "model_008: strong period modulation 0.12 > 0.05; DeltaR fractional peak-to-peak 0.2030031189160113 > 0.001",
     "model_009: strong period modulation 0.9073 > 0.05; only 35/100 cycles available for convergence window; Gamma peak-to-peak 0.013914661240107403 > 0.001; P fractional peak-to-peak 0.7950381069819137 > 0.001; DeltaR fractional peak-to-peak 1.0540808295950659 > 0.001"
   ],
   "status": "running",
