@@ -116,8 +116,12 @@ def wait_for_batch(args: argparse.Namespace, log_path: Path, status_path: Path) 
         status = batch_status(args)
         status_text = status.get("status")
         current = status.get("current_model")
+        ended_at = status.get("ended_at")
         waiting_status = "waiting_for_batch"
-        if status_text in {"failed", "missing", None}:
+        terminal_failed = status_text == "failed" and ended_at
+        if terminal_failed:
+            waiting_status = "batch_terminal_failed"
+        elif status_text in {"failed", "missing", None}:
             waiting_status = "waiting_for_batch_recovery"
         write_json(
             status_path,
@@ -126,10 +130,14 @@ def wait_for_batch(args: argparse.Namespace, log_path: Path, status_path: Path) 
                 "status": waiting_status,
                 "batch_status": status_text,
                 "current_model": current,
+                "batch_ended_at": ended_at,
             },
         )
         append_log(log_path, f"batch status={status_text}; current_model={current}")
         if status_text == "complete":
+            return 0
+        if terminal_failed:
+            append_log(log_path, "batch ended with failed status; proceeding to quality extension")
             return 0
         if status_text in {"failed", "missing", None}:
             append_log(log_path, "batch not complete; waiting for supervisor/recovery")
