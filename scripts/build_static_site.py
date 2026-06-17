@@ -283,6 +283,9 @@ def copy_model_assets(
         status = "awaiting convergence"
     elif verification_failed:
         status = "verification failed"
+    stale_stage_outputs = live_record.get("stale_completed_stage_outputs") if live_record else []
+    if stale_stage_outputs:
+        status = "stale stage output"
     if live_record and live_record.get("active_stage"):
         status = f"running: {live_record.get('active_stage')}"
     elif live_record and live_record.get("retry_pending"):
@@ -324,6 +327,7 @@ def copy_model_assets(
         "max_periods": live_record.get("max_periods") if live_record else None,
         "retry_pending": live_record.get("retry_pending") if live_record else None,
         "retry_pending_stages": live_record.get("retry_pending_stages") if live_record else None,
+        "stale_completed_stage_outputs": stale_stage_outputs,
         "converged_exact": convergence.get("converged_exact") if convergence and not record.get("registered_existing") else None,
         "convergence": "" if record.get("registered_existing") else convergence_text(convergence),
         "verification_passed": live_record.get("verification_passed") if live_record else None,
@@ -447,6 +451,17 @@ def card_html(model: dict[str, object]) -> str:
         ]
         if retry_names:
             progress_bits.append(f"queued retry for {', '.join(retry_names)}")
+    stale_stage_outputs = model.get("stale_completed_stage_outputs") or []
+    if stale_stage_outputs:
+        stale_names = [
+            str(item.get("stage"))
+            for item in stale_stage_outputs
+            if isinstance(item, dict) and item.get("stage")
+        ]
+        progress_bits.append(
+            "stale stage output"
+            + (f": {', '.join(stale_names)}" if stale_names else "")
+        )
     if model.get("profile_count"):
         progress_bits.append(f"{model['profile_count']} profiles")
     status_text = str(model.get("status"))
