@@ -35,7 +35,21 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--workspace", type=Path, default=DEFAULT_WORKSPACE)
     parser.add_argument("--models", nargs="*", default=None, help="Optional model ids to consider.")
-    parser.add_argument("--caps", nargs="+", type=int, default=[5000], help="Resume RSP_max_num_periods caps to try.")
+    parser.add_argument(
+        "--caps",
+        nargs="+",
+        type=int,
+        default=[5000, 7500, 10000],
+        help=(
+            "Resume RSP_max_num_periods caps to try. The driver reruns "
+            "final-cycle products only after strict convergence passes."
+        ),
+    )
+    parser.add_argument(
+        "--build-unconverged-products",
+        action="store_true",
+        help="Also rebuild final-cycle products at the final cap even if strict convergence still fails.",
+    )
     parser.add_argument("--python", type=Path, default=DEFAULT_PYTHON if DEFAULT_PYTHON.exists() else Path(sys.executable))
     parser.add_argument("--bash", default="bash")
     parser.add_argument("--wait-for-batch", action="store_true")
@@ -209,7 +223,27 @@ def quality_warning_models(args: argparse.Namespace, log_path: Path) -> list[dic
     return result
 
 
-def extend_one_model(args: argparse.Namespace, model_id: str, cap: int, log_path: Path) -> int:
+def run_continuation(args: argparse.Namespace, model_id: str, cap: int, log_path: Path) -> int:
+    command = [
+        str(args.python),
+        str(RUNNER),
+        "--workspace",
+        str(args.workspace),
+        "--model",
+        model_id,
+        "--stage",
+        "continue_saturation",
+        "--bash",
+        args.bash,
+        "--force",
+        "--resume-from-latest-photo",
+        "--resume-max-num-periods",
+        str(cap),
+    ]
+    return run_command(command, log_path, args.dry_run)
+
+
+def build_model_products(args: argparse.Namespace, model_id: str, log_path: Path) -> int:
     commands = [
         [
             str(args.python),
@@ -219,16 +253,24 @@ def extend_one_model(args: argparse.Namespace, model_id: str, cap: int, log_path
             "--model",
             model_id,
             "--stage",
-            "continue_saturation",
+            "restart",
             "--bash",
             args.bash,
             "--force",
-            "--resume-from-latest-photo",
-            "--resume-max-num-periods",
-            str(cap),
         ],
-        [str(args.python), str(RUNNER), "--workspace", str(args.workspace), "--model", model_id, "--stage", "restart", "--bash", args.bash, "--force"],
-        [str(args.python), str(RUNNER), "--workspace", str(args.workspace), "--model", model_id, "--stage", "deep2cycles", "--bash", args.bash, "--force"],
+        [
+            str(args.python),
+            str(RUNNER),
+            "--workspace",
+            str(args.workspace),
+            "--model",
+            model_id,
+            "--stage",
+            "deep2cycles",
+            "--bash",
+            args.bash,
+            "--force",
+        ],
         [str(args.python), str(RUNNER), "--workspace", str(args.workspace), "--model", model_id, "--stage", "final_cycle", "--force"],
         [str(args.python), str(RUNNER), "--workspace", str(args.workspace), "--model", model_id, "--stage", "plot", "--force"],
         [str(args.python), str(RUNNER), "--workspace", str(args.workspace), "--model", model_id, "--stage", "verify", "--force"],
@@ -238,6 +280,11 @@ def extend_one_model(args: argparse.Namespace, model_id: str, cap: int, log_path
         if code != 0:
             return code
     return 0
+
+
+def model_convergence_row(args: argparse.Namespace, model_id: str) -> dict:
+    convergence = convergence_by_model(args.workspace / "output")
+    return convergence.get(model_id, {})
 
 
 def main() -> int:
@@ -273,7 +320,9 @@ def main() -> int:
         return code
 
     attempts: list[dict[str, object]] = []
-    for cap in args.caps:
+    sorted_caps = sorted(dict.fromkeys(args.caps))
+    for cap_index, cap in enumerate(sorted_caps):
+        final_cap = cap_index == len(sorted_caps) - 1
         targets = quality_warning_models(args, log_path)
         if not targets:
             strict_code = strict_audit(args, log_path)
@@ -299,13 +348,21 @@ def main() -> int:
                     "status": "extending",
                     "current_model": model_id,
                     "cap": cap,
+                    "phase": "continue_saturation",
                     "attempts": attempts,
                     "log": str(log_path),
                 },
             )
-            returncode = extend_one_model(args, model_id, cap, log_path)
-            attempts.append({"model_id": model_id, "cap": cap, "returncode": returncode, "ended_at": now_iso()})
+            returncode = run_continuation(args, model_id, cap, log_path)
+            attempt: dict[str, object] = {
+                "model_id": model_id,
+                "cap": cap,
+                "continuation_returncode": returncode,
+                "ended_at": now_iso(),
+            }
             if returncode != 0:
+                attempt["returncode"] = returncode
+                attempts.append(attempt)
                 write_json(
                     status_path,
                     {
@@ -319,10 +376,81 @@ def main() -> int:
                     },
                 )
                 return returncode
-        code = analysis_refresh(args, log_path, allow_incomplete=True)
-        if code != 0:
-            write_json(status_path, {"updated_at": now_iso(), "status": "analysis_refresh_failed", "returncode": code, "attempts": attempts, "log": str(log_path)})
-            return code
+
+            code = analysis_refresh(args, log_path, allow_incomplete=True)
+            if code != 0:
+                attempt["analysis_returncode"] = code
+                attempt["returncode"] = code
+                attempts.append(attempt)
+                write_json(status_path, {"updated_at": now_iso(), "status": "analysis_refresh_failed", "returncode": code, "attempts": attempts, "log": str(log_path)})
+                return code
+
+            convergence_row = model_convergence_row(args, model_id)
+            converged = convergence_row.get("converged_exact") is True
+            attempt["converged_after_continuation"] = converged
+            attempt["convergence"] = {
+                key: convergence_row.get(key)
+                for key in (
+                    "source_kind",
+                    "cycle_count",
+                    "last_period_number",
+                    "gamma_peak_to_peak_last_window",
+                    "period_fractional_peak_to_peak_last_window",
+                    "delta_r_fractional_peak_to_peak_last_window",
+                    "delta_r_slope_per_cycle_last_window",
+                    "converged_exact",
+                )
+            }
+
+            should_build_products = converged or (final_cap and args.build_unconverged_products)
+            if should_build_products:
+                write_json(
+                    status_path,
+                    {
+                        "updated_at": now_iso(),
+                        "status": "building_products",
+                        "current_model": model_id,
+                        "cap": cap,
+                        "converged": converged,
+                        "attempts": attempts,
+                        "log": str(log_path),
+                    },
+                )
+                product_code = build_model_products(args, model_id, log_path)
+                attempt["product_returncode"] = product_code
+                if product_code != 0:
+                    attempt["returncode"] = product_code
+                    attempts.append(attempt)
+                    write_json(
+                        status_path,
+                        {
+                            "updated_at": now_iso(),
+                            "status": "failed",
+                            "current_model": model_id,
+                            "cap": cap,
+                            "returncode": product_code,
+                            "attempts": attempts,
+                            "log": str(log_path),
+                        },
+                    )
+                    return product_code
+                code = analysis_refresh(args, log_path, allow_incomplete=True)
+                if code != 0:
+                    attempt["post_product_analysis_returncode"] = code
+                    attempt["returncode"] = code
+                    attempts.append(attempt)
+                    write_json(status_path, {"updated_at": now_iso(), "status": "analysis_refresh_failed", "returncode": code, "attempts": attempts, "log": str(log_path)})
+                    return code
+            else:
+                append_log(
+                    log_path,
+                    (
+                        f"{model_id} not converged at cap={cap}; "
+                        "skipping final-cycle product rebuild"
+                    ),
+                )
+            attempt["returncode"] = 0
+            attempts.append(attempt)
 
     remaining = quality_warning_models(args, log_path)
     strict_code = None
