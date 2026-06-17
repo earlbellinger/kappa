@@ -69,6 +69,7 @@ MAX_PHASE_SEAM_FRACTION = 0.025
 MAX_PHASE_ADJACENT_FRACTION = 0.025
 MODEL_LOCK_POLL_SECONDS = 30
 MODEL_LOCK_STALE_SECONDS = 2 * 24 * 60 * 60
+OUTPUT_FRESHNESS_TOLERANCE_SECONDS = 2.0
 
 
 def parse_rsp_stop_reason(log_path: Path) -> dict[str, object]:
@@ -397,6 +398,41 @@ def mark_stage(
     stages[stage] = payload
 
 
+def stage_payload(status: dict[str, object], stage: str) -> dict[str, object]:
+    stages = status.get("stages", {})
+    if not isinstance(stages, dict):
+        return {}
+    payload = stages.get(stage, {})
+    return payload if isinstance(payload, dict) else {}
+
+
+def output_is_newer_than(path: Path, started_at: datetime | None) -> bool:
+    if started_at is None:
+        return path.exists()
+    if not path.exists():
+        return False
+    return path.stat().st_mtime >= started_at.timestamp() - OUTPUT_FRESHNESS_TOLERANCE_SECONDS
+
+
+def existing_output_can_complete_stage(
+    expected: Path,
+    status: dict[str, object],
+    stage: str,
+) -> tuple[bool, str]:
+    if not expected.exists():
+        return False, f"expected output is missing: {expected}"
+    payload = stage_payload(status, stage)
+    stage_status = payload.get("status")
+    started_at = parse_iso_datetime(payload.get("started_at"))
+    if stage_status in {"running", "failed"} and started_at is not None:
+        if not output_is_newer_than(expected, started_at):
+            return (
+                False,
+                f"existing output predates {stage} attempt started at {started_at.isoformat()}: {expected}",
+            )
+    return True, f"expected output exists: {expected}"
+
+
 def run_logged(command: list[str], cwd: Path, log_path: Path, dry_run: bool) -> None:
     print(" ".join(command))
     print(f"cwd: {cwd}")
@@ -430,10 +466,13 @@ def run_mesa_stage(
     script = RUN_SCRIPTS[stage]
     resume_photo: Path | None = None
     if expected.exists() and not force:
-        mark_stage(status, stage, "complete", skipped=True, expected_output=str(expected))
-        save_status(output_dir, status)
-        print(f"{record['model_id']} {stage}: already complete")
-        return
+        output_usable, output_reason = existing_output_can_complete_stage(expected, status, stage)
+        if output_usable:
+            mark_stage(status, stage, "complete", skipped=True, expected_output=str(expected))
+            save_status(output_dir, status)
+            print(f"{record['model_id']} {stage}: already complete")
+            return
+        print(f"{record['model_id']} {stage}: ignoring stale output ({output_reason})")
     if resume_from_latest_photo and stage in RESUMABLE_PHOTO_DIRS:
         try:
             resume_photo = latest_saved_photo(run_dir / RESUMABLE_PHOTO_DIRS[stage])
@@ -460,8 +499,10 @@ def run_mesa_stage(
     save_status(output_dir, status)
     try:
         run_logged([bash_exe, script], run_dir, output_dir / "logs" / f"{stage}.log", dry_run)
-        if not dry_run and not expected.exists():
-            raise FileNotFoundError(f"Expected {expected} after {stage}")
+        if not dry_run:
+            started = parse_iso_datetime(started_at)
+            if not output_is_newer_than(expected, started):
+                raise FileNotFoundError(f"Expected fresh {expected} after {stage}")
     except Exception as exc:
         mark_stage(
             status,
