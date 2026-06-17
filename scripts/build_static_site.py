@@ -143,6 +143,12 @@ def convergence_text(convergence: dict[str, object] | None) -> str:
     return " | ".join(bits)
 
 
+def strict_convergence_passed(record: dict[str, object], convergence: dict[str, object] | None) -> bool:
+    if record.get("registered_existing"):
+        return True
+    return bool(convergence and convergence.get("converged_exact") is True)
+
+
 def copy_model_assets(
     rre_root: Path,
     output_dir: Path,
@@ -161,6 +167,8 @@ def copy_model_assets(
     verify = load_json(verify_path)
     verified = isinstance(verify, dict) and verify.get("passed") is True
     verification_failed = isinstance(verify, dict) and verify.get("passed") is False
+    convergence_passed = strict_convergence_passed(record, convergence)
+    trusted_animation = verified and convergence_passed
 
     copied: dict[str, str | None] = {}
     source_map = {
@@ -173,7 +181,7 @@ def copy_model_assets(
         "run_status": source_output_dir / "run_status.json",
     }
     for key, source in source_map.items():
-        if key in {"gif", "png"} and not verified:
+        if key in {"gif", "png"} and not trusted_animation:
             copied[key] = None
             continue
         if source.suffix.lower() == ".json":
@@ -185,8 +193,10 @@ def copy_model_assets(
 
     summary = load_json(source_map["summary"])
     status = "pending"
-    if verified:
+    if trusted_animation:
         status = "verified"
+    elif verified and not convergence_passed:
+        status = "awaiting convergence"
     elif verification_failed:
         status = "verification failed"
     if live_record and live_record.get("active_stage"):
@@ -208,7 +218,7 @@ def copy_model_assets(
         "L": record.get("RSP_L"),
         "Z": record.get("RSP_Z"),
         "assets": copied,
-        "gif_mb": file_size_mb(source_map["gif"]) if verified else None,
+        "gif_mb": file_size_mb(source_map["gif"]) if trusted_animation else None,
         "profile_count": live_record.get("profile_count") if live_record else None,
         "latest_period": live_record.get("latest_period") if live_record else None,
         "max_periods": live_record.get("max_periods") if live_record else None,
@@ -216,6 +226,7 @@ def copy_model_assets(
         "convergence": "" if record.get("registered_existing") else convergence_text(convergence),
         "verification_passed": live_record.get("verification_passed") if live_record else None,
         "verification_failures": verify.get("failures", []) if isinstance(verify, dict) else [],
+        "animation_trusted": trusted_animation,
         "phase_curve_break_phases": phase_breaks,
     }
 
@@ -310,7 +321,12 @@ def card_html(model: dict[str, object]) -> str:
     if image:
         image_html = f'<a class="media" href="{html.escape(str(image))}"><img src="{html.escape(str(image))}" alt="{html.escape(str(model["model_id"]))} animation"></a>'
     else:
-        placeholder = "verification failed" if "failed" in str(model["status"]) else "queued"
+        if str(model["status"]) == "awaiting convergence":
+            placeholder = "strict convergence pending"
+        elif "failed" in str(model["status"]):
+            placeholder = "verification failed"
+        else:
+            placeholder = "queued"
         image_html = f'<div class="media placeholder">{html.escape(placeholder)}</div>'
     progress_bits = []
     if model.get("profile_count"):
@@ -345,7 +361,7 @@ def card_html(model: dict[str, object]) -> str:
 
 def write_index(output_dir: Path, models: list[dict[str, object]], metadata_links: dict[str, str | None]) -> None:
     generated = datetime.now(timezone.utc).isoformat(timespec="seconds")
-    completed = sum(1 for model in models if model["assets"].get("gif"))
+    trusted = sum(1 for model in models if model["assets"].get("gif"))
     verified = sum(1 for model in models if model.get("verification_passed") is True or model["status"] == "verified")
     cards = "\n".join(card_html(model) for model in models)
     convergence_figure = ""
@@ -417,7 +433,7 @@ def write_index(output_dir: Path, models: list[dict[str, object]], metadata_link
   <header>
     <h1>Kappa</h1>
     <p class="dek">RR Lyrae RSP animations for following pressure-volume work, gas heating, ionization structure, radius, temperature, luminosity, and radial velocity through pulsation phase.</p>
-    <p class="meta">Generated {html.escape(generated)}. Completed GIFs: {completed}/{len(models)}. Verified: {verified}/{len(models)}.</p>
+    <p class="meta">Generated {html.escape(generated)}. Trusted GIFs: {trusted}/{len(models)}. Seam-verified: {verified}/{len(models)}.</p>
   </header>
   <main>
     <nav class="toolbar">{" ".join(meta_links)}</nav>
