@@ -34,7 +34,12 @@ def sanitize_json_value(value: object, rre_root: Path) -> object:
     if isinstance(value, str):
         root_text = str(rre_root)
         root_forward = rre_root.as_posix()
-        sanitized = value.replace(root_text, "<local-rre-root>").replace(root_forward, "<local-rre-root>")
+        root_escaped = root_text.replace("\\", "\\\\")
+        sanitized = (
+            value.replace(root_escaped, "<local-rre-root>")
+            .replace(root_text, "<local-rre-root>")
+            .replace(root_forward, "<local-rre-root>")
+        )
         return sanitized.replace("\\", "/") if "<local-rre-root>" in sanitized else sanitized
     return value
 

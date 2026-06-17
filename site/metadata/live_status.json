@@ -1,8 +1,7 @@
 {
   "batch_status": {
-    "current_model": "model_007",
     "driver_pid": 46412,
-    "ended_at": null,
+    "ended_at": "2026-06-17T04:05:41.306383+00:00",
     "log": "<local-rre-root>/rsp_batch_runs/output/batch_remaining_007_009_recovery.log",
     "models": [
       "model_007",
@@ -11,17 +10,40 @@
     ],
     "results": {
       "model_007": {
+        "continuation_resume_returncode": 1,
+        "ended_at": "2026-06-17T04:04:05.270469+00:00",
+        "resume_returncode": 1,
+        "resume_stage": "continue_saturation",
+        "returncode": 1,
         "started_at": "2026-06-17T02:51:07.432498+00:00",
-        "status": "running"
+        "status": "failed"
+      },
+      "model_008": {
+        "continuation_resume_returncode": null,
+        "ended_at": "2026-06-17T04:04:52.677364+00:00",
+        "resume_returncode": 1,
+        "resume_stage": "create",
+        "returncode": 1,
+        "started_at": "2026-06-17T04:04:05.271473+00:00",
+        "status": "failed"
+      },
+      "model_009": {
+        "continuation_resume_returncode": null,
+        "ended_at": "2026-06-17T04:05:41.305882+00:00",
+        "resume_returncode": 1,
+        "resume_stage": "create",
+        "returncode": 1,
+        "started_at": "2026-06-17T04:04:52.677864+00:00",
+        "status": "failed"
       }
     },
     "stage": "all",
     "started_at": "2026-06-17T02:51:07.431996+00:00",
-    "status": "running",
+    "status": "failed",
     "workspace": "<local-rre-root>/rsp_batch_runs"
   },
   "completed_gif_count": 7,
-  "generated_at": "2026-06-17T03:58:00.036804+00:00",
+  "generated_at": "2026-06-17T04:11:04.360120+00:00",
   "models": [
     {
       "active_stage": null,
@@ -233,31 +255,32 @@
       "verification_passed": false
     },
     {
-      "active_stage": "create",
-      "active_stage_started_at": "2026-06-17T02:51:07.497555+00:00",
+      "active_stage": "continue_saturation",
+      "active_stage_started_at": "2026-06-17T04:07:24.291766+00:00",
       "estimate_basis": "linear extrapolation from active stage start time and latest period count",
-      "estimated_stage_eta": "2026-06-17T04:03:33.205766+00:00",
-      "estimated_stage_seconds_elapsed": 4012.537248,
-      "estimated_stage_seconds_remaining": 333.1709628303256,
-      "estimated_stage_seconds_total": 4345.708210830326,
+      "estimated_stage_eta": "2026-06-17T18:40:40.801528+00:00",
+      "estimated_stage_seconds_elapsed": 220.065341,
+      "estimated_stage_seconds_remaining": 52176.44442090475,
+      "estimated_stage_seconds_total": 52396.50976190475,
       "gif_exists": false,
       "gif_path": null,
-      "latest_history_model": "444410",
-      "latest_history_mtime": "2026-06-17T03:57:59.933082+00:00",
-      "latest_period": "554",
-      "latest_period_log": "create.log",
-      "latest_photo": "<local-rre-root>/rsp_batch_runs/runs/model_007_M0p6887_Z0p004060_T6669/photos_saturation/440000",
-      "max_periods": "600",
+      "latest_history_model": "503240",
+      "latest_history_mtime": "2026-06-17T04:11:04.285243+00:00",
+      "latest_period": "21",
+      "latest_period_log": "continue_saturation.log",
+      "latest_photo": "<local-rre-root>/rsp_batch_runs/runs/model_007_M0p6887_Z0p004060_T6669/photos_continue_saturation/500000",
+      "max_periods": "5000",
       "model_id": "model_007",
       "output_dir": "<local-rre-root>/rsp_batch_runs/output/model_007_M0p6887_Z0p004060_T6669",
-      "period_progress_fraction": 0.9233333333333333,
-      "period_progress_percent": 92.33333333333333,
+      "period_progress_fraction": 0.0042,
+      "period_progress_percent": 0.42,
       "profile_count": null,
       "registered_existing": false,
       "run_dir": "<local-rre-root>/rsp_batch_runs/runs/model_007_M0p6887_Z0p004060_T6669",
       "run_name": "model_007_M0p6887_Z0p004060_T6669",
       "stages": {
-        "create": "running",
+        "continue_saturation": "running",
+        "create": "complete",
         "prepared": "complete"
       },
       "verification_passed": false
@@ -303,6 +326,7 @@
       "run_dir": "<local-rre-root>/rsp_batch_runs/runs/model_009_M0p6668_Z0p0001120_T6852",
       "run_name": "model_009_M0p6668_Z0p0001120_T6852",
       "stages": {
+        "create": "failed",
         "prepared": "complete"
       },
       "verification_passed": false

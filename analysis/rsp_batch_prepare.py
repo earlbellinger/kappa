@@ -339,7 +339,7 @@ def write_history_columns(source: Path, destination: Path) -> None:
     }
     additions = [name for name in CONVERGENCE_HISTORY_COLUMNS if name not in active_columns]
     if additions:
-        text = text.rstrip() + "\n\n# RSP limit-cycle convergence diagnostics\n" + "\n".join(additions) + "\n"
+        text = text.rstrip() + "\n\n! RSP limit-cycle convergence diagnostics\n" + "\n".join(additions) + "\n"
     destination.write_text(text, newline="\n")
 
 
