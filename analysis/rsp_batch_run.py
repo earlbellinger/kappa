@@ -53,7 +53,7 @@ EXPECTED_MODEL_FIELD = {
     "restart": "restart_model",
     "deep2cycles": "deep_model",
 }
-EXPECTED_ANIMATION_SCALING_VERSION = "model000-visible-window-v5"
+EXPECTED_ANIMATION_SCALING_VERSION = "model000-visible-window-v6"
 REQUIRED_PROFILE_COLUMNS = {
     "rsp_Pvsc",
     "rsp_src_snk",
@@ -77,14 +77,8 @@ def expected_opacity_display_top(
     panel_top_fraction: float,
     reference_display_max: object,
 ) -> float:
-    target = float(panel_top_fraction) * max(float(panel_top), 0.0)
-    try:
-        reference_target = float(reference_display_max)
-    except (TypeError, ValueError):
-        reference_target = float("nan")
-    if math.isfinite(reference_target) and reference_target > 0.0:
-        target = min(target, reference_target)
-    return float(target)
+    _ = reference_display_max
+    return float(float(panel_top_fraction) * max(float(panel_top), 0.0))
 
 
 def parse_rsp_stop_reason(log_path: Path) -> dict[str, object]:
@@ -956,7 +950,7 @@ def animation_summary_scaling_status(summary: dict[str, object]) -> tuple[bool, 
         rel_tol=1.0e-8,
         abs_tol=1.0e-8,
     ):
-        return False, "opacity scaling is not tied to the model_000 reference or this panel's positive y-limit"
+        return False, "opacity scaling is not tied to this panel's positive y-limit"
     if not math.isclose(float(opacity_scaled_visible[0]), opacity_min_display, abs_tol=1.0e-12) or not math.isclose(
         float(opacity_scaled_visible[1]), opacity_max_display, rel_tol=1.0e-8, abs_tol=1.0e-8
     ):
@@ -1233,7 +1227,7 @@ def verify_model(record: dict[str, object], output_dir: Path) -> dict[str, objec
             abs_tol=1.0e-8,
         ):
             failures.append(
-                "opacity display maximum is not tied to the model_000 reference or panel-local positive y-limit: "
+                "opacity display maximum is not tied to the panel-local positive y-limit: "
                 f"opacity_max_display={opacity_max_display:.6g}, "
                 f"expected={expected_opacity_max_display:.6g}"
             )

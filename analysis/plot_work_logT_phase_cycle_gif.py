@@ -110,7 +110,7 @@ PLOT_SCALE_FACTORS = {
     "pdv_power": 1.0,
 }
 DISPLAY_POWER_SCALE = 1.0e9
-ANIMATION_SCALING_VERSION = "model000-visible-window-v5"
+ANIMATION_SCALING_VERSION = "model000-visible-window-v6"
 ZONE_LABEL_COLOR = "#2B2B2B"
 ZONE_LABEL_FONT_SIZE = 9.2
 ZONE_LABEL_STROKE_WIDTH = 1.3
@@ -251,8 +251,8 @@ def parse_args() -> argparse.Namespace:
         type=Path,
         default=None,
         help=(
-            "Optional model_000 animation summary used to calibrate the left-panel y-range floor "
-            "and opacity display height while still measuring each model within its shown x range."
+            "Optional model_000 animation summary recorded as the reference example for visible-window "
+            "power and opacity scaling."
         ),
     )
     parser.add_argument(
@@ -668,7 +668,7 @@ def load_scaling_reference(summary_path: Path | None) -> dict[str, object]:
         "summary_path": str(path),
         "loaded": bool(loaded),
         "scaling_method_version": summary.get("scaling_method_version"),
-        "left_power_ylim_floor": list(y_limits) if y_limits is not None else None,
+        "left_power_ylim_reference": list(y_limits) if y_limits is not None else None,
         "left_power_visible_data_bounds": list(visible_bounds) if visible_bounds is not None else None,
         "opacity_visible_data_bounds": list(opacity_visible_bounds) if opacity_visible_bounds is not None else None,
         "opacity_display_max_reference": opacity_display_max,
@@ -711,7 +711,6 @@ def power_panel_limits_from_visible_bounds(
 def opacity_display_scale(
     opacity_bounds: tuple[float, float],
     panel_limits: tuple[float, float],
-    reference_display_max: float | None = None,
 ) -> float:
     opacity_span = float(opacity_bounds[1]) - float(opacity_bounds[0])
     if not np.isfinite(opacity_span) or opacity_span <= 0.0:
@@ -720,10 +719,6 @@ def opacity_display_scale(
     if display_top <= 0.0:
         return 0.0
     target_display_top = float(OPACITY_PANEL_TOP_FRACTION * display_top)
-    if reference_display_max is not None:
-        reference_display_top = float(reference_display_max)
-        if np.isfinite(reference_display_top) and reference_display_top > 0.0:
-            target_display_top = min(reference_display_top, target_display_top)
     return float(target_display_top / opacity_span)
 
 
@@ -2361,7 +2356,9 @@ def main() -> None:
     scaling_reference = load_scaling_reference(args.scaling_reference_summary)
     reference_power_ylim: tuple[float, float] | None = None
     reference_opacity_display_max: float | None = None
-    reference_limits_value = scaling_reference.get("left_power_ylim_floor")
+    reference_limits_value = scaling_reference.get("left_power_ylim_reference")
+    if reference_limits_value is None:
+        reference_limits_value = scaling_reference.get("left_power_ylim_floor")
     if isinstance(reference_limits_value, (list, tuple)) and len(reference_limits_value) == 2:
         try:
             candidate_limits = (float(reference_limits_value[0]), float(reference_limits_value[1]))
@@ -2390,7 +2387,7 @@ def main() -> None:
     elif args.ymin is not None or args.ymax is not None:
         raise RuntimeError("Please provide both --ymin and --ymax when overriding the left-panel y-axis limits.")
     else:
-        left_power_ylim = power_panel_limits_from_visible_bounds(visible_power_bounds, reference_power_ylim)
+        left_power_ylim = power_panel_limits_from_visible_bounds(visible_power_bounds)
         left_power_ylim_raw = (
             float(left_power_ylim[0]) * DISPLAY_POWER_SCALE,
             float(left_power_ylim[1]) * DISPLAY_POWER_SCALE,
@@ -2401,7 +2398,6 @@ def main() -> None:
     opacity_scale_display = opacity_display_scale(
         scaled_diagnostic_bounds["opacity"],
         left_power_ylim,
-        reference_opacity_display_max,
     )
     opacity_display_span = (
         float(scaled_diagnostic_bounds["opacity"][1]) - float(scaled_diagnostic_bounds["opacity"][0])
@@ -3370,10 +3366,9 @@ def main() -> None:
             float(left_panel_x_limits[1]),
         ],
         "left_panel_scaling_method": (
-            "model_000-calibrated visible-window extrema; each model's power extrema are measured "
-            "only between the minimum and maximum shown x coordinate, zero is included, and the "
-            "model_000 left-panel y-limits are used as the minimum display range unless the current "
-            "model has larger visible excursions"
+            "panel-local visible-window extrema; each model's power extrema are measured only between "
+            "the minimum and maximum shown x coordinate, zero is included, and the model_000 summary is "
+            "used only as a reference example for the calibration metadata"
         ),
         "scaling_reference": scaling_reference,
         "panel_y_ranges": {
@@ -3382,7 +3377,7 @@ def main() -> None:
                 "visible_data_bounds": [float(visible_power_bounds[0]), float(visible_power_bounds[1])],
                 "x_field_for_scaling": left_panel_x_field,
                 "x_limits_for_scaling": [float(left_panel_x_limits[0]), float(left_panel_x_limits[1])],
-                "reference_floor_limits": (
+                "reference_example_limits": (
                     [float(reference_power_ylim[0]), float(reference_power_ylim[1])]
                     if reference_power_ylim is not None
                     else None
@@ -3390,7 +3385,7 @@ def main() -> None:
                 "method": (
                     "minimum and maximum of the plotted power curves within this panel's shown x range; "
                     "the axis includes zero and pads the lower and upper sides from their own local "
-                    "visible extrema, then applies the model_000 y-limit floor if available"
+                    "visible extrema"
                 ),
             },
             "photosphere_radial_velocity": {
@@ -3425,8 +3420,7 @@ def main() -> None:
         "opacity_scaling": {
             "method": (
                 "left-panel visible-window min opacity maps to zero; left-panel visible-window max "
-                "opacity maps to the model_000 reference display height when available, otherwise "
-                "to a fixed fraction of this panel's positive y-limit"
+                "opacity maps to a fixed fraction of this panel's positive y-limit"
             ),
             "panel": "left_power",
             "panel_top_fraction": float(OPACITY_PANEL_TOP_FRACTION),
@@ -3442,9 +3436,9 @@ def main() -> None:
                 float(scaled_diagnostic_bounds["opacity"][1]),
             ],
             "reference_convention": (
-                "model_000-calibrated per-panel rule: measure opacity min and max only in the shown "
-                "radius range, subtract the shown minimum, and scale the shown maximum to the same "
-                "display height used in the model_000 reference, unless no reference is available"
+                "model_000 example rule: measure opacity min and max only in the shown radius range, "
+                "subtract the shown minimum, and scale the shown maximum to a consistent fraction of "
+                "the positive y-axis in each panel"
             ),
             "display_min_value": 0.0,
             "display_units_per_opacity_unit": float(opacity_scale_display),
