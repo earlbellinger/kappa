@@ -110,7 +110,7 @@ PLOT_SCALE_FACTORS = {
     "pdv_power": 1.0,
 }
 DISPLAY_POWER_SCALE = 1.0e9
-ANIMATION_SCALING_VERSION = "model000-visible-window-v6"
+ANIMATION_SCALING_VERSION = "model000-visible-window-v7"
 ZONE_LABEL_COLOR = "#2B2B2B"
 ZONE_LABEL_FONT_SIZE = 9.2
 ZONE_LABEL_STROKE_WIDTH = 1.3
@@ -126,7 +126,8 @@ SCALED_KAPPA_COLOR = "#CFA8FF"
 SCALED_DIAGNOSTIC_PAD_FRACTION = 0.08
 POWER_PANEL_PAD_FRACTION = 0.08
 POWER_PANEL_MIN_HALF_RANGE = 0.05
-OPACITY_PANEL_TOP_FRACTION = 0.88
+OPACITY_PANEL_BOTTOM_FRACTION = 0.64
+OPACITY_PANEL_TOP_FRACTION = 0.92
 HIGH_OPACITY_REGION_THRESHOLD = 0.9
 HIGH_OPACITY_REGION_FALLBACK_TOP_N = 5
 POWER_GUIDE_X_FRACTION_FROM_LEFT = 0.04
@@ -708,18 +709,40 @@ def power_panel_limits_from_visible_bounds(
     return float(y_min), float(y_max)
 
 
-def opacity_display_scale(
+def opacity_display_mapping(
     opacity_bounds: tuple[float, float],
     panel_limits: tuple[float, float],
-) -> float:
+) -> dict[str, float]:
+    y_min = float(panel_limits[0])
+    y_max = float(panel_limits[1])
+    y_span = y_max - y_min
+    display_min = y_min + float(OPACITY_PANEL_BOTTOM_FRACTION) * y_span
+    display_max = y_min + float(OPACITY_PANEL_TOP_FRACTION) * y_span
+    if not all(np.isfinite(value) for value in (y_min, y_max, y_span, display_min, display_max)):
+        return {
+            "display_min_value": 0.0,
+            "opacity_max_display_value": 0.0,
+            "display_units_per_opacity_unit": 0.0,
+        }
+    if y_span <= 0.0 or display_max <= display_min:
+        return {
+            "display_min_value": float(y_min),
+            "opacity_max_display_value": float(y_min),
+            "display_units_per_opacity_unit": 0.0,
+        }
+
     opacity_span = float(opacity_bounds[1]) - float(opacity_bounds[0])
     if not np.isfinite(opacity_span) or opacity_span <= 0.0:
-        return 0.0
-    display_top = max(float(panel_limits[1]), 0.0)
-    if display_top <= 0.0:
-        return 0.0
-    target_display_top = float(OPACITY_PANEL_TOP_FRACTION * display_top)
-    return float(target_display_top / opacity_span)
+        return {
+            "display_min_value": float(display_min),
+            "opacity_max_display_value": float(display_min),
+            "display_units_per_opacity_unit": 0.0,
+        }
+    return {
+        "display_min_value": float(display_min),
+        "opacity_max_display_value": float(display_max),
+        "display_units_per_opacity_unit": float((display_max - display_min) / opacity_span),
+    }
 
 
 def scale_diagnostic_to_panel(
@@ -2395,13 +2418,13 @@ def main() -> None:
     scaled_diagnostic_bounds = {
         "opacity": finite_visible_bounds(frame_data, "opacity_plot", left_panel_x_field, left_panel_x_limits),
     }
-    opacity_scale_display = opacity_display_scale(
+    opacity_display = opacity_display_mapping(
         scaled_diagnostic_bounds["opacity"],
         left_power_ylim,
     )
-    opacity_display_span = (
-        float(scaled_diagnostic_bounds["opacity"][1]) - float(scaled_diagnostic_bounds["opacity"][0])
-    ) * opacity_scale_display
+    opacity_scale_display = float(opacity_display["display_units_per_opacity_unit"])
+    opacity_display_min = float(opacity_display["display_min_value"])
+    opacity_display_max = float(opacity_display["opacity_max_display_value"])
     luminosity_ylim = fractional_padding(sampled_photosphere_l, fraction=0.08)
     rv_ylim = fractional_padding(sampled_photosphere_rv, fraction=0.08)
     luminosity_span = float(luminosity_ylim[1] - luminosity_ylim[0])
@@ -3090,8 +3113,10 @@ def main() -> None:
         if coordinate != "temperature":
             opacity_min = float(scaled_diagnostic_bounds["opacity"][0])
             scaled_opacity = (
-                np.asarray(frame["opacity_plot"], dtype=float) - opacity_min
-            ) * opacity_scale_display
+                opacity_display_min
+                + (np.asarray(frame["opacity_plot"], dtype=float) - opacity_min)
+                * opacity_scale_display
+            )
             (scaled_kappa_handle,) = ax_left.plot(
                 x_plot,
                 scaled_opacity,
@@ -3368,7 +3393,7 @@ def main() -> None:
         "left_panel_scaling_method": (
             "panel-local visible-window extrema; each model's power extrema are measured only between "
             "the minimum and maximum shown x coordinate, zero is included, and the model_000 summary is "
-            "used only as a reference example for the calibration metadata"
+            "used only as a reference example for the calibration convention"
         ),
         "scaling_reference": scaling_reference,
         "panel_y_ranges": {
@@ -3419,10 +3444,11 @@ def main() -> None:
         },
         "opacity_scaling": {
             "method": (
-                "left-panel visible-window min opacity maps to zero; left-panel visible-window max "
-                "opacity maps to a fixed fraction of this panel's positive y-limit"
+                "left-panel visible-window min and max opacity are mapped into a fixed upper band of "
+                "this panel's own y-axis range"
             ),
             "panel": "left_power",
+            "panel_bottom_fraction": float(OPACITY_PANEL_BOTTOM_FRACTION),
             "panel_top_fraction": float(OPACITY_PANEL_TOP_FRACTION),
             "reference_opacity_max_display_value": (
                 float(reference_opacity_display_max)
@@ -3437,16 +3463,16 @@ def main() -> None:
             ],
             "reference_convention": (
                 "model_000 example rule: measure opacity min and max only in the shown radius range, "
-                "subtract the shown minimum, and scale the shown maximum to a consistent fraction of "
-                "the positive y-axis in each panel"
+                "then map those two extrema into a reserved band of each panel's own y-axis range"
             ),
-            "display_min_value": 0.0,
+            "display_min_value": float(opacity_display_min),
             "display_units_per_opacity_unit": float(opacity_scale_display),
             "opacity_min_baseline": float(scaled_diagnostic_bounds["opacity"][0]),
-            "opacity_max_display_value": float(opacity_display_span),
+            "opacity_max_display_value": float(opacity_display_max),
+            "opacity_display_span": float(opacity_display_max - opacity_display_min),
             "scaled_visible_display_bounds": [
-                0.0,
-                float(opacity_display_span),
+                float(opacity_display_min),
+                float(opacity_display_max),
             ],
         },
         "radius_rsun_xlim": [float(radius_rsun_xlim[0]), float(radius_rsun_xlim[1])],
