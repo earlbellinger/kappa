@@ -8,8 +8,8 @@
   "summary_path": "<local-rre-root>/rsp_batch_runs/output/model_003_M0p7317_Z0p001405_T6745/mesa_rsp_model_003_M0p7317_Z0p001405_T6745_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work_summary.json",
   "pressure_work_mode": "gas_plus_pav",
   "heating_mode": "gas_minus_c",
-  "scaling_method_version": "model000-visible-window-v8",
-  "expected_scaling_method_version": "model000-visible-window-v8",
+  "scaling_method_version": "model000-visible-window-v9",
+  "expected_scaling_method_version": "model000-visible-window-v9",
   "panel_y_ranges": {
     "left_power": {
       "limits": [
@@ -29,7 +29,8 @@
         -1.0538880567035844,
         0.9359095347404265
       ],
-      "method": "minimum and maximum of the plotted power curves within this panel's shown x range; the axis includes zero and pads the lower and upper sides from their own local visible extrema"
+      "pad_fraction": 0.07999999999999996,
+      "method": "minimum and maximum of the plotted power curves within this panel's shown x range; the axis includes zero and pads the lower and upper sides from their own local visible extrema using the model_000 reference padding convention"
     },
     "photosphere_radial_velocity": {
       "limits": [
@@ -72,7 +73,7 @@
     3.093220727900495
   ],
   "opacity_scaling": {
-    "method": "left-panel visible-window min and max opacity are mapped into a fixed upper band of this panel's own y-axis range",
+    "method": "left-panel visible-window min and max opacity are mapped into the same fractional band used by the model_000 reference, but inside this panel's own y-axis range",
     "panel": "left_power",
     "panel_bottom_fraction": 0.76,
     "panel_top_fraction": 0.92,
@@ -160,5 +161,5 @@
     "radius_rsun phase seam is 0.05676 of amplitude, expected <= 0.025",
     "teff_k phase seam is 0.0419 of amplitude, expected <= 0.025"
   ],
-  "verified_at": "2026-06-17T19:03:06.727353+00:00"
+  "verified_at": "2026-06-17T20:09:44.798017+00:00"
 }
