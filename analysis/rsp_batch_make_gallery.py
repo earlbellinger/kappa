@@ -306,6 +306,10 @@ def modulation_row_for(record: dict, modulation_by_model: dict[str, dict]) -> di
     return modulation_by_model.get(str(record.get("model_id")), {})
 
 
+def convergence_row_for(record: dict, convergence_by_model: dict[str, dict]) -> dict:
+    return convergence_by_model.get(str(record.get("model_id")), {})
+
+
 def modulation_diagnostics(modulation: dict) -> str:
     if not modulation:
         return ""
@@ -321,6 +325,28 @@ def modulation_diagnostics(modulation: dict) -> str:
     return " | ".join(bits)
 
 
+def convergence_diagnostics(convergence: dict) -> str:
+    if not convergence:
+        return ""
+    if convergence.get("converged_exact") is True:
+        return "strict convergence passed"
+    source = convergence.get("source_kind") or "unknown source"
+    cycles = convergence.get("cycle_count")
+    gamma = convergence.get("gamma_peak_to_peak_last_window")
+    period = convergence.get("period_fractional_peak_to_peak_last_window")
+    delta_r = convergence.get("delta_r_fractional_peak_to_peak_last_window")
+    bits = [f"strict convergence pending ({source}, cycles {cycles})"]
+    if gamma is not None:
+        bits.append(f"Gamma ptp {float(gamma):.3g}")
+    else:
+        bits.append("Gamma not recorded")
+    if period is not None:
+        bits.append(f"P frac {float(period):.3g}")
+    if delta_r is not None:
+        bits.append(f"DeltaR frac {float(delta_r):.3g}")
+    return " | ".join(bits)
+
+
 def modulation_png(modulation: dict) -> Path | None:
     value = modulation.get("diagnostic_png") if isinstance(modulation, dict) else None
     if not value:
@@ -329,11 +355,17 @@ def modulation_png(modulation: dict) -> Path | None:
     return path if path.exists() else None
 
 
-def build_card(record: dict, output_root: Path, modulation_by_model: dict[str, dict]) -> str:
+def build_card(
+    record: dict,
+    output_root: Path,
+    modulation_by_model: dict[str, dict],
+    convergence_by_model: dict[str, dict],
+) -> str:
     output_dir = Path(str(record["output_dir"]))
     status_text, status = stage_status(output_dir)
     products = find_products(record, output_root)
     modulation = modulation_row_for(record, modulation_by_model)
+    convergence = convergence_row_for(record, convergence_by_model)
     model_id = str(record["model_id"])
     run_name = str(record["run_name"])
     is_verified = status_text == "verified"
@@ -350,6 +382,9 @@ def build_card(record: dict, output_root: Path, modulation_by_model: dict[str, d
     modulation_checks = modulation_diagnostics(modulation)
     if modulation_checks:
         diagnostics = " | ".join(bit for bit in (diagnostics, modulation_checks) if bit)
+    convergence_checks = "" if record.get("registered_existing") else convergence_diagnostics(convergence)
+    if convergence_checks:
+        diagnostics = " | ".join(bit for bit in (diagnostics, convergence_checks) if bit)
     diagnostics_html = f'<p class="checks">{html.escape(diagnostics)}</p>' if diagnostics else ""
 
     placeholder_text = "Verification failed" if verification_failed else "No animation yet"
@@ -422,13 +457,21 @@ def main() -> int:
     audit_path = output_root / "batch_audit_summary.json"
     live_status_path = output_root / "live_status.json"
     modulation_path = output_root / "cycle_modulation_summary.json"
+    convergence_path = output_root / "convergence_summary_last100.json"
     finished_viewer_path = output_root / "finished_visualizer.html"
     live_status = read_json(live_status_path)
     modulation_data = read_json(modulation_path)
+    convergence_data = read_json(convergence_path)
     modulation_models = modulation_data.get("models", []) if isinstance(modulation_data, dict) else []
     modulation_by_model = {
         str(row.get("model_id")): row
         for row in modulation_models
+        if isinstance(row, dict) and row.get("model_id")
+    }
+    convergence_models = convergence_data.get("models", []) if isinstance(convergence_data, dict) else []
+    convergence_by_model = {
+        str(row.get("model_id")): row
+        for row in convergence_models
         if isinstance(row, dict) and row.get("model_id")
     }
     batch_status = read_json(batch_status_path)
@@ -448,7 +491,7 @@ def main() -> int:
             if baseline:
                 product_text += f" Registered baseline GIFs: {baseline}."
 
-    cards = "\n".join(build_card(row, output_root, modulation_by_model) for row in manifest)
+    cards = "\n".join(build_card(row, output_root, modulation_by_model, convergence_by_model) for row in manifest)
     generated = now_iso()
     html_text = f"""<!doctype html>
 <html lang="en">

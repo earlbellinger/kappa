@@ -105,11 +105,45 @@ def discover_models(rre_root: Path) -> tuple[list[dict[str, object]], dict[str, 
     return manifest, live_by_id
 
 
+def convergence_by_model(rre_root: Path) -> dict[str, dict[str, object]]:
+    path = rre_root / "rsp_batch_runs" / "output" / "convergence_summary_last100.json"
+    data = load_json(path)
+    rows = data.get("models", []) if isinstance(data, dict) else []
+    return {
+        str(row.get("model_id")): row
+        for row in rows
+        if isinstance(row, dict) and row.get("model_id")
+    }
+
+
+def convergence_text(convergence: dict[str, object] | None) -> str:
+    if not convergence:
+        return ""
+    if convergence.get("converged_exact") is True:
+        return "strict convergence passed"
+    source = convergence.get("source_kind") or "unknown source"
+    cycles = convergence.get("cycle_count")
+    gamma = convergence.get("gamma_peak_to_peak_last_window")
+    period = convergence.get("period_fractional_peak_to_peak_last_window")
+    delta_r = convergence.get("delta_r_fractional_peak_to_peak_last_window")
+    bits = [f"strict convergence pending", f"{source}", f"{cycles} cycles"]
+    if gamma is None:
+        bits.append("Gamma not recorded")
+    else:
+        bits.append(f"Gamma ptp {float(gamma):.3g}")
+    if period is not None:
+        bits.append(f"P frac {float(period):.3g}")
+    if delta_r is not None:
+        bits.append(f"DeltaR frac {float(delta_r):.3g}")
+    return " | ".join(bits)
+
+
 def copy_model_assets(
     rre_root: Path,
     output_dir: Path,
     record: dict[str, object],
     live_record: dict[str, object] | None,
+    convergence: dict[str, object] | None,
 ) -> dict[str, object]:
     model_id = str(record["model_id"])
     source_output_dir = Path(str(record["output_dir"]))
@@ -173,6 +207,8 @@ def copy_model_assets(
         "profile_count": live_record.get("profile_count") if live_record else None,
         "latest_period": live_record.get("latest_period") if live_record else None,
         "max_periods": live_record.get("max_periods") if live_record else None,
+        "converged_exact": convergence.get("converged_exact") if convergence and not record.get("registered_existing") else None,
+        "convergence": "" if record.get("registered_existing") else convergence_text(convergence),
         "verification_passed": live_record.get("verification_passed") if live_record else None,
         "verification_failures": verify.get("failures", []) if isinstance(verify, dict) else [],
         "phase_curve_break_phases": phase_breaks,
@@ -219,7 +255,7 @@ def write_manifest_csv(output_dir: Path, models: list[dict[str, object]]) -> Non
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", newline="", encoding="utf-8") as handle:
         writer = csv.writer(handle)
-        writer.writerow(["model_id", "run_name", "status", "M", "Teff", "L", "Z", "gif_mb"])
+        writer.writerow(["model_id", "run_name", "status", "M", "Teff", "L", "Z", "gif_mb", "converged_exact"])
         for model in models:
             writer.writerow(
                 [
@@ -231,6 +267,7 @@ def write_manifest_csv(output_dir: Path, models: list[dict[str, object]]) -> Non
                     fmt_float(model.get("L")),
                     fmt_float(model.get("Z")),
                     f"{model['gif_mb']:.2f}" if model.get("gif_mb") is not None else "",
+                    model.get("converged_exact"),
                 ]
             )
 
@@ -274,6 +311,8 @@ def card_html(model: dict[str, object]) -> str:
         progress_bits.append(f"{model['profile_count']} profiles")
     if model.get("latest_period") and model.get("max_periods"):
         progress_bits.append(f"period {model['latest_period']} / {model['max_periods']}")
+    if model.get("convergence"):
+        progress_bits.append(str(model["convergence"]))
     if model.get("gif_mb") is not None:
         progress_bits.append(f"{float(model['gif_mb']):.1f} MB GIF")
     failures = model.get("verification_failures") or []
@@ -386,8 +425,15 @@ def main() -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
 
     manifest, live_by_id = discover_models(rre_root)
+    convergence_by_id = convergence_by_model(rre_root)
     models = [
-        copy_model_assets(rre_root, output_dir, record, live_by_id.get(str(record["model_id"])))
+        copy_model_assets(
+            rre_root,
+            output_dir,
+            record,
+            live_by_id.get(str(record["model_id"])),
+            convergence_by_id.get(str(record["model_id"])),
+        )
         for record in manifest
         if isinstance(record, dict)
     ]
