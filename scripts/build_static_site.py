@@ -245,6 +245,10 @@ def copy_batch_assets(rre_root: Path, output_dir: Path) -> dict[str, str | None]
         "convergence_summary_last100.json",
         "convergence_summary_last100.csv",
         "convergence_summary_last100.png",
+        "convergence_trends_last100.json",
+        "convergence_trends_last100.csv",
+        "convergence_trends_last100.png",
+        "convergence_trends_exact_last100.png",
         "quality_extension_status.json",
     ):
         source = batch_source_dir / name
@@ -373,6 +377,24 @@ def write_index(output_dir: Path, models: list[dict[str, object]], metadata_link
       <a href="{html.escape(str(convergence_png))}"><img src="{html.escape(str(convergence_png))}" alt="Strict limit-cycle convergence summary"></a>
     </section>
 """
+    convergence_trends_figure = ""
+    convergence_trends_png = metadata_links.get("convergence_trends_last100.png")
+    if convergence_trends_png:
+        convergence_trends_figure = f"""
+    <section class="diagnostic">
+      <h2>Rolling Convergence Trends</h2>
+      <a href="{html.escape(str(convergence_trends_png))}"><img src="{html.escape(str(convergence_trends_png))}" alt="Rolling final-100-cycle convergence trends"></a>
+    </section>
+"""
+    convergence_trends_exact_figure = ""
+    convergence_trends_exact_png = metadata_links.get("convergence_trends_exact_last100.png")
+    if convergence_trends_exact_png:
+        convergence_trends_exact_figure = f"""
+    <section class="diagnostic">
+      <h2>Rolling Convergence Trends: Exact-History Runs</h2>
+      <a href="{html.escape(str(convergence_trends_exact_png))}"><img src="{html.escape(str(convergence_trends_exact_png))}" alt="Rolling final-100-cycle convergence trends for exact-history runs"></a>
+    </section>
+"""
     meta_links = []
     for label, href in (
         ("live status", metadata_links.get("live_status.json")),
@@ -381,6 +403,9 @@ def write_index(output_dir: Path, models: list[dict[str, object]], metadata_link
         ("cycle modulation", metadata_links.get("cycle_modulation_summary.json")),
         ("convergence", metadata_links.get("convergence_summary_last100.json")),
         ("convergence plot", convergence_png),
+        ("convergence trends", metadata_links.get("convergence_trends_last100.json")),
+        ("convergence trend plot", convergence_trends_png),
+        ("exact-history trend plot", convergence_trends_exact_png),
         ("models CSV", "metadata/models.csv"),
     ):
         if href:
@@ -438,6 +463,8 @@ def write_index(output_dir: Path, models: list[dict[str, object]], metadata_link
   <main>
     <nav class="toolbar">{" ".join(meta_links)}</nav>
 {convergence_figure}
+{convergence_trends_figure}
+{convergence_trends_exact_figure}
     <section class="grid">
 {cards}
     </section>
