@@ -6,7 +6,7 @@
   "output_dir": "<local-rre-root>/rsp_batch_runs/output/model_007_M0p6887_Z0p004060_T6669",
   "prefix": "mesa_rsp_model_007_M0p6887_Z0p004060_T6669",
   "product_stem": "mesa_rsp_model_007_M0p6887_Z0p004060_T6669_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work",
-  "updated_at": "2026-06-17T08:24:47.225975+00:00",
+  "updated_at": "2026-06-17T08:25:29.391732+00:00",
   "stages": {
     "prepared": {
       "status": "complete",
@@ -25,8 +25,9 @@
       "started_at": "2026-06-17T04:07:24.291766+00:00"
     },
     "restart": {
-      "status": "running",
-      "updated_at": "2026-06-17T08:24:47.225475+00:00",
+      "status": "failed",
+      "updated_at": "2026-06-17T08:25:29.391231+00:00",
+      "error": "CalledProcessError(2, ['bash', 'rn_restart'])",
       "expected_output": "<local-rre-root>/rsp_batch_runs/runs/model_007_M0p6887_Z0p004060_T6669/final_model_007_M0p6887_Z0p004060_T6669_restart.mod",
       "started_at": "2026-06-17T08:24:47.225475+00:00"
     }
