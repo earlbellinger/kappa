@@ -10,7 +10,7 @@
     "model_008: stages not complete: create, continue_saturation, restart, deep2cycles, final_cycle, plot, verify; missing files: create_model, saturated_model, restart_model, deep_model, final_cycle_summary, final_cycle_lightcurve, gif, png, animation_summary, verification_summary; verification_summary did not pass; pressure_work_mode=None; heating_mode=None; cycle_source=None; radius_window_contains_photosphere=None; phase_seam_ok=None; missing profile columns: cp, gamma1, ionization_he4, rsp_Lc, rsp_Lr, rsp_Lt, rsp_Pvsc, rsp_src_snk, tau",
     "model_009: stages not complete: create, continue_saturation, restart, deep2cycles, final_cycle, plot, verify; missing files: create_model, saturated_model, restart_model, deep_model, final_cycle_summary, final_cycle_lightcurve, gif, png, animation_summary, verification_summary; verification_summary did not pass; pressure_work_mode=None; heating_mode=None; cycle_source=None; radius_window_contains_photosphere=None; phase_seam_ok=None; missing profile columns: cp, gamma1, ionization_he4, rsp_Lc, rsp_Lr, rsp_Lt, rsp_Pvsc, rsp_src_snk, tau"
   ],
-  "generated_at": "2026-06-17T02:47:59.129554+00:00",
+  "generated_at": "2026-06-17T02:57:44.801489+00:00",
   "incomplete_models": [
     "model_003",
     "model_005",
@@ -1111,14 +1111,14 @@
       "saturated_by_grekm": null,
       "stages": {
         "continue_saturation": null,
-        "create": "failed",
+        "create": "running",
         "deep2cycles": null,
         "final_cycle": null,
         "plot": null,
         "restart": null,
         "verify": null
       },
-      "status": "incomplete",
+      "status": "running",
       "validation_passed": true,
       "verification_passed": false
     },
@@ -1350,7 +1350,7 @@
     "batch_status": "running",
     "current_model": "model_007",
     "status": "waiting_for_batch",
-    "updated_at": "2026-06-17T01:26:25.359776+00:00"
+    "updated_at": "2026-06-17T02:57:44.302248+00:00"
   },
   "quality_extension_complete": false,
   "quality_extension_required": true,
@@ -1360,6 +1360,6 @@
     "model_006: strong max-L cycle modulation 0.08684 > 0.05; strong min-V cycle modulation 0.1106 mag > 0.05 mag; strong period modulation 0.09743 > 0.05",
     "model_007: strong period modulation 0.8763 > 0.05"
   ],
-  "status": "incomplete",
+  "status": "running",
   "workspace": "<local-rre-root>/rsp_batch_runs"
 }

@@ -98,6 +98,12 @@ REQUIRED_DEEP_COLUMNS = (
     "rsp_Et",
     "rsp_Chi",
 )
+CONVERGENCE_HISTORY_COLUMNS = (
+    "rsp_GREKM",
+    "rsp_DeltaR",
+    "rsp_num_periods",
+    "rsp_period_in_days",
+)
 
 ASSIGNMENT_RE = re.compile(
     r"^(?P<indent>\s*)(?P<key>[A-Za-z][A-Za-z0-9_]*(?:\(\d+\))?)\s*=\s*(?P<value>.*?)(?P<comment>\s*!.*)?$"
@@ -319,9 +325,22 @@ def write_generated_inlists(template_run: Path, run_dir: Path, params: dict[str,
 
 
 def write_column_lists(template_run: Path, run_dir: Path) -> None:
-    shutil.copy2(template_run / "history_columns_combined_14507.list", run_dir / "history_columns_batch.list")
+    write_history_columns(template_run / "history_columns_combined_14507.list", run_dir / "history_columns_batch.list")
     source_profile = template_run / "profile_columns_combined_14507_deep.list"
     shutil.copy2(source_profile, run_dir / "profile_columns_batch_deep.list")
+
+
+def write_history_columns(source: Path, destination: Path) -> None:
+    text = source.read_text()
+    active_columns = {
+        line.strip().split()[0]
+        for line in text.splitlines()
+        if line.strip() and not line.lstrip().startswith(("!", "#"))
+    }
+    additions = [name for name in CONVERGENCE_HISTORY_COLUMNS if name not in active_columns]
+    if additions:
+        text = text.rstrip() + "\n\n# RSP limit-cycle convergence diagnostics\n" + "\n".join(additions) + "\n"
+    destination.write_text(text, newline="\n")
 
 
 def normalize_assignment_value(value: str) -> str:
@@ -461,7 +480,7 @@ def write_template_snapshot(workspace: Path, template_run: Path) -> None:
     template_dir.mkdir(parents=True, exist_ok=True)
     for name in STAGE_TEMPLATES.values():
         shutil.copy2(template_run / name, template_dir / name)
-    shutil.copy2(template_run / "history_columns_combined_14507.list", template_dir / "history_columns_batch.list")
+    write_history_columns(template_run / "history_columns_combined_14507.list", template_dir / "history_columns_batch.list")
     shutil.copy2(template_run / "profile_columns_combined_14507_deep.list", template_dir / "profile_columns_batch_deep.list")
     info = {
         "source_template_run": str(template_run),
