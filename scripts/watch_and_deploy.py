@@ -103,6 +103,7 @@ def status_signature(rre_root: Path) -> dict[str, object]:
                     "active_stage": model.get("active_stage"),
                     "period_progress_bucket_50": period // 50 if period is not None else None,
                     "gif_exists": bool(model.get("gif_exists")),
+                    "trusted_animation": bool(model.get("trusted_animation")),
                     "verification_passed": bool(model.get("verification_passed")),
                     "stages": model.get("stages", {}),
                 }

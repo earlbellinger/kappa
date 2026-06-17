@@ -286,13 +286,26 @@ def model_summary(record: dict, convergence_by_id: dict[str, dict[str, object]] 
     running_stage, running_stage_started_at = active_stage(run_status)
     max_period = max_periods(run_dir, running_stage, period_log)
     convergence = (convergence_by_id or {}).get(str(record["model_id"]), {})
+    stages = stage_summary(run_status)
+    registered_existing = bool(record.get("registered_existing"))
+    gif_exists = gif.exists()
+    verification_passed = isinstance(verification, dict) and verification.get("passed") is True
+    convergence_passed = convergence.get("converged_exact") is True
+    pending_convergence = any(value == "skipped_pending_convergence" for value in stages.values())
+    trusted_animation = bool(
+        gif_exists
+        and (
+            registered_existing
+            or (verification_passed and convergence_passed and not pending_convergence)
+        )
+    )
     summary = {
         "model_id": record["model_id"],
-        "registered_existing": bool(record.get("registered_existing")),
+        "registered_existing": registered_existing,
         "run_name": record["run_name"],
         "run_dir": str(run_dir),
         "output_dir": str(output_dir),
-        "stages": stage_summary(run_status),
+        "stages": stages,
         "active_stage": running_stage,
         "active_stage_started_at": running_stage_started_at,
         "latest_period": period,
@@ -301,9 +314,12 @@ def model_summary(record: dict, convergence_by_id: dict[str, dict[str, object]] 
         "latest_history_model": hist_model,
         "latest_history_mtime": hist_mtime,
         "latest_photo": latest_photo(run_dir),
-        "gif_exists": gif.exists(),
-        "gif_path": str(gif) if gif.exists() else None,
-        "verification_passed": isinstance(verification, dict) and verification.get("passed") is True,
+        "gif_exists": gif_exists,
+        "gif_path": str(gif) if gif_exists else None,
+        "trusted_animation": trusted_animation,
+        "trusted_gif_path": str(gif) if trusted_animation else None,
+        "pending_convergence": pending_convergence,
+        "verification_passed": verification_passed,
         "profile_count": verification.get("profile_count") if isinstance(verification, dict) else None,
     }
     if convergence:
@@ -343,17 +359,21 @@ def main() -> int:
     workspace_output = workspace / "output"
     convergence = convergence_by_model(workspace_output)
     models = [model_summary(row, convergence) for row in manifest]
-    registered_existing_gif_count = sum(1 for row in models if row["registered_existing"] and row["gif_exists"])
-    new_batch_gif_count = sum(1 for row in models if not row["registered_existing"] and row["gif_exists"])
+    registered_existing_gif_count = sum(1 for row in models if row["registered_existing"] and row["trusted_animation"])
+    new_batch_gif_count = sum(1 for row in models if not row["registered_existing"] and row["trusted_animation"])
+    physical_gif_count = sum(1 for row in models if row["gif_exists"])
+    physical_new_batch_gif_count = sum(1 for row in models if not row["registered_existing"] and row["gif_exists"])
     new_batch_model_count = sum(1 for row in models if not row["registered_existing"])
     summary = {
         "generated_at": now_iso(),
         "workspace": str(workspace),
         "batch_status": read_active_batch_status(workspace_output),
-        "total_gif_count": sum(1 for row in models if row["gif_exists"]),
-        "completed_gif_count": sum(1 for row in models if row["gif_exists"]),
+        "total_gif_count": registered_existing_gif_count + new_batch_gif_count,
+        "completed_gif_count": registered_existing_gif_count + new_batch_gif_count,
         "registered_existing_gif_count": registered_existing_gif_count,
         "new_batch_gif_count": new_batch_gif_count,
+        "physical_gif_count": physical_gif_count,
+        "physical_new_batch_gif_count": physical_new_batch_gif_count,
         "new_batch_model_count": new_batch_model_count,
         "verified_model_count": sum(1 for row in models if row["verification_passed"]),
         "limit_cycle_converged_model_count": sum(1 for row in models if row.get("limit_cycle_converged") is True),
