@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-17T08:38:46.008002+00:00",
+  "generated_at": "2026-06-17T08:44:38.420746+00:00",
   "workspace": "<local-rre-root>/rsp_batch_runs",
   "criterion": {
     "required_last_cycles": 100,
@@ -391,36 +391,36 @@
     },
     {
       "source_kind": "history_exact_rsp_columns",
-      "cycle_count": 88,
-      "last_cycle_count_used": 88,
-      "window_start_period_number": 1.0,
-      "window_end_period_number": 88.0,
-      "last_period_number": 88.0,
-      "gamma_peak_to_peak_last_window": 0.03662106696391855,
-      "gamma_median_last_window": 0.003522822098056089,
+      "cycle_count": 129,
+      "last_cycle_count_used": 100,
+      "window_start_period_number": 30.0,
+      "window_end_period_number": 129.0,
+      "last_period_number": 129.0,
+      "gamma_peak_to_peak_last_window": 0.004618671751937361,
+      "gamma_median_last_window": 0.0037797196733872773,
       "gamma_first_last_window": [
-        0.0,
-        0.004917418466283104
+        0.0026030807853361505,
+        0.0034007444551612696
       ],
-      "gamma_slope_per_cycle_last_window": 2.797632204221503e-05,
-      "period_fractional_peak_to_peak_last_window": 0.7461933381702288,
-      "period_median_days_last_window": 0.6309372625012488,
+      "gamma_slope_per_cycle_last_window": 2.571911461576402e-08,
+      "period_fractional_peak_to_peak_last_window": 0.04197297251247269,
+      "period_median_days_last_window": 0.6311243102780282,
       "period_first_last_days_window": [
-        0.41629795074874565,
-        0.6370017445538003
+        0.6187731874960661,
+        0.6294651147993972
       ],
-      "period_slope_days_per_cycle_last_window": 0.00025155135054516644,
-      "delta_r_fractional_peak_to_peak_last_window": 1.0441707853421587,
-      "delta_r_median_last_window": 0.002709499406817084,
+      "period_slope_days_per_cycle_last_window": 2.929645936675849e-06,
+      "delta_r_fractional_peak_to_peak_last_window": 0.2516820491341173,
+      "delta_r_median_last_window": 0.002865659098618689,
       "delta_r_first_last_window": [
-        0.00010941510695072765,
-        0.0028653212384721627
+        0.002683867770945092,
+        0.0031970242287586714
       ],
-      "delta_r_slope_per_cycle_last_window": 8.01909260782623e-06,
-      "steps_median_last_window": 1000.0,
-      "steps_min_last_window": 679.0,
-      "steps_max_last_window": 2050.0,
-      "has_full_window": false,
+      "delta_r_slope_per_cycle_last_window": 5.7315031376025385e-06,
+      "steps_median_last_window": 999.5,
+      "steps_min_last_window": 966.0,
+      "steps_max_last_window": 1038.0,
+      "has_full_window": true,
       "has_gamma": true,
       "converged_gamma": false,
       "converged_period": false,
