@@ -290,7 +290,10 @@ def copy_model_assets(
         stage_name = first_retry.get("stage") if isinstance(first_retry, dict) else None
         status = f"queued retry: {stage_name}" if stage_name else "queued retry"
     if not source_map["gif"].exists() and not source_map["png"].exists():
-        if not (live_record and live_record.get("retry_pending")):
+        if not (
+            live_record
+            and (live_record.get("retry_pending") or live_record.get("active_stage"))
+        ):
             status = "not rendered"
 
     phase_breaks = []
