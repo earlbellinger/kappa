@@ -313,6 +313,8 @@ def copy_model_assets(
         "gif_mb": file_size_mb(source_map["gif"]) if trusted_animation else None,
         "profile_count": live_record.get("profile_count") if live_record else None,
         "latest_period": live_record.get("latest_period") if live_record else None,
+        "latest_history_model": live_record.get("latest_history_model") if live_record else None,
+        "latest_history_mtime": live_record.get("latest_history_mtime") if live_record else None,
         "latest_period_days": live_record.get("latest_period_days") if live_record else None,
         "latest_delta_r": live_record.get("latest_delta_r") if live_record else None,
         "latest_steps": live_record.get("latest_steps") if live_record else None,
@@ -447,6 +449,8 @@ def card_html(model: dict[str, object]) -> str:
         progress_bits.append(f"{model['profile_count']} profiles")
     if model.get("latest_period") and model.get("max_periods") and "running" in str(model.get("status")):
         progress_bits.append(f"period {model['latest_period']} / {model['max_periods']}")
+    elif model.get("latest_history_model") and "running" in str(model.get("status")):
+        progress_bits.append(f"model {model['latest_history_model']}")
     if model.get("latest_max_vsurf_div_cs") is not None:
         velocity_text = f"max v_surf/c_s {fmt_float(model.get('latest_max_vsurf_div_cs'), 3)}"
         if model.get("latest_surface_velocity_status"):
