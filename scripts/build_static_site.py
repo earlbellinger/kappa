@@ -201,8 +201,14 @@ def copy_model_assets(
         status = "verification failed"
     if live_record and live_record.get("active_stage"):
         status = f"running: {live_record.get('active_stage')}"
+    elif live_record and live_record.get("retry_pending"):
+        retry_stages = live_record.get("retry_pending_stages") or []
+        first_retry = retry_stages[0] if isinstance(retry_stages, list) and retry_stages else {}
+        stage_name = first_retry.get("stage") if isinstance(first_retry, dict) else None
+        status = f"queued retry: {stage_name}" if stage_name else "queued retry"
     if not source_map["gif"].exists() and not source_map["png"].exists():
-        status = "not rendered"
+        if not (live_record and live_record.get("retry_pending")):
+            status = "not rendered"
 
     phase_breaks = []
     if isinstance(summary, dict):
@@ -222,6 +228,8 @@ def copy_model_assets(
         "profile_count": live_record.get("profile_count") if live_record else None,
         "latest_period": live_record.get("latest_period") if live_record else None,
         "max_periods": live_record.get("max_periods") if live_record else None,
+        "retry_pending": live_record.get("retry_pending") if live_record else None,
+        "retry_pending_stages": live_record.get("retry_pending_stages") if live_record else None,
         "converged_exact": convergence.get("converged_exact") if convergence and not record.get("registered_existing") else None,
         "convergence": "" if record.get("registered_existing") else convergence_text(convergence),
         "verification_passed": live_record.get("verification_passed") if live_record else None,
@@ -333,6 +341,15 @@ def card_html(model: dict[str, object]) -> str:
             placeholder = "queued"
         image_html = f'<div class="media placeholder">{html.escape(placeholder)}</div>'
     progress_bits = []
+    if model.get("retry_pending"):
+        retry_stages = model.get("retry_pending_stages") or []
+        retry_names = [
+            str(item.get("stage"))
+            for item in retry_stages
+            if isinstance(item, dict) and item.get("stage")
+        ]
+        if retry_names:
+            progress_bits.append(f"queued retry for {', '.join(retry_names)}")
     if model.get("profile_count"):
         progress_bits.append(f"{model['profile_count']} profiles")
     if model.get("latest_period") and model.get("max_periods") and "running" in str(model.get("status")):

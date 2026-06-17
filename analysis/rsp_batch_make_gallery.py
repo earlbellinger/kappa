@@ -30,6 +30,19 @@ def read_json(path: Path) -> dict | list:
     return json.loads(path.read_text())
 
 
+def read_active_batch_status(output_root: Path) -> tuple[dict | list, Path | None]:
+    candidates: list[tuple[float, Path, dict | list]] = []
+    for path in output_root.glob("batch*_status.json"):
+        data = read_json(path)
+        if isinstance(data, dict):
+            candidates.append((path.stat().st_mtime, path, data))
+    if not candidates:
+        return {}, None
+    running = [item for item in candidates if item[2].get("status") == "running"]
+    selected = max(running, key=lambda item: item[0]) if running else max(candidates, key=lambda item: item[0])
+    return selected[2], selected[1]
+
+
 def parse_fortran_float(value: object) -> float | None:
     if value is None:
         return None
@@ -82,6 +95,15 @@ def stage_status(output_dir: Path) -> tuple[str, dict]:
     if not isinstance(status, dict) or not status:
         return "registered" if output_dir.exists() else "pending", {}
     stages = status.get("stages", {})
+    retryable_failures = []
+    for name, data in stages.items():
+        if not isinstance(data, dict) or data.get("status") != "failed":
+            continue
+        expected_output = data.get("expected_output")
+        if expected_output and not Path(str(expected_output)).exists():
+            retryable_failures.append(str(name))
+    if retryable_failures:
+        return f"queued retry: {retryable_failures[0]}", status
     if any(data.get("status") == "skipped_pending_convergence" for data in stages.values() if isinstance(data, dict)):
         return "awaiting convergence", status
     if stages.get("verify", {}).get("status") == "complete":
@@ -497,6 +519,10 @@ def main() -> int:
     modulation_path = output_root / "cycle_modulation_summary.json"
     convergence_path = output_root / "convergence_summary_last100.json"
     convergence_png_path = output_root / "convergence_summary_last100.png"
+    convergence_trends_path = output_root / "convergence_trends_last100.json"
+    convergence_trends_csv_path = output_root / "convergence_trends_last100.csv"
+    convergence_trends_png_path = output_root / "convergence_trends_last100.png"
+    convergence_trends_exact_png_path = output_root / "convergence_trends_exact_last100.png"
     finished_viewer_path = output_root / "finished_visualizer.html"
     live_status = read_json(live_status_path)
     modulation_data = read_json(modulation_path)
@@ -513,7 +539,11 @@ def main() -> int:
         for row in convergence_models
         if isinstance(row, dict) and row.get("model_id")
     }
-    batch_status = read_json(batch_status_path)
+    batch_status, selected_batch_status_path = read_active_batch_status(output_root)
+    if selected_batch_status_path is not None:
+        batch_status_path = selected_batch_status_path
+        if isinstance(batch_status, dict) and batch_status.get("log"):
+            batch_log_path = Path(str(batch_status["log"]))
     batch_text = "not launched"
     if isinstance(batch_status, dict) and batch_status:
         batch_text = str(batch_status.get("status", "unknown"))
@@ -526,9 +556,10 @@ def main() -> int:
         new_total = live_status.get("new_batch_model_count")
         baseline = live_status.get("registered_existing_gif_count")
         if new_done is not None and new_total is not None:
-            product_text = f" Batch GIFs: {new_done}/{new_total}."
+            product_text = f" Rendered batch GIF files: {new_done}/{new_total}."
             if baseline:
                 product_text += f" Registered baseline GIFs: {baseline}."
+            product_text += " Strict convergence controls previews."
 
     cards = "\n".join(build_card(row, output_root, modulation_by_model, convergence_by_model) for row in manifest)
     convergence_panel = ""
@@ -538,6 +569,26 @@ def main() -> int:
       <h2>Limit-Cycle Convergence</h2>
       <a href="{html.escape(rel_or_uri(convergence_png_path, output_root))}">
         <img src="{html.escape(rel_or_uri(convergence_png_path, output_root))}" alt="Strict limit-cycle convergence summary">
+      </a>
+    </section>
+"""
+    convergence_trends_panel = ""
+    if convergence_trends_png_path.exists():
+        convergence_trends_panel = f"""
+    <section class="diagnostic-panel">
+      <h2>Rolling Convergence Trends</h2>
+      <a href="{html.escape(rel_or_uri(convergence_trends_png_path, output_root))}">
+        <img src="{html.escape(rel_or_uri(convergence_trends_png_path, output_root))}" alt="Rolling final-100-cycle convergence trends">
+      </a>
+    </section>
+"""
+    convergence_trends_exact_panel = ""
+    if convergence_trends_exact_png_path.exists():
+        convergence_trends_exact_panel = f"""
+    <section class="diagnostic-panel">
+      <h2>Rolling Convergence Trends: Exact-History Runs</h2>
+      <a href="{html.escape(rel_or_uri(convergence_trends_exact_png_path, output_root))}">
+        <img src="{html.escape(rel_or_uri(convergence_trends_exact_png_path, output_root))}" alt="Rolling final-100-cycle convergence trends for exact-history runs">
       </a>
     </section>
 """
@@ -771,9 +822,15 @@ def main() -> int:
       {link(quality_extension_log_path if quality_extension_log_path.exists() else None, "quality extension log", output_root)}
       {link(convergence_path if convergence_path.exists() else None, "convergence JSON", output_root)}
       {link(convergence_png_path if convergence_png_path.exists() else None, "convergence plot", output_root)}
+      {link(convergence_trends_path if convergence_trends_path.exists() else None, "convergence trends JSON", output_root)}
+      {link(convergence_trends_csv_path if convergence_trends_csv_path.exists() else None, "convergence trends CSV", output_root)}
+      {link(convergence_trends_png_path if convergence_trends_png_path.exists() else None, "convergence trends plot", output_root)}
+      {link(convergence_trends_exact_png_path if convergence_trends_exact_png_path.exists() else None, "exact-history trend plot", output_root)}
       {link(manifest_path, "manifest", output_root)}
     </p>
 {convergence_panel}
+{convergence_trends_panel}
+{convergence_trends_exact_panel}
     <section class="grid">
 {cards}
     </section>

@@ -245,6 +245,27 @@ def active_stage(status: dict) -> tuple[str | None, str | None]:
     return None, None
 
 
+def retry_pending_stages(status: dict) -> list[dict[str, object]]:
+    stages = status.get("stages", {})
+    if not isinstance(stages, dict):
+        return []
+    pending: list[dict[str, object]] = []
+    for stage_name, stage_data in stages.items():
+        if not isinstance(stage_data, dict) or stage_data.get("status") != "failed":
+            continue
+        expected_output = stage_data.get("expected_output")
+        expected_missing = bool(expected_output) and not Path(str(expected_output)).exists()
+        if expected_missing:
+            pending.append(
+                {
+                    "stage": str(stage_name),
+                    "expected_output": str(expected_output),
+                    "reason": "failed stage is retryable because its expected output is still absent",
+                }
+            )
+    return pending
+
+
 def progress_estimate(period: str | None, max_period: str | None, started_at: str | None) -> dict:
     period_num = parse_int(period)
     max_period_num = parse_int(max_period)
@@ -287,6 +308,7 @@ def model_summary(record: dict, convergence_by_id: dict[str, dict[str, object]] 
     max_period = max_periods(run_dir, running_stage, period_log)
     convergence = (convergence_by_id or {}).get(str(record["model_id"]), {})
     stages = stage_summary(run_status)
+    retry_pending = retry_pending_stages(run_status)
     registered_existing = bool(record.get("registered_existing"))
     gif_exists = gif.exists()
     verification_passed = isinstance(verification, dict) and verification.get("passed") is True
@@ -319,6 +341,8 @@ def model_summary(record: dict, convergence_by_id: dict[str, dict[str, object]] 
         "trusted_animation": trusted_animation,
         "trusted_gif_path": str(gif) if trusted_animation else None,
         "pending_convergence": pending_convergence,
+        "retry_pending": bool(retry_pending),
+        "retry_pending_stages": retry_pending,
         "verification_passed": verification_passed,
         "profile_count": verification.get("profile_count") if isinstance(verification, dict) else None,
     }

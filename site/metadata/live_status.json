@@ -33,7 +33,7 @@
     "workspace": "<local-rre-root>/rsp_batch_runs"
   },
   "completed_gif_count": 1,
-  "generated_at": "2026-06-17T09:41:19.168127+00:00",
+  "generated_at": "2026-06-17T09:44:30.190256+00:00",
   "limit_cycle_converged_model_count": 0,
   "models": [
     {
@@ -67,6 +67,8 @@
       "period_fractional_peak_to_peak_last_window": null,
       "profile_count": 3184,
       "registered_existing": true,
+      "retry_pending": false,
+      "retry_pending_stages": [],
       "run_dir": "<local-rre-root>/mesa_rsp_combined_14507_full_pressure_minus_eq",
       "run_name": "model_000_combined_14507_full_pressure_minus_eq",
       "stages": {
@@ -116,6 +118,8 @@
       "period_progress_percent": 100.0,
       "profile_count": 3728,
       "registered_existing": false,
+      "retry_pending": false,
+      "retry_pending_stages": [],
       "run_dir": "<local-rre-root>/rsp_batch_runs/runs/model_001_M0p5602_Z0p003592_T6824",
       "run_name": "model_001_M0p5602_Z0p003592_T6824",
       "stages": {
@@ -171,6 +175,8 @@
       "period_progress_percent": 100.0,
       "profile_count": 3000,
       "registered_existing": false,
+      "retry_pending": false,
+      "retry_pending_stages": [],
       "run_dir": "<local-rre-root>/rsp_batch_runs/runs/model_002_M0p5753_Z0p00707_T6044",
       "run_name": "model_002_M0p5753_Z0p00707_T6044",
       "stages": {
@@ -226,6 +232,8 @@
       "period_progress_percent": 100.0,
       "profile_count": 3004,
       "registered_existing": false,
+      "retry_pending": false,
+      "retry_pending_stages": [],
       "run_dir": "<local-rre-root>/rsp_batch_runs/runs/model_003_M0p7317_Z0p001405_T6745",
       "run_name": "model_003_M0p7317_Z0p001405_T6745",
       "stages": {
@@ -281,6 +289,8 @@
       "period_progress_percent": 100.0,
       "profile_count": 3008,
       "registered_existing": false,
+      "retry_pending": false,
+      "retry_pending_stages": [],
       "run_dir": "<local-rre-root>/rsp_batch_runs/runs/model_004_M0p7595_Z0p0001834_T6876",
       "run_name": "model_004_M0p7595_Z0p0001834_T6876",
       "stages": {
@@ -336,6 +346,8 @@
       "period_progress_percent": 100.0,
       "profile_count": 2995,
       "registered_existing": false,
+      "retry_pending": false,
+      "retry_pending_stages": [],
       "run_dir": "<local-rre-root>/rsp_batch_runs/runs/model_005_M0p6238_Z0p00007156_T6925",
       "run_name": "model_005_M0p6238_Z0p00007156_T6925",
       "stages": {
@@ -391,6 +403,8 @@
       "period_progress_percent": 100.0,
       "profile_count": 3097,
       "registered_existing": false,
+      "retry_pending": false,
+      "retry_pending_stages": [],
       "run_dir": "<local-rre-root>/rsp_batch_runs/runs/model_006_M0p7194_Z0p001620_T6711",
       "run_name": "model_006_M0p7194_Z0p001620_T6711",
       "stages": {
@@ -446,6 +460,8 @@
       "period_progress_percent": 31.28,
       "profile_count": null,
       "registered_existing": false,
+      "retry_pending": false,
+      "retry_pending_stages": [],
       "run_dir": "<local-rre-root>/rsp_batch_runs/runs/model_007_M0p6887_Z0p004060_T6669",
       "run_name": "model_007_M0p6887_Z0p004060_T6669",
       "stages": {
@@ -484,28 +500,30 @@
       "delta_r_fractional_peak_to_peak_last_window": 0.19948796904691754,
       "delta_r_slope_per_cycle_last_window": 1.2550967894041314e-05,
       "estimate_basis": "linear extrapolation from active stage start time and latest period count",
-      "estimated_stage_eta": "2026-06-17T09:51:29.804564+00:00",
-      "estimated_stage_seconds_elapsed": 4549.686385,
-      "estimated_stage_seconds_remaining": 610.6384373062374,
-      "estimated_stage_seconds_total": 5160.324822306237,
+      "estimated_stage_eta": "2026-06-17T09:51:13.105610+00:00",
+      "estimated_stage_seconds_elapsed": 4740.708508,
+      "estimated_stage_seconds_remaining": 402.91735963110295,
+      "estimated_stage_seconds_total": 5143.625867631103,
       "gamma_peak_to_peak_last_window": 0.00021721352244655039,
       "gif_exists": false,
       "gif_path": null,
-      "latest_history_model": "530590",
-      "latest_history_mtime": "2026-06-17T09:41:19.118548+00:00",
-      "latest_period": "529",
+      "latest_history_model": "554340",
+      "latest_history_mtime": "2026-06-17T09:44:30.110769+00:00",
+      "latest_period": "553",
       "latest_period_log": "create.log",
-      "latest_photo": "<local-rre-root>/rsp_batch_runs/runs/model_008_M0p6151_Z0p0004406_T6792/photos_saturation/530000",
+      "latest_photo": "<local-rre-root>/rsp_batch_runs/runs/model_008_M0p6151_Z0p0004406_T6792/photos_saturation/550000",
       "limit_cycle_converged": false,
       "max_periods": "600",
       "model_id": "model_008",
       "output_dir": "<local-rre-root>/rsp_batch_runs/output/model_008_M0p6151_Z0p0004406_T6792",
       "pending_convergence": false,
       "period_fractional_peak_to_peak_last_window": 5.778112445806955e-05,
-      "period_progress_fraction": 0.8816666666666667,
-      "period_progress_percent": 88.16666666666667,
+      "period_progress_fraction": 0.9216666666666666,
+      "period_progress_percent": 92.16666666666667,
       "profile_count": null,
       "registered_existing": false,
+      "retry_pending": false,
+      "retry_pending_stages": [],
       "run_dir": "<local-rre-root>/rsp_batch_runs/runs/model_008_M0p6151_Z0p0004406_T6792",
       "run_name": "model_008_M0p6151_Z0p0004406_T6792",
       "stages": {
@@ -550,6 +568,14 @@
       "period_fractional_peak_to_peak_last_window": null,
       "profile_count": null,
       "registered_existing": false,
+      "retry_pending": true,
+      "retry_pending_stages": [
+        {
+          "expected_output": "<local-rre-root>/rsp_batch_runs/runs/model_009_M0p6668_Z0p0001120_T6852/final_model_009_M0p6668_Z0p0001120_T6852_create.mod",
+          "reason": "failed stage is retryable because its expected output is still absent",
+          "stage": "create"
+        }
+      ],
       "run_dir": "<local-rre-root>/rsp_batch_runs/runs/model_009_M0p6668_Z0p0001120_T6852",
       "run_name": "model_009_M0p6668_Z0p0001120_T6852",
       "stages": {
