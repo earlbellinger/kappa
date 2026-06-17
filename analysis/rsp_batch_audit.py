@@ -274,22 +274,32 @@ def audit_batch_model(record: dict) -> dict[str, object]:
     validation = run_status.get("validation", {}) if isinstance(run_status, dict) else {}
     validation_passed = validation.get("passed") is True
     stages = stage_statuses(run_status if isinstance(run_status, dict) else {})
-    missing_or_bad_stages = [stage for stage, value in stages.items() if value != "complete"]
+    pending_convergence = any(value == "skipped_pending_convergence" for value in stages.values())
+    downstream_stages = {"restart", "deep2cycles", "final_cycle", "plot", "verify"}
+    missing_or_bad_stages = [
+        stage
+        for stage, value in stages.items()
+        if value != "complete"
+        and not (pending_convergence and stage in downstream_stages and value == "skipped_pending_convergence")
+    ]
 
     files = expected_files(record)
     file_checks = {name: file_check(path) for name, path in files.items()}
-    required_file_names = (
-        "create_model",
-        "saturated_model",
-        "restart_model",
-        "deep_model",
-        "final_cycle_summary",
-        "final_cycle_lightcurve",
-        "gif",
-        "png",
-        "animation_summary",
-        "verification_summary",
-    )
+    if pending_convergence:
+        required_file_names = ("create_model", "saturated_model")
+    else:
+        required_file_names = (
+            "create_model",
+            "saturated_model",
+            "restart_model",
+            "deep_model",
+            "final_cycle_summary",
+            "final_cycle_lightcurve",
+            "gif",
+            "png",
+            "animation_summary",
+            "verification_summary",
+        )
     missing_files = [name for name in required_file_names if not file_checks[name]["exists"]]
 
     verification = read_json(files["verification_summary"])
@@ -312,24 +322,26 @@ def audit_batch_model(record: dict) -> dict[str, object]:
         failures.append("stages not complete: " + ", ".join(missing_or_bad_stages))
     if missing_files:
         failures.append("missing files: " + ", ".join(missing_files))
-    if not verification_passed:
+    if not verification_passed and not pending_convergence:
         failures.append("verification_summary did not pass")
-    if pressure_mode != EXPECTED_PRESSURE_WORK_MODE:
+    if pressure_mode != EXPECTED_PRESSURE_WORK_MODE and not pending_convergence:
         failures.append(f"pressure_work_mode={pressure_mode!r}")
-    if heating_mode != EXPECTED_HEATING_MODE:
+    if heating_mode != EXPECTED_HEATING_MODE and not pending_convergence:
         failures.append(f"heating_mode={heating_mode!r}")
-    if cycle_source != EXPECTED_CYCLE_SOURCE:
+    if cycle_source != EXPECTED_CYCLE_SOURCE and not pending_convergence:
         failures.append(f"cycle_source={cycle_source!r}")
-    if radius_ok is not True:
+    if radius_ok is not True and not pending_convergence:
         failures.append(f"radius_window_contains_photosphere={radius_ok!r}")
-    if phase_seam_ok is not True:
+    if phase_seam_ok is not True and not pending_convergence:
         failures.append(f"phase_seam_ok={phase_seam_ok!r}")
-    if missing_columns:
+    if missing_columns and not pending_convergence:
         failures.append("missing profile columns: " + ", ".join(map(str, missing_columns)))
 
     is_running = any(value == "running" for value in stages.values())
     if failures:
         status = "running" if is_running else "incomplete"
+    elif pending_convergence:
+        status = "awaiting_convergence"
     else:
         status = "complete"
 
@@ -348,6 +360,7 @@ def audit_batch_model(record: dict) -> dict[str, object]:
         "radius_window_contains_photosphere": radius_ok,
         "phase_seam_ok": phase_seam_ok,
         "phase_seam": phase_seam,
+        "pending_convergence": pending_convergence,
         "continue_saturation_stop": continue_stop,
         "saturated_by_grekm": verification.get("saturated_by_grekm") if isinstance(verification, dict) else None,
         "reached_max_periods": verification.get("reached_max_periods") if isinstance(verification, dict) else None,

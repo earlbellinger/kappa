@@ -82,6 +82,8 @@ def stage_status(output_dir: Path) -> tuple[str, dict]:
     if not isinstance(status, dict) or not status:
         return "registered" if output_dir.exists() else "pending", {}
     stages = status.get("stages", {})
+    if any(data.get("status") == "skipped_pending_convergence" for data in stages.values() if isinstance(data, dict)):
+        return "awaiting convergence", status
     if stages.get("verify", {}).get("status") == "complete":
         return "verified", status
     for stage in ("verify", "plot", "final_cycle", "deep2cycles", "restart", "continue_saturation", "create", "prepared"):

@@ -81,6 +81,20 @@ def has_saved_photo(workspace: Path, model: str, stage: str) -> bool:
     return any(path.is_file() and path.name.isdigit() for path in photo_dir.iterdir())
 
 
+def model_has_pending_convergence(workspace: Path, model: str) -> bool:
+    manifest = json.loads((workspace / "inputs" / "manifest.json").read_text())
+    record = next((row for row in manifest if row["model_id"] == model or row["run_name"] == model), None)
+    if record is None:
+        return False
+    status_path = Path(record["output_dir"]) / "run_status.json"
+    status = read_json(status_path)
+    stages = status.get("stages", {}) if isinstance(status, dict) else {}
+    return any(
+        isinstance(stage, dict) and stage.get("status") == "skipped_pending_convergence"
+        for stage in stages.values()
+    )
+
+
 def run_command(command: list[str], log_path: Path) -> int:
     with log_path.open("ab") as log:
         header = f"\n\n[{now_iso()}] $ {' '.join(command)}\n".encode("utf-8", "replace")
@@ -157,12 +171,16 @@ def main() -> int:
             if retry_code == 0:
                 returncode = run_command(command, log_path)
 
-        result_status = "complete" if returncode == 0 else "failed"
+        pending_convergence = returncode != 0 and model_has_pending_convergence(workspace, model)
+        effective_returncode = 0 if pending_convergence else returncode
+        result_status = "skipped_pending_convergence" if pending_convergence else "complete" if returncode == 0 else "failed"
         batch_status["results"][model].update(
             {
                 "status": result_status,
                 "ended_at": now_iso(),
                 "returncode": returncode,
+                "effective_returncode": effective_returncode,
+                "pending_convergence": pending_convergence,
                 "resume_stage": retry_stage,
                 "resume_returncode": retry_code,
                 "continuation_resume_returncode": retry_code if retry_stage == "continue_saturation" else None,
@@ -170,8 +188,8 @@ def main() -> int:
         )
         write_json(status_path, batch_status)
 
-        if returncode != 0:
-            overall_code = returncode
+        if effective_returncode != 0:
+            overall_code = effective_returncode
             if args.stop_on_failure:
                 break
 
