@@ -461,6 +461,7 @@ def write_resume_files(
     if resume_max_num_periods is not None:
         text = set_or_insert_assignment(text, "RSP_max_num_periods", str(resume_max_num_periods))
         text = set_or_insert_assignment(text, "RSP_GREKM_avg_abs_limit", "-1")
+        text = set_or_insert_assignment(text, "RSP_target_steps_per_cycle", "1000")
     text = set_or_insert_assignment(text, "log_directory", f"'{RESUME_LOG_DIR_PREFIXES[stage]}_{photo_id}'")
     text = set_or_insert_assignment(text, "photo_directory", f"'{RESUME_PHOTO_DIR_PREFIXES[stage]}_{photo_id}'")
     (run_dir / inlist_name).write_text(text, newline="\n")
