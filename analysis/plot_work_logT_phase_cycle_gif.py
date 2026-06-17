@@ -123,6 +123,9 @@ FIGURE_HEIGHT_PX = 800
 FIGURE_DPI = 100
 SCALED_KAPPA_COLOR = "#CFA8FF"
 SCALED_DIAGNOSTIC_PAD_FRACTION = 0.08
+POWER_PANEL_PAD_FRACTION = 0.08
+POWER_PANEL_MIN_HALF_RANGE = 0.05
+OPACITY_PANEL_TOP_FRACTION = 0.88
 HIGH_OPACITY_REGION_THRESHOLD = 0.9
 HIGH_OPACITY_REGION_FALLBACK_TOP_N = 5
 POWER_GUIDE_X_FRACTION_FROM_LEFT = 0.04
@@ -529,6 +532,90 @@ def finite_global_bounds(frame_data: list[dict[str, object]], field_name: str) -
     if data_max <= data_min:
         return data_min - 0.5, data_max + 0.5
     return data_min, data_max
+
+
+def visible_window_mask(frame: dict[str, object], x_field_name: str, x_limits: tuple[float, float]) -> np.ndarray:
+    x_values = np.asarray(frame[x_field_name], dtype=float)
+    x0 = float(min(x_limits))
+    x1 = float(max(x_limits))
+    return np.isfinite(x_values) & (x_values >= x0) & (x_values <= x1)
+
+
+def finite_visible_bounds(
+    frame_data: list[dict[str, object]],
+    field_name: str,
+    x_field_name: str,
+    x_limits: tuple[float, float],
+) -> tuple[float, float]:
+    finite_values: list[np.ndarray] = []
+    for frame in frame_data:
+        values = np.asarray(frame[field_name], dtype=float)
+        mask = visible_window_mask(frame, x_field_name, x_limits) & np.isfinite(values)
+        if np.any(mask):
+            finite_values.append(values[mask])
+    if not finite_values:
+        return finite_global_bounds(frame_data, field_name)
+    concatenated = np.concatenate(finite_values)
+    data_min = float(np.nanmin(concatenated))
+    data_max = float(np.nanmax(concatenated))
+    if not np.isfinite(data_min) or not np.isfinite(data_max):
+        return finite_global_bounds(frame_data, field_name)
+    if data_max <= data_min:
+        return data_min - 0.5, data_max + 0.5
+    return data_min, data_max
+
+
+def visible_power_series_names(main_terms_only: bool) -> tuple[str, ...]:
+    if main_terms_only:
+        return ("pdv_power", "heating_total")
+    return ("pdv_power", "heating_total", "heating_radiative", "heating_convective")
+
+
+def finite_visible_scaled_power_bounds(
+    frame_data: list[dict[str, object]],
+    series_names: tuple[str, ...],
+    x_field_name: str,
+    x_limits: tuple[float, float],
+) -> tuple[float, float]:
+    finite_values: list[np.ndarray] = []
+    for frame in frame_data:
+        mask = visible_window_mask(frame, x_field_name, x_limits)
+        for series_name in series_names:
+            values = np.asarray(frame[f"{series_name}_plot"], dtype=float)
+            series_mask = mask & np.isfinite(values)
+            if np.any(series_mask):
+                scale = float(PLOT_SCALE_FACTORS[series_name]) / DISPLAY_POWER_SCALE
+                finite_values.append(values[series_mask] * scale)
+    if not finite_values:
+        return -1.0, 1.0
+    concatenated = np.concatenate(finite_values)
+    data_min = float(np.nanmin(concatenated))
+    data_max = float(np.nanmax(concatenated))
+    if not np.isfinite(data_min) or not np.isfinite(data_max):
+        return -1.0, 1.0
+    if data_max <= data_min:
+        pad = max(abs(data_min), POWER_PANEL_MIN_HALF_RANGE) * POWER_PANEL_PAD_FRACTION
+        return data_min - pad, data_max + pad
+    return data_min, data_max
+
+
+def symmetric_power_panel_limits(data_bounds: tuple[float, float]) -> tuple[float, float]:
+    max_abs = max(abs(float(data_bounds[0])), abs(float(data_bounds[1])), POWER_PANEL_MIN_HALF_RANGE)
+    half_range = max_abs * (1.0 + POWER_PANEL_PAD_FRACTION)
+    return -float(half_range), float(half_range)
+
+
+def opacity_display_scale(
+    opacity_bounds: tuple[float, float],
+    panel_limits: tuple[float, float],
+) -> float:
+    opacity_span = float(opacity_bounds[1]) - float(opacity_bounds[0])
+    if not np.isfinite(opacity_span) or opacity_span <= 0.0:
+        return 0.0
+    panel_top = max(float(panel_limits[1]), 0.0)
+    if panel_top <= 0.0:
+        return 0.0
+    return float(OPACITY_PANEL_TOP_FRACTION * panel_top / opacity_span)
 
 
 def scale_diagnostic_to_panel(
@@ -2111,9 +2198,6 @@ def main() -> None:
     normalized_photosphere_l = normalize_unit_interval(sampled_photosphere_l)
     for frame, luminosity_unit in zip(frame_data, normalized_photosphere_l):
         frame["photosphere_luminosity_unit"] = float(np.nan_to_num(luminosity_unit, nan=0.5))
-    scaled_diagnostic_bounds = {
-        "opacity": finite_global_bounds(frame_data, "opacity_plot"),
-    }
 
     mean_light_profile = load_mean_light_profile(run_dir, final_cycle_summary_path)
     mean_light_frame = instantaneous_power_structure(
@@ -2153,16 +2237,36 @@ def main() -> None:
         args.radius_xmin,
         args.radius_xmax,
     )
+    if coordinate == "temperature":
+        left_panel_x_field = "temperature_plot"
+        left_panel_x_limits = (float(args.hot_limit), outermost_temperature)
+    else:
+        left_panel_x_field = "radius_rsun_plot"
+        left_panel_x_limits = main_radius_xlim
+    visible_power_bounds = finite_visible_scaled_power_bounds(
+        frame_data,
+        visible_power_series_names(main_terms_only),
+        left_panel_x_field,
+        left_panel_x_limits,
+    )
     if args.ymin is not None and args.ymax is not None:
         left_power_ylim_raw = (float(args.ymin), float(args.ymax))
+        left_power_ylim = (
+            float(left_power_ylim_raw[0]) / DISPLAY_POWER_SCALE,
+            float(left_power_ylim_raw[1]) / DISPLAY_POWER_SCALE,
+        )
     elif args.ymin is not None or args.ymax is not None:
         raise RuntimeError("Please provide both --ymin and --ymax when overriding the left-panel y-axis limits.")
     else:
-        left_power_ylim_raw = (-3.4e8, 3.4e8)
-    left_power_ylim = (
-        float(left_power_ylim_raw[0]) / DISPLAY_POWER_SCALE,
-        float(left_power_ylim_raw[1]) / DISPLAY_POWER_SCALE,
-    )
+        left_power_ylim = symmetric_power_panel_limits(visible_power_bounds)
+        left_power_ylim_raw = (
+            float(left_power_ylim[0]) * DISPLAY_POWER_SCALE,
+            float(left_power_ylim[1]) * DISPLAY_POWER_SCALE,
+        )
+    scaled_diagnostic_bounds = {
+        "opacity": finite_visible_bounds(frame_data, "opacity_plot", left_panel_x_field, left_panel_x_limits),
+    }
+    opacity_scale_display = opacity_display_scale(scaled_diagnostic_bounds["opacity"], left_power_ylim)
     luminosity_ylim = fractional_padding(sampled_photosphere_l, fraction=0.08)
     rv_ylim = fractional_padding(sampled_photosphere_rv, fraction=0.08)
     luminosity_span = float(luminosity_ylim[1] - luminosity_ylim[0])
@@ -2852,7 +2956,7 @@ def main() -> None:
             opacity_min = float(scaled_diagnostic_bounds["opacity"][0])
             scaled_opacity = (
                 np.asarray(frame["opacity_plot"], dtype=float) - opacity_min
-            ) * 6.0e6 / DISPLAY_POWER_SCALE
+            ) * opacity_scale_display
             (scaled_kappa_handle,) = ax_left.plot(
                 x_plot,
                 scaled_opacity,
@@ -3120,6 +3224,15 @@ def main() -> None:
         ),
         "hot_temperature_limit_K": float(args.hot_limit),
         "outermost_temperature_limit_K": outermost_temperature,
+        "left_panel_x_field_for_scaling": left_panel_x_field,
+        "left_panel_x_limits_for_scaling": [
+            float(left_panel_x_limits[0]),
+            float(left_panel_x_limits[1]),
+        ],
+        "left_power_visible_data_bounds": [
+            float(visible_power_bounds[0]),
+            float(visible_power_bounds[1]),
+        ],
         "left_power_ylim_raw": [float(left_power_ylim_raw[0]), float(left_power_ylim_raw[1])],
         "left_power_ylim": [float(left_power_ylim[0]), float(left_power_ylim[1])],
         "scaled_diagnostic_bounds": {
@@ -3127,6 +3240,16 @@ def main() -> None:
                 float(scaled_diagnostic_bounds["opacity"][0]),
                 float(scaled_diagnostic_bounds["opacity"][1]),
             ],
+        },
+        "opacity_scaling": {
+            "method": "visible-window min opacity maps to zero; visible-window max opacity maps to a fixed fraction of the positive left-panel y-limit",
+            "panel_top_fraction": float(OPACITY_PANEL_TOP_FRACTION),
+            "display_units_per_opacity_unit": float(opacity_scale_display),
+            "opacity_min_baseline": float(scaled_diagnostic_bounds["opacity"][0]),
+            "opacity_max_display_value": float(
+                (float(scaled_diagnostic_bounds["opacity"][1]) - float(scaled_diagnostic_bounds["opacity"][0]))
+                * opacity_scale_display
+            ),
         },
         "radius_rsun_xlim": [float(radius_rsun_xlim[0]), float(radius_rsun_xlim[1])],
         "main_radius_xlim_used": [float(main_radius_xlim[0]), float(main_radius_xlim[1])],
