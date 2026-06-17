@@ -69,6 +69,7 @@ def status_signature(rre_root: Path) -> dict[str, object]:
     live = load_json(output_dir / "live_status.json")
     audit = load_json(output_dir / "batch_audit_summary.json")
     quality = load_json(output_dir / "quality_extension_status.json")
+    convergence = load_json(output_dir / "convergence_summary_last100.json")
     live_models = []
     if isinstance(live, dict):
         for model in live.get("models", []):
@@ -88,6 +89,21 @@ def status_signature(rre_root: Path) -> dict[str, object]:
                     "stages": model.get("stages", {}),
                 }
             )
+    convergence_models = []
+    if isinstance(convergence, dict):
+        for model in convergence.get("models", []):
+            if not isinstance(model, dict):
+                continue
+            convergence_models.append(
+                {
+                    "model_id": model.get("model_id"),
+                    "source_kind": model.get("source_kind"),
+                    "cycle_count": model.get("cycle_count"),
+                    "last_period_number": model.get("last_period_number"),
+                    "has_full_window": model.get("has_full_window"),
+                    "converged_exact": model.get("converged_exact"),
+                }
+            )
     return {
         "batch_status": live.get("batch_status", {}).get("status") if isinstance(live, dict) else None,
         "completed_gif_count": live.get("completed_gif_count") if isinstance(live, dict) else None,
@@ -96,6 +112,8 @@ def status_signature(rre_root: Path) -> dict[str, object]:
         "audit_status": audit.get("status") if isinstance(audit, dict) else None,
         "quality_status": quality.get("status") if isinstance(quality, dict) else None,
         "quality_complete": quality.get("complete") if isinstance(quality, dict) else None,
+        "convergence_generated_at": convergence.get("generated_at") if isinstance(convergence, dict) else None,
+        "convergence_models": convergence_models,
         "models": live_models,
     }
 
