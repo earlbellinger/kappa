@@ -1050,7 +1050,29 @@ def main() -> None:
     with model_run_lock(record, args.lock_wait_seconds, args.dry_run):
         output_dir = Path(str(record["output_dir"]))
         status = load_status(output_dir, record)
-        for stage in stage_list(args.stage):
+        stages_to_run = stage_list(args.stage)
+        for stage_index, stage in enumerate(stages_to_run):
+            if (
+                stage in DOWNSTREAM_PRODUCT_STAGES
+                and not args.allow_unconverged_products
+                and not bool(record["registered_existing"])
+            ):
+                refresh_convergence(args.workspace, args.python, args.dry_run)
+                row = convergence_row(args.workspace, record["model_id"])
+                if row.get("converged_exact") is not True:
+                    reason = convergence_gate_reason(row)
+                    mark_downstream_pending_convergence(
+                        record,
+                        status,
+                        stages_to_run,
+                        stage_index,
+                        reason,
+                        row,
+                    )
+                    if not args.dry_run:
+                        save_status(output_dir, status)
+                    print(f"{record['model_id']} products skipped: {reason}")
+                    break
             if stage in MESA_STAGES:
                 run_mesa_stage(
                     record,
