@@ -73,26 +73,42 @@ def active_model_convergence_args(workspace: Path) -> list[str]:
     return ["--models", str(current_model), "--merge-existing"]
 
 
-def active_model_growth_args(workspace: Path) -> list[str]:
+def active_model_growth_models(workspace: Path) -> list[str]:
     output_dir = workspace / "output"
     status, _status_path = read_active_batch_status(output_dir)
+    active_model_ids: set[str] = set()
     current_model = status.get("current_model") if isinstance(status, dict) else None
-    if status.get("status") != "running" or not current_model:
+    if status.get("status") == "running" and current_model:
+        active_model_ids.add(str(current_model))
+
+    live = read_status(output_dir / "live_status.json")
+    live_rows = live.get("models", []) if isinstance(live, dict) else []
+    for row in live_rows:
+        if not isinstance(row, dict) or not row.get("model_id"):
+            continue
+        if row.get("active_stage"):
+            active_model_ids.add(str(row["model_id"]))
+    if not active_model_ids:
         return []
+
     convergence = read_status(output_dir / "convergence_summary_last100.json")
     rows = convergence.get("models", []) if isinstance(convergence, dict) else []
+    models: list[str] = []
     for row in rows:
-        if not isinstance(row, dict) or str(row.get("model_id")) != str(current_model):
+        if not isinstance(row, dict):
+            continue
+        model_id = str(row.get("model_id"))
+        if model_id not in active_model_ids:
             continue
         if row.get("source_kind") != "history_exact_rsp_columns":
-            return []
+            continue
         try:
             cycle_count = int(float(str(row.get("cycle_count"))))
         except (TypeError, ValueError):
-            return []
+            continue
         if cycle_count >= 100:
-            return ["--model", str(current_model)]
-    return []
+            models.append(model_id)
+    return sorted(set(models))
 
 
 def append_log(path: Path, line: str) -> None:
@@ -190,23 +206,31 @@ def rebuild(args: argparse.Namespace, log_path: Path) -> int:
         if convergence_trends_completed.stderr.strip():
             append_log(log_path, convergence_trends_completed.stderr.strip())
 
-        growth_command = [
-            str(args.python),
-            str(GROWTH_DIAGNOSTIC_SCRIPT),
-            "--workspace",
-            str(args.workspace),
-        ]
-        growth_command.extend(active_model_growth_args(args.workspace))
-        if len(growth_command) > 4:
-            growth_completed = subprocess.run(growth_command, cwd=ROOT, capture_output=True, text=True)
-            append_log(log_path, f"[{now_iso()}] growth diagnostic returncode={growth_completed.returncode}")
-            if growth_completed.stdout.strip():
-                append_log(log_path, growth_completed.stdout.strip())
-            if growth_completed.stderr.strip():
-                append_log(log_path, growth_completed.stderr.strip())
+        growth_returncode = 0
+        growth_models = active_model_growth_models(args.workspace)
+        if growth_models:
+            for model_id in growth_models:
+                growth_command = [
+                    str(args.python),
+                    str(GROWTH_DIAGNOSTIC_SCRIPT),
+                    "--workspace",
+                    str(args.workspace),
+                    "--model",
+                    model_id,
+                ]
+                growth_completed = subprocess.run(growth_command, cwd=ROOT, capture_output=True, text=True)
+                growth_returncode = max(growth_returncode, int(growth_completed.returncode))
+                append_log(
+                    log_path,
+                    f"[{now_iso()}] growth diagnostic {model_id} returncode={growth_completed.returncode}",
+                )
+                if growth_completed.stdout.strip():
+                    append_log(log_path, growth_completed.stdout.strip())
+                if growth_completed.stderr.strip():
+                    append_log(log_path, growth_completed.stderr.strip())
         else:
-            growth_completed = subprocess.CompletedProcess(growth_command, 0, "", "")
             append_log(log_path, f"[{now_iso()}] growth diagnostic skipped; no active exact-history model with a full window")
+        growth_completed = subprocess.CompletedProcess(["growth diagnostics"], growth_returncode, "", "")
 
         final_status_completed = subprocess.run(status_command, cwd=ROOT, capture_output=True, text=True)
         append_log(log_path, f"[{now_iso()}] final live status returncode={final_status_completed.returncode}")
