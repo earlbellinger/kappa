@@ -99,14 +99,24 @@ def status_signature(rre_root: Path) -> dict[str, object]:
             except (TypeError, ValueError):
                 period = None
             try:
+                history_model = int(float(str(model.get("latest_history_model"))))
+            except (TypeError, ValueError):
+                history_model = None
+            try:
                 max_vsurf = float(str(model.get("latest_max_vsurf_div_cs")))
             except (TypeError, ValueError):
                 max_vsurf = None
+            active_stage = model.get("active_stage")
             live_models.append(
                 {
                     "model_id": model.get("model_id"),
-                    "active_stage": model.get("active_stage"),
+                    "active_stage": active_stage,
                     "period_progress_bucket_50": period // 50 if period is not None else None,
+                    "history_model_bucket_1000": (
+                        history_model // 1000
+                        if history_model is not None and active_stage == "create"
+                        else None
+                    ),
                     "max_vsurf_div_cs_bucket_0p02": (
                         int(max_vsurf / 0.02) if max_vsurf is not None else None
                     ),
