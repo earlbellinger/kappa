@@ -17,6 +17,7 @@ MAX_PHASE_SEAM_FRACTION = 0.025
 STRONG_MAX_L_MODULATION_FRACTION = 0.05
 STRONG_MIN_V_MODULATION_MAG = 0.05
 STRONG_PERIOD_MODULATION_FRACTION = 0.05
+CONVERGENCE_TOLERANCE = 1.0e-3
 REQUIRED_PROFILE_COLUMNS = {
     "rsp_Pvsc",
     "rsp_src_snk",
@@ -74,6 +75,17 @@ def cycle_modulation_by_model(output_dir: Path) -> dict[str, dict]:
     }
 
 
+def convergence_by_model(output_dir: Path) -> dict[str, dict]:
+    path = output_dir / "convergence_summary_last100.json"
+    data = read_json(path)
+    rows = data.get("models", []) if isinstance(data, dict) else []
+    return {
+        str(row.get("model_id")): row
+        for row in rows
+        if isinstance(row, dict) and row.get("model_id")
+    }
+
+
 def as_float(value: object) -> float | None:
     try:
         return float(value)
@@ -106,17 +118,54 @@ def cycle_modulation_warnings(modulation: dict | None) -> list[str]:
     return warnings
 
 
+def add_quality_warnings(model: dict[str, object], warnings: list[str]) -> None:
+    existing = list(model.get("quality_warnings") or [])
+    existing.extend(warnings)
+    model["quality_warnings"] = existing
+    if warnings and model.get("status") == "complete":
+        model["status"] = "quality_warning"
+
+
 def attach_cycle_modulation_quality(model: dict[str, object], modulation_by_model: dict[str, dict]) -> None:
     modulation = modulation_by_model.get(str(model.get("model_id")))
     if modulation:
         model["cycle_modulation"] = modulation
     warnings = cycle_modulation_warnings(modulation)
-    if not warnings:
-        model["quality_warnings"] = []
+    add_quality_warnings(model, warnings)
+
+
+def convergence_warnings(convergence: dict | None) -> list[str]:
+    if not convergence:
+        return ["convergence summary missing"]
+    if convergence.get("converged_exact") is True:
+        return []
+    warnings: list[str] = []
+    source_kind = convergence.get("source_kind")
+    if source_kind != "history_exact_rsp_columns":
+        warnings.append(f"exact Gamma/P/DeltaR convergence unavailable from source={source_kind!r}")
+    used = as_float(convergence.get("last_cycle_count_used"))
+    required = as_float(convergence.get("required_last_cycles"))
+    if required is not None and (used is None or used < required):
+        warnings.append(f"only {used or 0:g}/{required:g} cycles available for convergence window")
+    gamma_ptp = as_float(convergence.get("gamma_peak_to_peak_last_window"))
+    period_ptp = as_float(convergence.get("period_fractional_peak_to_peak_last_window"))
+    delta_r_ptp = as_float(convergence.get("delta_r_fractional_peak_to_peak_last_window"))
+    if convergence.get("converged_gamma") is not True:
+        warnings.append(f"Gamma peak-to-peak {gamma_ptp!r} > {CONVERGENCE_TOLERANCE:g}")
+    if convergence.get("converged_period") is not True:
+        warnings.append(f"P fractional peak-to-peak {period_ptp!r} > {CONVERGENCE_TOLERANCE:g}")
+    if convergence.get("converged_delta_r") is not True:
+        warnings.append(f"DeltaR fractional peak-to-peak {delta_r_ptp!r} > {CONVERGENCE_TOLERANCE:g}")
+    return warnings
+
+
+def attach_convergence_quality(model: dict[str, object], convergence_by_id: dict[str, dict]) -> None:
+    convergence = convergence_by_id.get(str(model.get("model_id")))
+    if convergence:
+        model["convergence"] = convergence
+    if model.get("registered_existing"):
         return
-    model["quality_warnings"] = warnings
-    if model.get("status") == "complete":
-        model["status"] = "quality_warning"
+    add_quality_warnings(model, convergence_warnings(convergence))
 
 
 def stage_statuses(run_status: dict) -> dict[str, str | None]:
@@ -324,8 +373,10 @@ def main() -> int:
         for record in manifest
     ]
     modulation_by_model = cycle_modulation_by_model(output_dir)
+    convergence_by_id = convergence_by_model(output_dir)
     for model in models:
         attach_cycle_modulation_quality(model, modulation_by_model)
+        attach_convergence_quality(model, convergence_by_id)
     complete = all(model["status"] == "complete" for model in models)
     running = any(model["status"] == "running" for model in models)
     incomplete = [model["model_id"] for model in models if model["status"] != "complete"]

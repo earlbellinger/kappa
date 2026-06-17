@@ -34,7 +34,7 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--workspace", type=Path, default=DEFAULT_WORKSPACE)
     parser.add_argument("--models", nargs="*", default=None, help="Optional model ids to consider.")
-    parser.add_argument("--caps", nargs="+", type=int, default=[4000], help="Resume RSP_max_num_periods caps to try.")
+    parser.add_argument("--caps", nargs="+", type=int, default=[5000], help="Resume RSP_max_num_periods caps to try.")
     parser.add_argument("--python", type=Path, default=DEFAULT_PYTHON if DEFAULT_PYTHON.exists() else Path(sys.executable))
     parser.add_argument("--bash", default="bash")
     parser.add_argument("--wait-for-batch", action="store_true")
@@ -146,11 +146,23 @@ def wait_for_batch(args: argparse.Namespace, log_path: Path, status_path: Path) 
         time.sleep(max(30, args.wait_interval_seconds))
 
 
+def convergence_by_model(output_dir: Path) -> dict[str, dict]:
+    convergence = read_json(output_dir / "convergence_summary_last100.json")
+    rows = convergence.get("models", []) if isinstance(convergence, dict) else []
+    return {
+        str(row.get("model_id")): row
+        for row in rows
+        if isinstance(row, dict) and row.get("model_id")
+    }
+
+
 def quality_warning_models(args: argparse.Namespace, log_path: Path) -> list[dict]:
     audit_path = args.workspace / "output" / "batch_audit_summary.json"
+    output_dir = args.workspace / "output"
     audit = read_json(audit_path)
     if not isinstance(audit, dict):
         return []
+    convergence = convergence_by_model(output_dir)
     selected = set(args.models or [])
     models = audit.get("models", [])
     result = []
@@ -162,12 +174,34 @@ def quality_warning_models(args: argparse.Namespace, log_path: Path) -> list[dic
             continue
         if model.get("registered_existing"):
             continue
-        warnings = model.get("quality_warnings")
-        if not warnings:
+        stages = model.get("stages", {})
+        if isinstance(stages, dict) and any(
+            isinstance(stage, dict) and stage.get("status") == "running"
+            for stage in stages.values()
+        ):
+            append_log(log_path, f"skip {model_id}: model is still running")
             continue
-        if model.get("reached_max_periods") is not True:
-            append_log(log_path, f"skip {model_id}: quality warning but did not reach period cap")
+        continue_stage = stages.get("continue_saturation") if isinstance(stages, dict) else None
+        if isinstance(continue_stage, dict) and continue_stage.get("status") != "complete":
+            append_log(log_path, f"skip {model_id}: continue_saturation is not complete")
             continue
+        reasons = list(model.get("quality_warnings") or [])
+        convergence_row = convergence.get(model_id)
+        if not convergence_row:
+            reasons.append("missing convergence summary")
+        elif convergence_row.get("converged_exact") is not True:
+            source_kind = convergence_row.get("source_kind")
+            gamma = convergence_row.get("gamma_peak_to_peak_last_window")
+            period = convergence_row.get("period_fractional_peak_to_peak_last_window")
+            delta_r = convergence_row.get("delta_r_fractional_peak_to_peak_last_window")
+            reasons.append(
+                "not converged over final 100 cycles "
+                f"(source={source_kind}, Gamma_ptp={gamma}, P_frac_ptp={period}, DeltaR_frac_ptp={delta_r})"
+            )
+        if not reasons:
+            continue
+        model = dict(model)
+        model["extension_reasons"] = reasons
         result.append(model)
     return result
 
