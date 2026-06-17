@@ -1,6 +1,6 @@
 {
   "batch_status": {
-    "current_model": "model_006",
+    "current_model": "model_007",
     "driver_pid": 1658056,
     "ended_at": null,
     "log": "<local-rre-root>/rsp_batch_runs/output/batch_remaining_006_009.log",
@@ -12,7 +12,14 @@
     ],
     "results": {
       "model_006": {
+        "continuation_resume_returncode": null,
+        "ended_at": "2026-06-17T01:15:43.101380+00:00",
+        "returncode": 0,
         "started_at": "2026-06-16T15:59:09.377348+00:00",
+        "status": "complete"
+      },
+      "model_007": {
+        "started_at": "2026-06-17T01:15:43.104380+00:00",
         "status": "running"
       }
     },
@@ -21,8 +28,8 @@
     "status": "running",
     "workspace": "<local-rre-root>/rsp_batch_runs"
   },
-  "completed_gif_count": 6,
-  "generated_at": "2026-06-17T00:50:27.027737+00:00",
+  "completed_gif_count": 7,
+  "generated_at": "2026-06-17T01:20:56.820324+00:00",
   "models": [
     {
       "active_stage": null,
@@ -203,55 +210,62 @@
       "verification_passed": false
     },
     {
-      "active_stage": "continue_saturation",
-      "active_stage_started_at": "2026-06-16T17:42:22.491115+00:00",
-      "estimate_basis": "linear extrapolation from active stage start time and latest period count",
-      "estimated_stage_eta": "2026-06-17T01:09:41.080047+00:00",
-      "estimated_stage_seconds_elapsed": 25684.529608,
-      "estimated_stage_seconds_remaining": 1154.0593240794115,
-      "estimated_stage_seconds_total": 26838.588932079412,
-      "gif_exists": false,
-      "gif_path": null,
-      "latest_history_model": "2433710",
-      "latest_history_mtime": "2026-06-17T00:50:26.837255+00:00",
-      "latest_period": "1914",
-      "latest_period_log": "continue_saturation.log",
-      "latest_photo": "<local-rre-root>/rsp_batch_runs/runs/model_006_M0p7194_Z0p001620_T6711/photos_continue_saturation/2430000",
-      "max_periods": "2000",
+      "active_stage": null,
+      "active_stage_started_at": null,
+      "gif_exists": true,
+      "gif_path": "<local-rre-root>/rsp_batch_runs/output/model_006_M0p7194_Z0p001620_T6711/mesa_rsp_model_006_M0p7194_Z0p001620_T6711_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work.gif",
+      "latest_history_model": "2546092",
+      "latest_history_mtime": "2026-06-17T01:14:37.360733+00:00",
+      "latest_period": "2",
+      "latest_period_log": "deep2cycles.log",
+      "latest_photo": "<local-rre-root>/rsp_batch_runs/runs/model_006_M0p7194_Z0p001620_T6711/photos_restart/2540000",
+      "max_periods": "2",
       "model_id": "model_006",
       "output_dir": "<local-rre-root>/rsp_batch_runs/output/model_006_M0p7194_Z0p001620_T6711",
-      "period_progress_fraction": 0.957,
-      "period_progress_percent": 95.7,
-      "profile_count": null,
+      "period_progress_fraction": 1.0,
+      "period_progress_percent": 100.0,
+      "profile_count": 3097,
       "registered_existing": false,
       "run_dir": "<local-rre-root>/rsp_batch_runs/runs/model_006_M0p7194_Z0p001620_T6711",
       "run_name": "model_006_M0p7194_Z0p001620_T6711",
       "stages": {
-        "continue_saturation": "running",
+        "continue_saturation": "complete",
         "create": "complete",
-        "prepared": "complete"
+        "deep2cycles": "complete",
+        "final_cycle": "complete",
+        "plot": "complete",
+        "prepared": "complete",
+        "restart": "complete",
+        "verify": "failed"
       },
       "verification_passed": false
     },
     {
-      "active_stage": null,
-      "active_stage_started_at": null,
+      "active_stage": "create",
+      "active_stage_started_at": "2026-06-17T01:15:43.299407+00:00",
+      "estimate_basis": "linear extrapolation from active stage start time and latest period count",
+      "estimated_stage_eta": "2026-06-17T03:03:49.896904+00:00",
+      "estimated_stage_seconds_elapsed": 313.518879,
+      "estimated_stage_seconds_remaining": 6173.078617551724,
+      "estimated_stage_seconds_total": 6486.597496551724,
       "gif_exists": false,
       "gif_path": null,
-      "latest_history_model": null,
-      "latest_history_mtime": null,
-      "latest_period": null,
-      "latest_period_log": null,
-      "latest_photo": null,
-      "max_periods": null,
+      "latest_history_model": "23910",
+      "latest_history_mtime": "2026-06-17T01:20:56.711403+00:00",
+      "latest_period": "29",
+      "latest_period_log": "create.log",
+      "latest_photo": "<local-rre-root>/rsp_batch_runs/runs/model_007_M0p6887_Z0p004060_T6669/photos_saturation/20000",
+      "max_periods": "600",
       "model_id": "model_007",
       "output_dir": "<local-rre-root>/rsp_batch_runs/output/model_007_M0p6887_Z0p004060_T6669",
+      "period_progress_fraction": 0.04833333333333333,
+      "period_progress_percent": 4.833333333333333,
       "profile_count": null,
       "registered_existing": false,
       "run_dir": "<local-rre-root>/rsp_batch_runs/runs/model_007_M0p6887_Z0p004060_T6669",
       "run_name": "model_007_M0p6887_Z0p004060_T6669",
       "stages": {
-        "create": "stopped",
+        "create": "running",
         "prepared": "complete"
       },
       "verification_passed": false
@@ -301,10 +315,10 @@
       "verification_passed": false
     }
   ],
-  "new_batch_gif_count": 5,
+  "new_batch_gif_count": 6,
   "new_batch_model_count": 9,
   "registered_existing_gif_count": 1,
-  "total_gif_count": 6,
+  "total_gif_count": 7,
   "verified_model_count": 4,
   "workspace": "<local-rre-root>/rsp_batch_runs"
 }
