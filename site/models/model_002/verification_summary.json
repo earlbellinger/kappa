@@ -8,8 +8,8 @@
   "summary_path": "<local-rre-root>/rsp_batch_runs/output/model_002_M0p5753_Z0p00707_T6044/mesa_rsp_model_002_M0p5753_Z0p00707_T6044_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work_summary.json",
   "pressure_work_mode": "gas_plus_pav",
   "heating_mode": "gas_minus_c",
-  "scaling_method_version": "model000-visible-window-v6",
-  "expected_scaling_method_version": "model000-visible-window-v6",
+  "scaling_method_version": "model000-visible-window-v7",
+  "expected_scaling_method_version": "model000-visible-window-v7",
   "panel_y_ranges": {
     "left_power": {
       "limits": [
@@ -72,10 +72,11 @@
     0.07414103881529135
   ],
   "opacity_scaling": {
-    "method": "left-panel visible-window min opacity maps to zero; left-panel visible-window max opacity maps to a fixed fraction of this panel's positive y-limit",
+    "method": "left-panel visible-window min and max opacity are mapped into a fixed upper band of this panel's own y-axis range",
     "panel": "left_power",
-    "panel_top_fraction": 0.88,
-    "reference_opacity_max_display_value": 0.8236003905715753,
+    "panel_bottom_fraction": 0.64,
+    "panel_top_fraction": 0.92,
+    "reference_opacity_max_display_value": 0.7767257274249058,
     "x_field_for_scaling": "radius_rsun_plot",
     "x_limits_for_scaling": [
       4.711042152452866,
@@ -85,14 +86,15 @@
       0.00269378555828959,
       169.65719431396022
     ],
-    "reference_convention": "model_000 example rule: measure opacity min and max only in the shown radius range, subtract the shown minimum, and scale the shown maximum to a consistent fraction of the positive y-axis in each panel",
-    "display_min_value": 0.0,
-    "display_units_per_opacity_unit": 0.0003845704885767757,
+    "reference_convention": "model_000 example rule: measure opacity min and max only in the shown radius range, then map those two extrema into a reserved band of each panel's own y-axis range",
+    "display_min_value": 0.021480536849885087,
+    "display_units_per_opacity_unit": 0.00024142105318602594,
     "opacity_min_baseline": 0.00269378555828959,
-    "opacity_max_display_value": 0.06524411415745639,
+    "opacity_max_display_value": 0.062438705045201076,
+    "opacity_display_span": 0.04095816819531599,
     "scaled_visible_display_bounds": [
-      0.0,
-      0.06524411415745639
+      0.021480536849885087,
+      0.062438705045201076
     ]
   },
   "photosphere_radius_rsun_range": [
@@ -150,5 +152,5 @@
   "phase_seam_ok": true,
   "passed": true,
   "failures": [],
-  "verified_at": "2026-06-17T16:25:45.569425+00:00"
+  "verified_at": "2026-06-17T18:49:49.928116+00:00"
 }
