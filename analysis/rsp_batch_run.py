@@ -53,7 +53,7 @@ EXPECTED_MODEL_FIELD = {
     "restart": "restart_model",
     "deep2cycles": "deep_model",
 }
-EXPECTED_ANIMATION_SCALING_VERSION = "per-panel-visible-window-v2"
+EXPECTED_ANIMATION_SCALING_VERSION = "per-panel-visible-window-v3"
 REQUIRED_PROFILE_COLUMNS = {
     "rsp_Pvsc",
     "rsp_src_snk",
@@ -831,6 +831,9 @@ def animation_summary_scaling_status(summary: dict[str, object]) -> tuple[bool, 
         panel_top = float(left_power_ylim[1])
         opacity_units = float(opacity_scaling["display_units_per_opacity_unit"])
         opacity_max_display = float(opacity_scaling["opacity_max_display_value"])
+        opacity_min_display = float(opacity_scaling["display_min_value"])
+        opacity_x_limits = opacity_scaling["x_limits_for_scaling"]
+        opacity_visible = opacity_scaling["visible_data_bounds"]
         left_power_limits = left_power_panel["limits"]
         left_power_visible = left_power_panel["visible_data_bounds"]
     except (KeyError, TypeError, ValueError, IndexError):
@@ -852,6 +855,11 @@ def animation_summary_scaling_status(summary: dict[str, object]) -> tuple[bool, 
         panel_top,
         opacity_units,
         opacity_max_display,
+        opacity_min_display,
+        float(opacity_x_limits[0]),
+        float(opacity_x_limits[1]),
+        float(opacity_visible[0]),
+        float(opacity_visible[1]),
     )
     if not all(math.isfinite(value) for value in finite_values):
         return False, "visible-window scaling metadata contains non-finite values"
@@ -868,6 +876,18 @@ def animation_summary_scaling_status(summary: dict[str, object]) -> tuple[bool, 
         return False, "left-power panel y-range metadata does not match the plotted limits"
     if opacity_units <= 0.0 or opacity_max_display <= 0.0:
         return False, "opacity display scale is not positive"
+    if abs(opacity_min_display) > 1.0e-12:
+        return False, "opacity display baseline is not zero"
+    if opacity_max_display > panel_top + 1.0e-8:
+        return False, "opacity display maximum falls outside the positive plotted y-limit"
+    if (
+        opacity_scaling.get("x_field_for_scaling") != summary["left_panel_x_field_for_scaling"]
+        or abs(float(opacity_x_limits[0]) - scale_left) > 1.0e-8
+        or abs(float(opacity_x_limits[1]) - scale_right) > 1.0e-8
+    ):
+        return False, "opacity scaling limits do not match the displayed left-panel radius range"
+    if float(opacity_visible[1]) <= float(opacity_visible[0]):
+        return False, "opacity visible-window extrema are degenerate"
     return True, "per-panel visible-window scaling metadata is current"
 
 
@@ -1102,12 +1122,28 @@ def verify_model(record: dict[str, object], output_dir: Path) -> dict[str, objec
     try:
         opacity_units = float(opacity_scaling["display_units_per_opacity_unit"])
         opacity_max_display = float(opacity_scaling["opacity_max_display_value"])
+        opacity_min_display = float(opacity_scaling["display_min_value"])
+        opacity_x_limits = opacity_scaling["x_limits_for_scaling"]
+        opacity_visible = opacity_scaling["visible_data_bounds"]
         if not math.isfinite(opacity_units) or opacity_units <= 0.0:
             failures.append(f"opacity display scale is {opacity_units!r}, expected a positive finite value")
         if not math.isfinite(opacity_max_display) or opacity_max_display <= 0.0:
             failures.append(
                 f"opacity_max_display_value is {opacity_max_display!r}, expected a positive finite value"
             )
+        if abs(opacity_min_display) > 1.0e-12:
+            failures.append(f"opacity display baseline is {opacity_min_display!r}, expected 0")
+        if not math.isfinite(opacity_max_display) or opacity_max_display > float(left_power_ylim[1]) + 1.0e-8:
+            failures.append("opacity display maximum falls outside the positive plotted y-limit")
+        if opacity_scaling.get("x_field_for_scaling") != summary.get("left_panel_x_field_for_scaling"):
+            failures.append("opacity scaling x-field does not match the left-panel scaling x-field")
+        if (
+            abs(float(opacity_x_limits[0]) - float(scaling_x_limits[0])) > 1.0e-8
+            or abs(float(opacity_x_limits[1]) - float(scaling_x_limits[1])) > 1.0e-8
+        ):
+            failures.append("opacity scaling x-limits do not match the displayed left-panel radius range")
+        if float(opacity_visible[1]) <= float(opacity_visible[0]):
+            failures.append("opacity visible-window extrema are degenerate")
     except (TypeError, ValueError, KeyError):
         failures.append("visible-window opacity scaling metadata is missing")
     try:
