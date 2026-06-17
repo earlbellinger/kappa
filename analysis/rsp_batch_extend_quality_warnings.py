@@ -15,6 +15,7 @@ DEFAULT_PYTHON = Path(r"C:\Program Files\Python311\python.exe")
 RUNNER = ROOT / "rsp_batch_run.py"
 AUDIT = ROOT / "rsp_batch_audit.py"
 CYCLE_DIAGNOSTICS = ROOT / "rsp_batch_cycle_diagnostics.py"
+CONVERGENCE = ROOT / "rsp_batch_convergence.py"
 LIVE_STATUS = ROOT / "rsp_batch_live_status.py"
 GALLERY = ROOT / "rsp_batch_make_gallery.py"
 FINISHED_VIEWER = ROOT / "rsp_batch_make_finished_viewer.py"
@@ -80,6 +81,7 @@ def analysis_refresh(args: argparse.Namespace, log_path: Path, allow_incomplete:
     commands = [
         [str(args.python), str(LIVE_STATUS), "--workspace", str(args.workspace)],
         [str(args.python), str(CYCLE_DIAGNOSTICS), "--workspace", str(args.workspace)],
+        [str(args.python), str(CONVERGENCE), "--workspace", str(args.workspace)],
         [
             str(args.python),
             str(AUDIT),

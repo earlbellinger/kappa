@@ -190,6 +190,8 @@ def copy_batch_assets(rre_root: Path, output_dir: Path) -> dict[str, str | None]
         "batch_audit_summary.json",
         "cycle_modulation_summary.json",
         "cycle_modulation_summary.csv",
+        "convergence_summary_last100.json",
+        "convergence_summary_last100.csv",
         "quality_extension_status.json",
     ):
         source = batch_source_dir / name
@@ -307,6 +309,7 @@ def write_index(output_dir: Path, models: list[dict[str, object]], metadata_link
         ("audit", metadata_links.get("batch_audit_summary.json")),
         ("manifest", metadata_links.get("manifest.json")),
         ("cycle modulation", metadata_links.get("cycle_modulation_summary.json")),
+        ("convergence", metadata_links.get("convergence_summary_last100.json")),
         ("models CSV", "metadata/models.csv"),
     ):
         if href:

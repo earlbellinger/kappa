@@ -17,6 +17,7 @@ FINISHED_VIEWER_SCRIPT = ROOT / "rsp_batch_make_finished_viewer.py"
 LIVE_STATUS_SCRIPT = ROOT / "rsp_batch_live_status.py"
 AUDIT_SCRIPT = ROOT / "rsp_batch_audit.py"
 CYCLE_DIAGNOSTICS_SCRIPT = ROOT / "rsp_batch_cycle_diagnostics.py"
+CONVERGENCE_SCRIPT = ROOT / "rsp_batch_convergence.py"
 
 
 def now_iso() -> str:
@@ -90,6 +91,19 @@ def rebuild(args: argparse.Namespace, log_path: Path) -> int:
     if cycle_completed.stderr.strip():
         append_log(log_path, cycle_completed.stderr.strip())
 
+    convergence_command = [
+        str(args.python),
+        str(CONVERGENCE_SCRIPT),
+        "--workspace",
+        str(args.workspace),
+    ]
+    convergence_completed = subprocess.run(convergence_command, cwd=ROOT, capture_output=True, text=True)
+    append_log(log_path, f"[{now_iso()}] convergence returncode={convergence_completed.returncode}")
+    if convergence_completed.stdout.strip():
+        append_log(log_path, convergence_completed.stdout.strip())
+    if convergence_completed.stderr.strip():
+        append_log(log_path, convergence_completed.stderr.strip())
+
     command = [
         str(args.python),
         str(GALLERY_SCRIPT),
@@ -121,6 +135,7 @@ def rebuild(args: argparse.Namespace, log_path: Path) -> int:
         status_completed.returncode
         or audit_completed.returncode
         or cycle_completed.returncode
+        or convergence_completed.returncode
         or completed.returncode
         or viewer_completed.returncode
     )
