@@ -6,7 +6,7 @@
   "output_dir": "<local-rre-root>/rsp_batch_runs/output/model_002_M0p5753_Z0p00707_T6044",
   "prefix": "mesa_rsp_model_002_M0p5753_Z0p00707_T6044",
   "product_stem": "mesa_rsp_model_002_M0p5753_Z0p00707_T6044_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work",
-  "updated_at": "2026-06-17T08:56:42.447704+00:00",
+  "updated_at": "2026-06-17T09:23:19.303394+00:00",
   "stages": {
     "prepared": {
       "status": "complete",
@@ -128,82 +128,63 @@
       }
     },
     "verify": {
-      "status": "complete",
-      "updated_at": "2026-06-17T00:43:24.662634+00:00",
+      "status": "skipped_pending_convergence",
+      "updated_at": "2026-06-17T09:23:19.303394+00:00",
       "expected_output": "<local-rre-root>/rsp_batch_runs/output/model_002_M0p5753_Z0p00707_T6044/verification_summary.json",
-      "result": {
+      "reason": "strict convergence pending (source=period_log_fallback, cycles=1999, Gamma_ptp=None, P_frac_ptp=0.0, DeltaR_frac_ptp=0.11147892994542363)",
+      "convergence": {
+        "source_kind": "period_log_fallback",
+        "cycle_count": 1999,
+        "last_cycle_count_used": 100,
+        "window_start_period_number": 1901.0,
+        "window_end_period_number": 2000.0,
+        "last_period_number": 2000.0,
+        "gamma_peak_to_peak_last_window": null,
+        "gamma_median_last_window": null,
+        "gamma_first_last_window": [
+          null,
+          null
+        ],
+        "gamma_slope_per_cycle_last_window": null,
+        "period_fractional_peak_to_peak_last_window": 0.0,
+        "period_median_days_last_window": 0.73069,
+        "period_first_last_days_window": [
+          0.73069,
+          0.73069
+        ],
+        "period_slope_days_per_cycle_last_window": 0.0,
+        "delta_r_fractional_peak_to_peak_last_window": 0.11147892994542363,
+        "delta_r_median_last_window": 0.055885,
+        "delta_r_first_last_window": [
+          0.05285,
+          0.05908
+        ],
+        "delta_r_slope_per_cycle_last_window": 6.296825682568256e-05,
+        "steps_median_last_window": 1000.0,
+        "steps_min_last_window": 1000.0,
+        "steps_max_last_window": 1000.0,
+        "has_full_window": true,
+        "has_gamma": false,
+        "converged_gamma": false,
+        "converged_period": true,
+        "converged_delta_r": false,
+        "converged_exact": false,
+        "limit_cycle_converged": false,
+        "source": "continue_saturation",
+        "source_path": "<local-rre-root>/rsp_batch_runs/output/model_002_M0p5753_Z0p00707_T6044/logs/continue_saturation.log",
+        "gamma_status": "not recorded in history",
+        "stop_reasons": [
+          "period_number >= max_period_number",
+          "termination code: reached max number of periods"
+        ],
+        "grekm_stopped": false,
+        "period_cap_stopped": true,
         "model_id": "model_002",
         "run_name": "model_002_M0p5753_Z0p00707_T6044",
-        "profile_count": 3000,
-        "first_profile": "<local-rre-root>/rsp_batch_runs/runs/model_002_M0p5753_Z0p00707_T6044/LOGS/profile1.data",
-        "required_profile_columns_present": true,
-        "missing_profile_columns": [],
-        "summary_path": "<local-rre-root>/rsp_batch_runs/output/model_002_M0p5753_Z0p00707_T6044/mesa_rsp_model_002_M0p5753_Z0p00707_T6044_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work_summary.json",
-        "pressure_work_mode": "gas_plus_pav",
-        "heating_mode": "gas_minus_c",
-        "cycle_source": "final-cycle summary age window",
-        "main_radius_xlim_used": [
-          4.711042152452866,
-          5.865910760003436
-        ],
-        "photosphere_radius_rsun_range": [
-          5.711042152452866,
-          5.765910760003436
-        ],
-        "radius_window_contains_photosphere": true,
-        "continue_saturation_stop": {
-          "log_path": "<local-rre-root>/rsp_batch_runs/output/model_002_M0p5753_Z0p00707_T6044/logs/continue_saturation.log",
-          "exists": true,
-          "stop_reason": "period_number >= max_period_number",
-          "termination_code": "reached max number of periods",
-          "saturated_by_grekm": false,
-          "reached_max_periods": true
-        },
-        "saturated_by_grekm": false,
-        "reached_max_periods": true,
-        "phase_seam": {
-          "path": "<local-rre-root>/rsp_batch_runs/output/model_002_M0p5753_Z0p00707_T6044/mesa_rsp_model_002_M0p5753_Z0p00707_T6044_final_cycle_lightcurve.csv",
-          "exists": true,
-          "row_count": 1000,
-          "parsed_row_count": 1000,
-          "phase_first": 0.0,
-          "phase_last": 0.999000000005,
-          "max_allowed_fraction_of_amplitude": 0.025,
-          "max_allowed_adjacent_fraction_of_amplitude": 0.025,
-          "metrics": {
-            "luminosity_lsun": {
-              "seam": 0.0014379702735354272,
-              "amplitude": 0.845825063947899,
-              "fraction_of_amplitude": 0.001700079998603592,
-              "max_adjacent_step": 0.0031652160172725985,
-              "max_adjacent_fraction_of_amplitude": 0.0037421638967506036
-            },
-            "radius_rsun": {
-              "seam": 3.171456000039541e-05,
-              "amplitude": 0.06069373232999986,
-              "fraction_of_amplitude": 0.000522534350465698,
-              "max_adjacent_step": 0.00019207545000021753,
-              "max_adjacent_fraction_of_amplitude": 0.003164666970155631
-            },
-            "teff_k": {
-              "seam": 0.04379125000014028,
-              "amplitude": 57.80738912000015,
-              "fraction_of_amplitude": 0.0007575372399060559,
-              "max_adjacent_step": 0.1987251099999412,
-              "max_adjacent_fraction_of_amplitude": 0.003437711216941753
-            }
-          },
-          "failures": [],
-          "age_monotonic_by_phase": true,
-          "minimum_age_step_days_by_phase": 0.0007306799998332281,
-          "ok": true
-        },
-        "phase_seam_ok": true,
-        "passed": true,
-        "failures": [],
-        "verified_at": "2026-06-17T00:43:24.660629+00:00"
+        "tolerance": 0.001,
+        "required_last_cycles": 100
       },
-      "started_at": "2026-06-17T00:43:24.470859+00:00"
+      "metadata_reconciled_from_stale_status": true
     }
   },
   "validation": {

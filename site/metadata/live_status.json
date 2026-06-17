@@ -33,7 +33,7 @@
     "workspace": "<local-rre-root>/rsp_batch_runs"
   },
   "completed_gif_count": 1,
-  "generated_at": "2026-06-17T09:14:39.580716+00:00",
+  "generated_at": "2026-06-17T09:23:29.978885+00:00",
   "limit_cycle_converged_model_count": 0,
   "models": [
     {
@@ -126,7 +126,7 @@
         "plot": "skipped_pending_convergence",
         "prepared": "complete",
         "restart": "complete",
-        "verify": "complete"
+        "verify": "skipped_pending_convergence"
       },
       "steps_median_last_window": 1235.0,
       "trusted_animation": false,
@@ -181,7 +181,7 @@
         "plot": "skipped_pending_convergence",
         "prepared": "complete",
         "restart": "complete",
-        "verify": "complete"
+        "verify": "skipped_pending_convergence"
       },
       "steps_median_last_window": 1000.0,
       "trusted_animation": false,
@@ -236,7 +236,7 @@
         "plot": "skipped_pending_convergence",
         "prepared": "complete",
         "restart": "complete",
-        "verify": "failed"
+        "verify": "skipped_pending_convergence"
       },
       "steps_median_last_window": 1039.0,
       "trusted_animation": false,
@@ -291,7 +291,7 @@
         "plot": "skipped_pending_convergence",
         "prepared": "complete",
         "restart": "complete",
-        "verify": "complete"
+        "verify": "skipped_pending_convergence"
       },
       "steps_median_last_window": 1000.0,
       "trusted_animation": false,
@@ -346,7 +346,7 @@
         "plot": "skipped_pending_convergence",
         "prepared": "complete",
         "restart": "complete",
-        "verify": "failed"
+        "verify": "skipped_pending_convergence"
       },
       "steps_median_last_window": 1058.0,
       "trusted_animation": false,
@@ -401,7 +401,7 @@
         "plot": "skipped_pending_convergence",
         "prepared": "complete",
         "restart": "complete",
-        "verify": "failed"
+        "verify": "skipped_pending_convergence"
       },
       "steps_median_last_window": 1025.5,
       "trusted_animation": false,
@@ -471,39 +471,39 @@
       "converged_delta_r": false,
       "converged_exact": false,
       "converged_gamma": true,
-      "converged_period": false,
-      "convergence_cycle_count": 331,
-      "convergence_last_period_number": 331.0,
+      "converged_period": true,
+      "convergence_cycle_count": 390,
+      "convergence_last_period_number": 390.0,
       "convergence_source_kind": "history_exact_rsp_columns",
-      "convergence_window_end_period_number": 331.0,
-      "convergence_window_start_period_number": 232.0,
+      "convergence_window_end_period_number": 390.0,
+      "convergence_window_start_period_number": 291.0,
       "delta_r_first_last_window": [
-        0.0038960680097162026,
-        0.004755218776340442
+        0.004389275869929321,
+        0.00535348852190598
       ],
-      "delta_r_fractional_peak_to_peak_last_window": 0.1996614048457618,
-      "delta_r_slope_per_cycle_last_window": 8.663523128177761e-06,
+      "delta_r_fractional_peak_to_peak_last_window": 0.1990004605101753,
+      "delta_r_slope_per_cycle_last_window": 9.754485674289707e-06,
       "estimate_basis": "linear extrapolation from active stage start time and latest period count",
-      "estimated_stage_eta": "2026-06-17T09:52:15.537637+00:00",
-      "estimated_stage_seconds_elapsed": 2950.099474,
-      "estimated_stage_seconds_remaining": 2255.9584212941177,
-      "estimated_stage_seconds_total": 5206.057895294118,
-      "gamma_peak_to_peak_last_window": 0.00043374758160992163,
+      "estimated_stage_eta": "2026-06-17T09:52:17.206889+00:00",
+      "estimated_stage_seconds_elapsed": 3480.497643,
+      "estimated_stage_seconds_remaining": 1727.2295036334167,
+      "estimated_stage_seconds_total": 5207.727146633417,
+      "gamma_peak_to_peak_last_window": 0.0003310714389356557,
       "gif_exists": false,
       "gif_path": null,
-      "latest_history_model": "341680",
-      "latest_history_mtime": "2026-06-17T09:14:39.521561+00:00",
-      "latest_period": "340",
+      "latest_history_model": "402350",
+      "latest_history_mtime": "2026-06-17T09:23:29.898015+00:00",
+      "latest_period": "401",
       "latest_period_log": "create.log",
-      "latest_photo": "<local-rre-root>/rsp_batch_runs/runs/model_008_M0p6151_Z0p0004406_T6792/photos_saturation/340000",
+      "latest_photo": "<local-rre-root>/rsp_batch_runs/runs/model_008_M0p6151_Z0p0004406_T6792/photos_saturation/400000",
       "limit_cycle_converged": false,
       "max_periods": "600",
       "model_id": "model_008",
       "output_dir": "<local-rre-root>/rsp_batch_runs/output/model_008_M0p6151_Z0p0004406_T6792",
       "pending_convergence": false,
-      "period_fractional_peak_to_peak_last_window": 0.0013677270461564769,
-      "period_progress_fraction": 0.5666666666666667,
-      "period_progress_percent": 56.666666666666664,
+      "period_fractional_peak_to_peak_last_window": 0.0004786614909068709,
+      "period_progress_fraction": 0.6683333333333333,
+      "period_progress_percent": 66.83333333333333,
       "profile_count": null,
       "registered_existing": false,
       "run_dir": "<local-rre-root>/rsp_batch_runs/runs/model_008_M0p6151_Z0p0004406_T6792",
@@ -516,8 +516,8 @@
       "trusted_animation": false,
       "trusted_gif_path": null,
       "verification_passed": false,
-      "window_end_period_number": 331.0,
-      "window_start_period_number": 232.0
+      "window_end_period_number": 390.0,
+      "window_start_period_number": 291.0
     },
     {
       "active_stage": null,
