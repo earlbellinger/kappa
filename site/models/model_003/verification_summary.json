@@ -36,21 +36,28 @@
     "phase_first": 0.0,
     "phase_last": 0.999075392712,
     "max_allowed_fraction_of_amplitude": 0.025,
+    "max_allowed_adjacent_fraction_of_amplitude": 0.025,
     "metrics": {
       "luminosity_lsun": {
         "seam": 0.864675662990166,
         "amplitude": 16.73020086627382,
-        "fraction_of_amplitude": 0.05168351951668756
+        "fraction_of_amplitude": 0.05168351951668756,
+        "max_adjacent_step": 0.10655469126222528,
+        "max_adjacent_fraction_of_amplitude": 0.006369002507138298
       },
       "radius_rsun": {
         "seam": 0.01880610520999948,
         "amplitude": 0.3313124612599996,
-        "fraction_of_amplitude": 0.05676244454699598
+        "fraction_of_amplitude": 0.05676244454699598,
+        "max_adjacent_step": 0.0010743277599996048,
+        "max_adjacent_fraction_of_amplitude": 0.0032426421750449018
       },
       "teff_k": {
         "seam": 24.407150359999832,
         "amplitude": 582.4633420600003,
-        "fraction_of_amplitude": 0.04190332437691095
+        "fraction_of_amplitude": 0.04190332437691095,
+        "max_adjacent_step": 3.737499480000224,
+        "max_adjacent_fraction_of_amplitude": 0.006416711937238481
       }
     },
     "failures": [
@@ -69,5 +76,5 @@
     "radius_rsun phase seam is 0.05676 of amplitude, expected <= 0.025",
     "teff_k phase seam is 0.0419 of amplitude, expected <= 0.025"
   ],
-  "verified_at": "2026-06-16T22:43:45.984894+00:00"
+  "verified_at": "2026-06-17T00:43:24.881964+00:00"
 }

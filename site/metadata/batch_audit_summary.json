@@ -10,7 +10,7 @@
     "model_008: stages not complete: create, continue_saturation, restart, deep2cycles, final_cycle, plot, verify; missing files: create_model, saturated_model, restart_model, deep_model, final_cycle_summary, final_cycle_lightcurve, gif, png, animation_summary, verification_summary; verification_summary did not pass; pressure_work_mode=None; heating_mode=None; cycle_source=None; radius_window_contains_photosphere=None; phase_seam_ok=None; missing profile columns: cp, gamma1, ionization_he4, rsp_Lc, rsp_Lr, rsp_Lt, rsp_Pvsc, rsp_src_snk, tau",
     "model_009: stages not complete: create, continue_saturation, restart, deep2cycles, final_cycle, plot, verify; missing files: create_model, saturated_model, restart_model, deep_model, final_cycle_summary, final_cycle_lightcurve, gif, png, animation_summary, verification_summary; verification_summary did not pass; pressure_work_mode=None; heating_mode=None; cycle_source=None; radius_window_contains_photosphere=None; phase_seam_ok=None; missing profile columns: cp, gamma1, ionization_he4, rsp_Lc, rsp_Lr, rsp_Lt, rsp_Pvsc, rsp_src_snk, tau"
   ],
-  "generated_at": "2026-06-16T22:50:43.693162+00:00",
+  "generated_at": "2026-06-17T00:50:27.211823+00:00",
   "incomplete_models": [
     "model_003",
     "model_005",
@@ -41,7 +41,7 @@
           "path": "<local-rre-root>/output/combined_14507_full_pressure_minus_eq/mesa_rsp_combined_14507_full_pressure_minus_eq_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work.png"
         },
         "verification_summary": {
-          "bytes": 2450,
+          "bytes": 2868,
           "exists": true,
           "path": "<local-rre-root>/output/combined_14507_full_pressure_minus_eq/verification_summary.json"
         }
@@ -78,21 +78,28 @@
         "age_monotonic_by_phase": true,
         "exists": true,
         "failures": [],
+        "max_allowed_adjacent_fraction_of_amplitude": 0.025,
         "max_allowed_fraction_of_amplitude": 0.025,
         "metrics": {
           "luminosity_lsun": {
             "amplitude": 12.57043593912266,
             "fraction_of_amplitude": 0.0015328120602470237,
+            "max_adjacent_fraction_of_amplitude": 0.009777345038355116,
+            "max_adjacent_step": 0.12290548945934177,
             "seam": 0.019268115810049835
           },
           "radius_rsun": {
             "amplitude": 0.5710537041299997,
             "fraction_of_amplitude": 0.0001964804346560565,
+            "max_adjacent_fraction_of_amplitude": 0.0031589525765335184,
+            "max_adjacent_step": 0.001803931570000472,
             "seam": 0.00011220087999941342
           },
           "teff_k": {
             "amplitude": 506.7422390900001,
             "fraction_of_amplitude": 0.0009363598362194199,
+            "max_adjacent_fraction_of_amplitude": 0.007101966961472678,
+            "max_adjacent_step": 3.598866639999869,
             "seam": 0.47449307999977464
           }
         },
@@ -189,7 +196,7 @@
           "path": "<local-rre-root>/rsp_batch_runs/runs/model_001_M0p5602_Z0p003592_T6824/final_model_001_M0p5602_Z0p003592_T6824_saturated.mod"
         },
         "verification_summary": {
-          "bytes": 2511,
+          "bytes": 2929,
           "exists": true,
           "path": "<local-rre-root>/rsp_batch_runs/output/model_001_M0p5602_Z0p003592_T6824/verification_summary.json"
         }
@@ -201,21 +208,28 @@
         "age_monotonic_by_phase": true,
         "exists": true,
         "failures": [],
-        "max_allowed_fraction_of_amplitude": 0.02,
+        "max_allowed_adjacent_fraction_of_amplitude": 0.025,
+        "max_allowed_fraction_of_amplitude": 0.025,
         "metrics": {
           "luminosity_lsun": {
             "amplitude": 33.22601050743008,
             "fraction_of_amplitude": 0.0019639417562347735,
+            "max_adjacent_fraction_of_amplitude": 0.006631544384657571,
+            "max_adjacent_step": 0.2203397634051214,
             "seam": 0.06525394942863727
           },
           "radius_rsun": {
             "amplitude": 0.5397520781400003,
             "fraction_of_amplitude": 0.0004579511223974595,
+            "max_adjacent_fraction_of_amplitude": 0.004323670856520498,
+            "max_adjacent_step": 0.0023337103300002937,
             "seam": 0.0002471800700005744
           },
           "teff_k": {
             "amplitude": 1144.4708494200004,
             "fraction_of_amplitude": 0.002002841156821186,
+            "max_adjacent_fraction_of_amplitude": 0.005048541439852523,
+            "max_adjacent_step": 5.777908510000088,
             "seam": 2.2921933200004787
           }
         },
@@ -323,7 +337,7 @@
           "path": "<local-rre-root>/rsp_batch_runs/runs/model_002_M0p5753_Z0p00707_T6044/final_model_002_M0p5753_Z0p00707_T6044_saturated.mod"
         },
         "verification_summary": {
-          "bytes": 2527,
+          "bytes": 2951,
           "exists": true,
           "path": "<local-rre-root>/rsp_batch_runs/output/model_002_M0p5753_Z0p00707_T6044/verification_summary.json"
         }
@@ -335,21 +349,28 @@
         "age_monotonic_by_phase": true,
         "exists": true,
         "failures": [],
-        "max_allowed_fraction_of_amplitude": 0.02,
+        "max_allowed_adjacent_fraction_of_amplitude": 0.025,
+        "max_allowed_fraction_of_amplitude": 0.025,
         "metrics": {
           "luminosity_lsun": {
             "amplitude": 0.845825063947899,
             "fraction_of_amplitude": 0.001700079998603592,
+            "max_adjacent_fraction_of_amplitude": 0.0037421638967506036,
+            "max_adjacent_step": 0.0031652160172725985,
             "seam": 0.0014379702735354272
           },
           "radius_rsun": {
             "amplitude": 0.06069373232999986,
             "fraction_of_amplitude": 0.000522534350465698,
+            "max_adjacent_fraction_of_amplitude": 0.003164666970155631,
+            "max_adjacent_step": 0.00019207545000021753,
             "seam": 3.171456000039541e-05
           },
           "teff_k": {
             "amplitude": 57.80738912000015,
             "fraction_of_amplitude": 0.0007575372399060559,
+            "max_adjacent_fraction_of_amplitude": 0.003437711216941753,
+            "max_adjacent_step": 0.1987251099999412,
             "seam": 0.04379125000014028
           }
         },
@@ -461,7 +482,7 @@
           "path": "<local-rre-root>/rsp_batch_runs/runs/model_003_M0p7317_Z0p001405_T6745/final_model_003_M0p7317_Z0p001405_T6745_saturated.mod"
         },
         "verification_summary": {
-          "bytes": 2981,
+          "bytes": 3400,
           "exists": true,
           "path": "<local-rre-root>/rsp_batch_runs/output/model_003_M0p7317_Z0p001405_T6745/verification_summary.json"
         }
@@ -477,21 +498,28 @@
           "radius_rsun phase seam is 0.05676 of amplitude, expected <= 0.025",
           "teff_k phase seam is 0.0419 of amplitude, expected <= 0.025"
         ],
+        "max_allowed_adjacent_fraction_of_amplitude": 0.025,
         "max_allowed_fraction_of_amplitude": 0.025,
         "metrics": {
           "luminosity_lsun": {
             "amplitude": 16.73020086627382,
             "fraction_of_amplitude": 0.05168351951668756,
+            "max_adjacent_fraction_of_amplitude": 0.006369002507138298,
+            "max_adjacent_step": 0.10655469126222528,
             "seam": 0.864675662990166
           },
           "radius_rsun": {
             "amplitude": 0.3313124612599996,
             "fraction_of_amplitude": 0.05676244454699598,
+            "max_adjacent_fraction_of_amplitude": 0.0032426421750449018,
+            "max_adjacent_step": 0.0010743277599996048,
             "seam": 0.01880610520999948
           },
           "teff_k": {
             "amplitude": 582.4633420600003,
             "fraction_of_amplitude": 0.04190332437691095,
+            "max_adjacent_fraction_of_amplitude": 0.006416711937238481,
+            "max_adjacent_step": 3.737499480000224,
             "seam": 24.407150359999832
           }
         },
@@ -603,7 +631,7 @@
           "path": "<local-rre-root>/rsp_batch_runs/runs/model_004_M0p7595_Z0p0001834_T6876/final_model_004_M0p7595_Z0p0001834_T6876_saturated.mod"
         },
         "verification_summary": {
-          "bytes": 2538,
+          "bytes": 2956,
           "exists": true,
           "path": "<local-rre-root>/rsp_batch_runs/output/model_004_M0p7595_Z0p0001834_T6876/verification_summary.json"
         }
@@ -615,21 +643,28 @@
         "age_monotonic_by_phase": true,
         "exists": true,
         "failures": [],
+        "max_allowed_adjacent_fraction_of_amplitude": 0.025,
         "max_allowed_fraction_of_amplitude": 0.025,
         "metrics": {
           "luminosity_lsun": {
             "amplitude": 7.3633270434362075,
             "fraction_of_amplitude": 0.017340075546952976,
+            "max_adjacent_fraction_of_amplitude": 0.003445860369228461,
+            "max_adjacent_step": 0.025372996844645,
             "seam": 0.12768064721010575
           },
           "radius_rsun": {
             "amplitude": 0.09130168519999948,
             "fraction_of_amplitude": 0.018219881115621152,
+            "max_adjacent_fraction_of_amplitude": 0.003263425306413099,
+            "max_adjacent_step": 0.0002979562299998406,
             "seam": 0.0016635058499998578
           },
           "teff_k": {
             "amplitude": 222.66949741999997,
             "fraction_of_amplitude": 0.020358376439180786,
+            "max_adjacent_fraction_of_amplitude": 0.0033277115571986654,
+            "max_adjacent_step": 0.7409798600001523,
             "seam": 4.533189449999554
           }
         },
@@ -741,7 +776,7 @@
           "path": "<local-rre-root>/rsp_batch_runs/runs/model_005_M0p6238_Z0p00007156_T6925/final_model_005_M0p6238_Z0p00007156_T6925_saturated.mod"
         },
         "verification_summary": {
-          "bytes": 2836,
+          "bytes": 3254,
           "exists": true,
           "path": "<local-rre-root>/rsp_batch_runs/output/model_005_M0p6238_Z0p00007156_T6925/verification_summary.json"
         }
@@ -756,21 +791,28 @@
           "radius_rsun phase seam is 0.3245 of amplitude, expected <= 0.025",
           "teff_k phase seam is 0.1056 of amplitude, expected <= 0.025"
         ],
+        "max_allowed_adjacent_fraction_of_amplitude": 0.025,
         "max_allowed_fraction_of_amplitude": 0.025,
         "metrics": {
           "luminosity_lsun": {
             "amplitude": 11.260209500848426,
             "fraction_of_amplitude": 0.014524514756499178,
+            "max_adjacent_fraction_of_amplitude": 0.0041719054255351,
+            "max_adjacent_step": 0.04697652910925143,
             "seam": 0.1635490790563452
           },
           "radius_rsun": {
             "amplitude": 0.2615772998699999,
             "fraction_of_amplitude": 0.3244899978407296,
+            "max_adjacent_fraction_of_amplitude": 0.0025224558106830175,
+            "max_adjacent_step": 0.0006598171799998553,
             "seam": 0.08487921747000016
           },
           "teff_k": {
             "amplitude": 447.3407082699996,
             "fraction_of_amplitude": 0.10558216251469009,
+            "max_adjacent_fraction_of_amplitude": 0.0038920458116434987,
+            "max_adjacent_step": 1.741070529999888,
             "seam": 47.231199359999664
           }
         },
@@ -811,19 +853,19 @@
     {
       "continue_saturation_stop": null,
       "cycle_modulation": {
-        "cycle_count": 1320,
+        "cycle_count": 1904,
         "diagnostic_png": "<local-rre-root>/rsp_batch_runs/output/cycle_diagnostics/model_006_M0p7194_Z0p001620_T6711_cycle_modulation_diagnostic.png",
         "history_path": "<local-rre-root>/rsp_batch_runs/runs/model_006_M0p7194_Z0p001620_T6711/LOGS_continue_saturation/history.data",
         "history_source": "continue_saturation",
         "last_cycle_count_used": 80,
-        "last_max_l_lsun": 59.31656824112043,
-        "last_min_abs_mag_v": 0.30155280040787813,
-        "last_period_days": 0.40185820508327197,
-        "max_l_modulation_fraction": 0.0506036832064881,
-        "min_v_modulation_mag": 0.06471215127804353,
+        "last_max_l_lsun": 61.38589394675883,
+        "last_min_abs_mag_v": 0.2575999514020639,
+        "last_period_days": 0.3986894782641457,
+        "max_l_modulation_fraction": 0.07989490413983931,
+        "min_v_modulation_mag": 0.10209705412309361,
         "model_id": "model_006",
-        "period_modulation_fraction": 0.06150117451595956,
-        "radius_amplitude_modulation_fraction": 0.18626842343793112,
+        "period_modulation_fraction": 0.09097793677057642,
+        "radius_amplitude_modulation_fraction": 0.2922174924465014,
         "run_name": "model_006_M0p7194_Z0p001620_T6711"
       },
       "cycle_source": null,
@@ -908,9 +950,9 @@
       "pressure_work_mode": null,
       "profile_count": null,
       "quality_warnings": [
-        "strong max-L cycle modulation 0.0506 > 0.05",
-        "strong min-V cycle modulation 0.06471 mag > 0.05 mag",
-        "strong period modulation 0.0615 > 0.05"
+        "strong max-L cycle modulation 0.07989 > 0.05",
+        "strong min-V cycle modulation 0.1021 mag > 0.05 mag",
+        "strong period modulation 0.09098 > 0.05"
       ],
       "radius_window_contains_photosphere": null,
       "reached_max_periods": null,
@@ -933,19 +975,12 @@
     {
       "continue_saturation_stop": null,
       "cycle_modulation": {
-        "cycle_count": 14,
-        "diagnostic_png": "<local-rre-root>/rsp_batch_runs/output/cycle_diagnostics/model_007_M0p6887_Z0p004060_T6669_cycle_modulation_diagnostic.png",
-        "history_path": "<local-rre-root>/rsp_batch_runs/runs/model_007_M0p6887_Z0p004060_T6669/LOGS_saturation/history.data",
-        "history_source": "saturation",
-        "last_cycle_count_used": 14,
-        "last_max_l_lsun": 50.84628281548869,
-        "last_min_abs_mag_v": 0.47911348663152487,
-        "last_period_days": 0.5745729192058073,
-        "max_l_modulation_fraction": 0.00292321360486804,
-        "min_v_modulation_mag": 0.003786315357818981,
+        "cycle_count": 0,
+        "diagnostic_png": null,
+        "history_path": null,
+        "history_source": null,
+        "last_cycle_count_used": 0,
         "model_id": "model_007",
-        "period_modulation_fraction": 0.8792639442503153,
-        "radius_amplitude_modulation_fraction": 0.867975914162282,
         "run_name": "model_007_M0p6887_Z0p004060_T6669"
       },
       "cycle_source": null,
@@ -1029,9 +1064,7 @@
       "phase_seam_ok": null,
       "pressure_work_mode": null,
       "profile_count": null,
-      "quality_warnings": [
-        "strong period modulation 0.8793 > 0.05"
-      ],
+      "quality_warnings": [],
       "radius_window_contains_photosphere": null,
       "reached_max_periods": null,
       "registered_existing": false,
@@ -1039,14 +1072,14 @@
       "saturated_by_grekm": null,
       "stages": {
         "continue_saturation": null,
-        "create": "running",
+        "create": "stopped",
         "deep2cycles": null,
         "final_cycle": null,
         "plot": null,
         "restart": null,
         "verify": null
       },
-      "status": "running",
+      "status": "incomplete",
       "validation_passed": true,
       "verification_passed": false
     },
@@ -1274,18 +1307,18 @@
     }
   ],
   "quality_extension": {
+    "batch_ended_at": null,
     "batch_status": "running",
     "current_model": "model_006",
     "status": "waiting_for_batch",
-    "updated_at": "2026-06-16T22:46:24.243292+00:00"
+    "updated_at": "2026-06-17T00:46:25.326727+00:00"
   },
   "quality_extension_complete": false,
   "quality_extension_required": true,
   "quality_warnings": [
     "model_003: strong max-L cycle modulation 0.1188 > 0.05; strong min-V cycle modulation 0.1452 mag > 0.05 mag; strong period modulation 0.1242 > 0.05",
     "model_005: strong max-L cycle modulation 0.197 > 0.05; strong min-V cycle modulation 0.258 mag > 0.05 mag; strong period modulation 0.2449 > 0.05",
-    "model_006: strong max-L cycle modulation 0.0506 > 0.05; strong min-V cycle modulation 0.06471 mag > 0.05 mag; strong period modulation 0.0615 > 0.05",
-    "model_007: strong period modulation 0.8793 > 0.05"
+    "model_006: strong max-L cycle modulation 0.07989 > 0.05; strong min-V cycle modulation 0.1021 mag > 0.05 mag; strong period modulation 0.09098 > 0.05"
   ],
   "status": "running",
   "workspace": "<local-rre-root>/rsp_batch_runs"

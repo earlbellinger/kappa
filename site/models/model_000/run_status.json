@@ -15,7 +15,7 @@
     },
     "verify": {
       "status": "complete",
-      "updated_at": "2026-06-16T19:24:57.120312+00:00",
+      "updated_at": "2026-06-17T00:43:23.866430+00:00",
       "expected_output": "<local-rre-root>/output/combined_14507_full_pressure_minus_eq/verification_summary.json",
       "result": {
         "model_id": "model_000",
@@ -29,49 +29,68 @@
         "heating_mode": "gas_minus_c",
         "cycle_source": "final-cycle summary age window",
         "main_radius_xlim_used": [
-          5.387275254936601,
-          6.996044599444927
+          5.387294668462144,
+          6.995969579647836
         ],
         "photosphere_radius_rsun_range": [
-          6.387275254936601,
-          6.896044599444927
+          6.387294668462144,
+          6.895969579647836
         ],
         "radius_window_contains_photosphere": true,
+        "continue_saturation_stop": {
+          "log_path": "<local-rre-root>/output/combined_14507_full_pressure_minus_eq/logs/continue_saturation.log",
+          "exists": false,
+          "stop_reason": null,
+          "termination_code": null,
+          "saturated_by_grekm": null,
+          "reached_max_periods": null
+        },
+        "saturated_by_grekm": null,
+        "reached_max_periods": null,
         "phase_seam": {
           "path": "<local-rre-root>/output/combined_14507_full_pressure_minus_eq/mesa_rsp_combined_14507_full_pressure_minus_eq_final_cycle_lightcurve.csv",
           "exists": true,
-          "row_count": 1062,
-          "parsed_row_count": 1062,
+          "row_count": 1061,
+          "parsed_row_count": 1061,
           "phase_first": 0.0,
           "phase_last": 0.9989997949,
-          "max_allowed_fraction_of_amplitude": 0.02,
+          "max_allowed_fraction_of_amplitude": 0.025,
+          "max_allowed_adjacent_fraction_of_amplitude": 0.025,
           "metrics": {
             "luminosity_lsun": {
-              "seam": 0.0015987037174198804,
+              "seam": 0.019268115810049835,
               "amplitude": 12.57043593912266,
-              "fraction_of_amplitude": 0.0001271796559134655
+              "fraction_of_amplitude": 0.0015328120602470237,
+              "max_adjacent_step": 0.12290548945934177,
+              "max_adjacent_fraction_of_amplitude": 0.009777345038355116
             },
             "radius_rsun": {
-              "seam": 0.0003231071299998334,
-              "amplitude": 0.5710610887999996,
-              "fraction_of_amplitude": 0.0005658013412869632
+              "seam": 0.00011220087999941342,
+              "amplitude": 0.5710537041299997,
+              "fraction_of_amplitude": 0.0001964804346560565,
+              "max_adjacent_step": 0.001803931570000472,
+              "max_adjacent_fraction_of_amplitude": 0.0031589525765335184
             },
             "teff_k": {
-              "seam": 0.10629016000075353,
+              "seam": 0.47449307999977464,
               "amplitude": 506.7422390900001,
-              "fraction_of_amplitude": 0.0002097519247490159
+              "fraction_of_amplitude": 0.0009363598362194199,
+              "max_adjacent_step": 3.598866639999869,
+              "max_adjacent_fraction_of_amplitude": 0.007101966961472678
             }
           },
           "failures": [],
+          "age_monotonic_by_phase": true,
+          "minimum_age_step_days_by_phase": 0.000605179999865868,
           "ok": true
         },
         "phase_seam_ok": true,
         "passed": true,
         "failures": [],
-        "verified_at": "2026-06-16T19:24:57.119312+00:00"
+        "verified_at": "2026-06-17T00:43:23.864419+00:00"
       },
-      "started_at": "2026-06-16T19:24:57.012521+00:00"
+      "started_at": "2026-06-17T00:43:23.661882+00:00"
     }
   },
-  "updated_at": "2026-06-16T19:24:57.120312+00:00"
+  "updated_at": "2026-06-17T00:43:23.866430+00:00"
 }

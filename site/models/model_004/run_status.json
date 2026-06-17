@@ -6,7 +6,7 @@
   "output_dir": "<local-rre-root>/rsp_batch_runs/output/model_004_M0p7595_Z0p0001834_T6876",
   "prefix": "mesa_rsp_model_004_M0p7595_Z0p0001834_T6876",
   "product_stem": "mesa_rsp_model_004_M0p7595_Z0p0001834_T6876_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work",
-  "updated_at": "2026-06-16T22:43:44.698207+00:00",
+  "updated_at": "2026-06-17T00:43:25.214020+00:00",
   "stages": {
     "prepared": {
       "status": "complete",
@@ -77,7 +77,7 @@
     },
     "verify": {
       "status": "complete",
-      "updated_at": "2026-06-16T22:43:44.697707+00:00",
+      "updated_at": "2026-06-17T00:43:25.214020+00:00",
       "expected_output": "<local-rre-root>/rsp_batch_runs/output/model_004_M0p7595_Z0p0001834_T6876/verification_summary.json",
       "result": {
         "model_id": "model_004",
@@ -117,21 +117,28 @@
           "phase_first": 0.0,
           "phase_last": 0.998994974875,
           "max_allowed_fraction_of_amplitude": 0.025,
+          "max_allowed_adjacent_fraction_of_amplitude": 0.025,
           "metrics": {
             "luminosity_lsun": {
               "seam": 0.12768064721010575,
               "amplitude": 7.3633270434362075,
-              "fraction_of_amplitude": 0.017340075546952976
+              "fraction_of_amplitude": 0.017340075546952976,
+              "max_adjacent_step": 0.025372996844645,
+              "max_adjacent_fraction_of_amplitude": 0.003445860369228461
             },
             "radius_rsun": {
               "seam": 0.0016635058499998578,
               "amplitude": 0.09130168519999948,
-              "fraction_of_amplitude": 0.018219881115621152
+              "fraction_of_amplitude": 0.018219881115621152,
+              "max_adjacent_step": 0.0002979562299998406,
+              "max_adjacent_fraction_of_amplitude": 0.003263425306413099
             },
             "teff_k": {
               "seam": 4.533189449999554,
               "amplitude": 222.66949741999997,
-              "fraction_of_amplitude": 0.020358376439180786
+              "fraction_of_amplitude": 0.020358376439180786,
+              "max_adjacent_step": 0.7409798600001523,
+              "max_adjacent_fraction_of_amplitude": 0.0033277115571986654
             }
           },
           "failures": [],
@@ -142,9 +149,9 @@
         "phase_seam_ok": true,
         "passed": true,
         "failures": [],
-        "verified_at": "2026-06-16T22:43:44.696707+00:00"
+        "verified_at": "2026-06-17T00:43:25.212004+00:00"
       },
-      "started_at": "2026-06-16T22:43:44.665645+00:00"
+      "started_at": "2026-06-17T00:43:25.061279+00:00"
     }
   },
   "validation": {
