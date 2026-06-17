@@ -119,6 +119,32 @@ def history_candidates(run_dir: Path) -> list[tuple[str, Path]]:
     return unique
 
 
+def cumulative_history_candidates(run_dir: Path) -> list[tuple[str, Path]]:
+    resume_histories = sorted(
+        run_dir.glob("LOGS_continue_saturation_resume_*/history.data"),
+        key=lambda path: path.stat().st_mtime,
+    )
+    candidates: list[tuple[str, Path]] = [
+        ("saturation", run_dir / "LOGS_saturation" / "history.data"),
+        ("continue_saturation", run_dir / "LOGS_continue_saturation" / "history.data"),
+    ]
+    candidates.extend((f"continue_saturation_resume:{path.parent.name}", path) for path in resume_histories)
+    return [(label, path) for label, path in candidates if path.exists()]
+
+
+def cumulative_log_candidates(output_dir: Path) -> list[tuple[str, Path]]:
+    resume_logs = sorted(
+        (output_dir / "logs").glob("continue_saturation_resume_*.log"),
+        key=lambda path: path.stat().st_mtime,
+    )
+    candidates: list[tuple[str, Path]] = [
+        ("create", output_dir / "logs" / "create.log"),
+        ("continue_saturation", output_dir / "logs" / "continue_saturation.log"),
+    ]
+    candidates.extend((path.stem, path) for path in resume_logs)
+    return [(label, path) for label, path in candidates if path.exists()]
+
+
 def exact_cycle_rows(history_path: Path) -> list[dict[str, float]]:
     history = read_history(history_path)
     if any(name not in history for name in EXACT_COLUMNS):
@@ -152,6 +178,48 @@ def exact_cycle_rows(history_path: Path) -> list[dict[str, float]]:
             }
         )
     return rows
+
+
+def append_cumulative_rows(
+    combined: list[dict[str, float]],
+    rows: list[dict[str, float]],
+    source_label: str,
+) -> list[dict[str, float]]:
+    if not rows:
+        return combined
+    if not combined:
+        offset = 0.0
+    else:
+        last_cumulative_period = float(combined[-1]["period_number"])
+        first_segment_period = float(rows[0]["period_number"])
+        offset = last_cumulative_period if first_segment_period <= last_cumulative_period else 0.0
+    for row in rows:
+        copied = dict(row)
+        copied["segment_period_number"] = float(row["period_number"])
+        copied["segment_label"] = source_label
+        copied["period_number"] = float(row["period_number"]) + offset
+        if combined and copied["period_number"] <= float(combined[-1]["period_number"]):
+            continue
+        combined.append(copied)
+    return combined
+
+
+def cumulative_exact_source(run_dir: Path) -> tuple[str | None, list[Path], list[dict[str, float]]]:
+    combined: list[dict[str, float]] = []
+    labels: list[str] = []
+    paths: list[Path] = []
+    for label, path in cumulative_history_candidates(run_dir):
+        rows = exact_cycle_rows(path)
+        if not rows:
+            continue
+        previous_count = len(combined)
+        append_cumulative_rows(combined, rows, label)
+        if len(combined) > previous_count:
+            labels.append(label)
+            paths.append(path)
+    if not combined:
+        return None, [], []
+    return "cumulative:" + "+".join(labels), paths, combined
 
 
 def parse_period_log(path: Path) -> tuple[list[dict[str, float]], list[str]]:
@@ -191,6 +259,28 @@ def parse_period_log(path: Path) -> tuple[list[dict[str, float]], list[str]]:
     return rows, stops
 
 
+def cumulative_log_source(output_dir: Path) -> tuple[str | None, list[Path], list[dict[str, float]], list[str]]:
+    combined: list[dict[str, float]] = []
+    labels: list[str] = []
+    paths: list[Path] = []
+    latest_stops: list[str] = []
+    for label, path in cumulative_log_candidates(output_dir):
+        rows, stops = parse_period_log(path)
+        if not rows:
+            if stops:
+                latest_stops = stops
+            continue
+        previous_count = len(combined)
+        append_cumulative_rows(combined, rows, label)
+        if len(combined) > previous_count:
+            labels.append(label)
+            paths.append(path)
+            latest_stops = stops
+    if not combined:
+        return None, [], [], latest_stops
+    return "cumulative:" + "+".join(labels), paths, combined, latest_stops
+
+
 def log_candidates(output_dir: Path) -> list[tuple[str, Path]]:
     resume_logs = sorted(
         (output_dir / "logs").glob("continue_saturation_resume_*.log"),
@@ -208,6 +298,11 @@ def log_candidates(output_dir: Path) -> list[tuple[str, Path]]:
 
 
 def select_exact_source(run_dir: Path, required_cycles: int) -> tuple[str | None, Path | None, list[dict[str, float]]]:
+    cumulative_label, cumulative_paths, cumulative_rows = cumulative_exact_source(run_dir)
+    if cumulative_rows:
+        latest_path = cumulative_paths[-1] if cumulative_paths else None
+        return cumulative_label, latest_path, cumulative_rows
+
     parsed: list[tuple[str, Path, list[dict[str, float]]]] = []
     for label, path in history_candidates(run_dir):
         if not path.exists():
@@ -224,6 +319,11 @@ def select_exact_source(run_dir: Path, required_cycles: int) -> tuple[str | None
 
 
 def select_log_source(output_dir: Path, required_cycles: int) -> tuple[str | None, Path | None, list[dict[str, float]], list[str]]:
+    cumulative_label, cumulative_paths, cumulative_rows, cumulative_stops = cumulative_log_source(output_dir)
+    if cumulative_rows:
+        latest_path = cumulative_paths[-1] if cumulative_paths else None
+        return cumulative_label, latest_path, cumulative_rows, cumulative_stops
+
     parsed: list[tuple[str, Path, list[dict[str, float]], list[str]]] = []
     for label, path in log_candidates(output_dir):
         rows, stops = parse_period_log(path)
@@ -564,6 +664,11 @@ def main() -> int:
         "criterion": {
             "required_last_cycles": int(args.last_cycles),
             "tolerance": float(args.tolerance),
+            "period_numbering": (
+                "create/saturation, continuation, and continuation-resume histories are merged "
+                "chronologically; when a later stage resets its period counter, period numbers are "
+                "offset so the convergence window follows the cumulative integration"
+            ),
             "gamma": "absolute peak-to-peak rsp_GREKM over final window <= tolerance",
             "period": "fractional peak-to-peak rsp_period_in_days or log period over final window <= tolerance",
             "delta_r": "fractional peak-to-peak rsp_DeltaR or log delta R over final window <= tolerance",
