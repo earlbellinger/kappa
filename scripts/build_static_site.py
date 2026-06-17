@@ -124,6 +124,31 @@ def fmt_float(value: object, digits: int = 4) -> str:
     return f"{number:.{digits}g}"
 
 
+def fmt_cycles(value: object) -> str:
+    number = parse_manifest_number(value)
+    if number is None:
+        return "..."
+    return f"{number:.0f}"
+
+
+def growth_summary_html(path: Path | None) -> str:
+    if path is None:
+        return ""
+    data = load_json(path)
+    if not isinstance(data, dict):
+        return ""
+    outlook = data.get("growth_outlook")
+    if not isinstance(outlook, dict):
+        return ""
+    bits = [
+        f"DeltaR window {fmt_float(outlook.get('delta_r_criterion_factor'), 3)}x criterion",
+        f"amplitude doubles in {fmt_cycles(outlook.get('doubling_cycles'))} cycles",
+        rf"max v<sub>surf</sub>/c<sub>s</sub> {fmt_float(outlook.get('max_vsurf_div_cs_latest'), 3)}",
+        rf"v<sub>surf</sub>/c<sub>s</sub>=0.8 in {fmt_cycles(outlook.get('cycles_to_vsurf_div_cs_0p8'))} cycles",
+    ]
+    return f'<p class="metric-row">{" | ".join(bits)}</p>'
+
+
 def file_size_mb(path: Path | None) -> float | None:
     if path is None or not path.exists():
         return None
@@ -474,11 +499,14 @@ def write_index(output_dir: Path, models: list[dict[str, object]], metadata_link
             if json_href
             else ""
         )
+        json_path = output_dir / str(json_href) if json_href else None
+        metric_summary = growth_summary_html(json_path)
         growth_items.append(
             f"""
         <figure>
           <a href="{html.escape(str(href))}"><img src="{html.escape(str(href))}" alt="{html.escape(label)} active amplitude growth diagnostic"></a>
           <figcaption>{html.escape(label)} active amplitude growth{json_link}</figcaption>
+          {metric_summary}
         </figure>
 """
         )
@@ -532,6 +560,7 @@ def write_index(output_dir: Path, models: list[dict[str, object]], metadata_link
     figure {{ margin:0; }}
     figcaption {{ margin-top:8px; color:var(--muted); }}
     .caption-link {{ display:inline; margin-left:8px; border-bottom:1px solid rgba(217,237,248,.38); }}
+    .metric-row {{ margin:6px 0 0; color:#f7f1e4; font-size:13px; }}
     .grid {{ display:grid; grid-template-columns: repeat(auto-fit, minmax(480px, 1fr)); gap:22px; align-items:start; }}
     .card {{ background:var(--panel); border:1px solid var(--line); border-radius:8px; overflow:hidden; }}
     .card-head {{ display:flex; justify-content:space-between; gap:16px; align-items:start; padding:16px 18px 12px; background:var(--panel2); border-bottom:1px solid var(--line); }}
