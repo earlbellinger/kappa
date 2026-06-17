@@ -211,6 +211,28 @@ def main() -> int:
         output_prefix = workspace / "output" / f"{model_id}_growth_diagnostic"
     output_prefix = output_prefix.resolve()
 
+    if not rows:
+        payload = {
+            "generated_at": now_iso(),
+            "workspace": str(workspace),
+            "model_id": model_id,
+            "run_name": record.get("run_name"),
+            "source": source,
+            "source_kind": source_kind,
+            "cycle_count": 0,
+            "first_period": None,
+            "last_period": None,
+            "rolling_window": int(args.rolling_window),
+            "fits": {},
+            "latest_rolling": None,
+            "status": "no convergence rows available yet",
+        }
+        json_path = output_prefix.with_suffix(".json")
+        json_path.parent.mkdir(parents=True, exist_ok=True)
+        json_path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+        print(json_path)
+        return 0
+
     fits: dict[str, dict[str, dict[str, object]]] = {}
     for window in args.windows:
         fits[str(window)] = {
