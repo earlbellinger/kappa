@@ -16,6 +16,7 @@ DEFAULT_KAPPA_ROOT = Path(r"C:\Users\earlb\Downloads\kappa")
 DEFAULT_PAGES_ROOT = Path(r"C:\Users\earlb\Downloads\earlbellinger.github.io")
 REFRESH_MARKER_NAME = "gallery_refresh_in_progress.json"
 REFRESH_MARKER_STALE_SECONDS = 1800
+ANIMATION_SUFFIX = "_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work"
 
 
 def now_iso() -> str:
@@ -48,6 +49,79 @@ def load_json(path: Path) -> object | None:
         return json.loads(path.read_text(encoding="utf-8"))
     except json.JSONDecodeError:
         return None
+
+
+def stable_animation_summary(summary: dict[str, object]) -> dict[str, object]:
+    opacity_scaling = summary.get("opacity_scaling", {})
+    if not isinstance(opacity_scaling, dict):
+        opacity_scaling = {}
+    panel_limits = summary.get("panel_limits", {})
+    if not isinstance(panel_limits, dict):
+        panel_limits = {}
+    left_power_panel = panel_limits.get("left_power", {})
+    if not isinstance(left_power_panel, dict):
+        left_power_panel = {}
+    scaled_diagnostic_bounds = summary.get("scaled_diagnostic_bounds", {})
+    if not isinstance(scaled_diagnostic_bounds, dict):
+        scaled_diagnostic_bounds = {}
+
+    return {
+        "scaling_method_version": summary.get("scaling_method_version"),
+        "coordinate": summary.get("coordinate"),
+        "pressure_work_mode": summary.get("pressure_work_mode"),
+        "heating_mode": summary.get("heating_mode"),
+        "main_terms_only": summary.get("main_terms_only"),
+        "x_limits": summary.get("x_limits"),
+        "left_power_ylim": summary.get("left_power_ylim"),
+        "left_power_visible_data_bounds": summary.get("left_power_visible_data_bounds"),
+        "left_power_panel_limits": left_power_panel.get("limits"),
+        "left_power_panel_visible_data_bounds": left_power_panel.get("visible_data_bounds"),
+        "scaled_opacity_visible_data_bounds": scaled_diagnostic_bounds.get("opacity"),
+        "opacity_scaling": {
+            "method": opacity_scaling.get("method"),
+            "panel_top_fraction": opacity_scaling.get("panel_top_fraction"),
+            "visible_data_bounds": opacity_scaling.get("visible_data_bounds"),
+            "display_units_per_opacity_unit": opacity_scaling.get("display_units_per_opacity_unit"),
+            "opacity_min_baseline": opacity_scaling.get("opacity_min_baseline"),
+            "opacity_max_display_value": opacity_scaling.get("opacity_max_display_value"),
+            "scaled_visible_display_bounds": opacity_scaling.get("scaled_visible_display_bounds"),
+        },
+    }
+
+
+def animation_artifacts_signature(rre_root: Path) -> list[dict[str, object]]:
+    manifest = load_json(rre_root / "rsp_batch_runs" / "inputs" / "manifest.json")
+    if not isinstance(manifest, list):
+        return []
+
+    artifacts: list[dict[str, object]] = []
+    for model in manifest:
+        if not isinstance(model, dict) or not model.get("model_id"):
+            continue
+        output_dir_value = model.get("output_dir")
+        output_dir = Path(str(output_dir_value)) if output_dir_value else None
+        summary_path: Path | None = None
+        gif_path: Path | None = None
+        if output_dir is not None and output_dir.exists():
+            summaries = sorted(output_dir.glob(f"*{ANIMATION_SUFFIX}_summary.json"))
+            gifs = sorted(output_dir.glob(f"*{ANIMATION_SUFFIX}.gif"))
+            summary_path = summaries[-1] if summaries else None
+            gif_path = gifs[-1] if gifs else None
+
+        summary = load_json(summary_path) if summary_path is not None else None
+        artifact: dict[str, object] = {
+            "model_id": model.get("model_id"),
+            "summary_exists": isinstance(summary, dict),
+            "gif_exists": gif_path is not None and gif_path.exists(),
+            "gif_size_bytes": gif_path.stat().st_size if gif_path is not None and gif_path.exists() else None,
+            "gif_mtime_bucket_60s": (
+                int(gif_path.stat().st_mtime // 60) if gif_path is not None and gif_path.exists() else None
+            ),
+        }
+        if isinstance(summary, dict):
+            artifact.update(stable_animation_summary(summary))
+        artifacts.append(artifact)
+    return artifacts
 
 
 def write_json(path: Path, value: object) -> None:
@@ -194,6 +268,7 @@ def status_signature(rre_root: Path) -> dict[str, object]:
         "convergence_models": convergence_models,
         "convergence_trend_models": convergence_trend_models,
         "growth_diagnostics": growth_diagnostics,
+        "animation_artifacts": animation_artifacts_signature(rre_root),
         "models": live_models,
     }
 
