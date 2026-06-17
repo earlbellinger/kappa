@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-17T12:30:43.250302+00:00",
+  "generated_at": "2026-06-17T12:34:43.886039+00:00",
   "workspace": "<local-rre-root>/rsp_batch_runs",
   "criterion": {
     "required_last_cycles": 100,
@@ -298,6 +298,14 @@
       "steps_median_last_window": 1058.0,
       "steps_min_last_window": 820.0,
       "steps_max_last_window": 1181.0,
+      "max_vsurf_div_cs_median_last_window": 2.1778500000000003,
+      "max_vsurf_div_cs_first_last_window": [
+        2.93598,
+        2.57636
+      ],
+      "max_vsurf_div_cs_slope_per_cycle_last_window": -0.0001677730573057319,
+      "max_vsurf_div_cs_min_last_window": 0.77258,
+      "max_vsurf_div_cs_max_last_window": 3.01805,
       "has_full_window": true,
       "has_gamma": false,
       "converged_gamma": false,
@@ -350,6 +358,14 @@
       "steps_median_last_window": 1025.5,
       "steps_min_last_window": 944.0,
       "steps_max_last_window": 1221.0,
+      "max_vsurf_div_cs_median_last_window": 3.08427,
+      "max_vsurf_div_cs_first_last_window": [
+        3.4892,
+        3.35526
+      ],
+      "max_vsurf_div_cs_slope_per_cycle_last_window": 0.0001464929492949289,
+      "max_vsurf_div_cs_min_last_window": 2.55174,
+      "max_vsurf_div_cs_max_last_window": 3.64836,
       "has_full_window": true,
       "has_gamma": false,
       "converged_gamma": false,
@@ -424,43 +440,43 @@
     },
     {
       "source_kind": "history_exact_rsp_columns",
-      "cycle_count": 1504,
+      "cycle_count": 1505,
       "last_cycle_count_used": 100,
-      "window_start_period_number": 1405.0,
-      "window_end_period_number": 1504.0,
-      "last_period_number": 1504.0,
-      "gamma_peak_to_peak_last_window": 3.078207652151572e-05,
-      "gamma_median_last_window": 0.0041139278811327465,
+      "window_start_period_number": 1406.0,
+      "window_end_period_number": 1505.0,
+      "last_period_number": 1505.0,
+      "gamma_peak_to_peak_last_window": 3.1772366962703504e-05,
+      "gamma_median_last_window": 0.004114109795068718,
       "gamma_first_last_window": [
-        0.004100227750759874,
-        0.0041302548832224195
+        0.004100653837017776,
+        0.004131245173663607
       ],
-      "gamma_slope_per_cycle_last_window": 2.982880958503272e-07,
-      "period_fractional_peak_to_peak_last_window": 8.665895043153763e-06,
-      "period_median_days_last_window": 0.6316273266368511,
+      "gamma_slope_per_cycle_last_window": 2.997940103357192e-07,
+      "period_fractional_peak_to_peak_last_window": 8.728304926942068e-06,
+      "period_median_days_last_window": 0.6316273059726141,
       "period_first_last_days_window": [
-        0.6316291354222361,
-        0.6316236618061171
+        0.6316291049217667,
+        0.63162359188604
       ],
-      "period_slope_days_per_cycle_last_window": -5.721476445566071e-08,
-      "delta_r_fractional_peak_to_peak_last_window": 0.2027585479507855,
-      "delta_r_median_last_window": 0.04602917103426574,
+      "period_slope_days_per_cycle_last_window": -5.790886523342801e-08,
+      "delta_r_fractional_peak_to_peak_last_window": 0.20276657625038652,
+      "delta_r_median_last_window": 0.046123401982208545,
       "delta_r_first_last_window": [
-        0.04160260992310061,
-        0.050935417805386685
+        0.04168758205561396,
+        0.05103986636056668
       ],
-      "delta_r_slope_per_cycle_last_window": 9.421350232876386e-05,
+      "delta_r_slope_per_cycle_last_window": 9.440935123869644e-05,
       "steps_median_last_window": 1000.0,
       "steps_min_last_window": 1000.0,
       "steps_max_last_window": 1000.0,
-      "max_vsurf_div_cs_median_last_window": 0.25934500000000005,
+      "max_vsurf_div_cs_median_last_window": 0.2599,
       "max_vsurf_div_cs_first_last_window": [
-        0.23336,
-        0.28834
+        0.23386,
+        0.28896
       ],
-      "max_vsurf_div_cs_slope_per_cycle_last_window": 0.0005546909090909091,
-      "max_vsurf_div_cs_min_last_window": 0.23336,
-      "max_vsurf_div_cs_max_last_window": 0.28834,
+      "max_vsurf_div_cs_slope_per_cycle_last_window": 0.0005559241524152415,
+      "max_vsurf_div_cs_min_last_window": 0.23386,
+      "max_vsurf_div_cs_max_last_window": 0.28896,
       "has_full_window": true,
       "has_gamma": true,
       "converged_gamma": true,
