@@ -30,6 +30,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--pages-root", type=Path, default=DEFAULT_PAGES_ROOT)
     parser.add_argument("--python", type=Path, default=DEFAULT_PYTHON if DEFAULT_PYTHON.exists() else Path(sys.executable))
     parser.add_argument("--interval-seconds", type=int, default=900)
+    parser.add_argument("--refresh-wait-seconds", type=int, default=240)
     parser.add_argument("--state-file", type=Path, default=None)
     parser.add_argument("--log", type=Path, default=None)
     parser.add_argument("--deploy-initial", action="store_true")
@@ -166,19 +167,32 @@ def write_json(path: Path, value: object) -> None:
     path.write_text(json.dumps(value, indent=2) + "\n", encoding="utf-8")
 
 
-def refresh_in_progress(rre_root: Path, log_path: Path) -> bool:
+def refresh_in_progress(rre_root: Path, log_path: Path, wait_seconds: int = 0) -> bool:
     marker = rre_root / "rsp_batch_runs" / "output" / REFRESH_MARKER_NAME
     if not marker.exists():
+        return False
+    deadline = time.time() + max(0, wait_seconds)
+    while marker.exists():
+        age = time.time() - marker.stat().st_mtime
+        if age > REFRESH_MARKER_STALE_SECONDS:
+            append_log(log_path, f"[{now_iso()}] ignoring stale refresh marker age={age:.0f}s")
+            try:
+                marker.unlink()
+            except OSError as exc:
+                append_log(log_path, f"[{now_iso()}] could not remove stale refresh marker: {exc!r}")
+            return False
+        if time.time() >= deadline:
+            break
+        remaining = int(max(0, deadline - time.time()))
+        append_log(log_path, f"[{now_iso()}] local refresh in progress; waiting up to {remaining}s")
+        time.sleep(min(15, max(1, remaining)))
+    if not marker.exists():
+        append_log(log_path, f"[{now_iso()}] local refresh completed; continuing deploy check")
         return False
     age = time.time() - marker.stat().st_mtime
     if age <= REFRESH_MARKER_STALE_SECONDS:
         append_log(log_path, f"[{now_iso()}] local refresh in progress; deferring deploy")
         return True
-    append_log(log_path, f"[{now_iso()}] ignoring stale refresh marker age={age:.0f}s")
-    try:
-        marker.unlink()
-    except OSError as exc:
-        append_log(log_path, f"[{now_iso()}] could not remove stale refresh marker: {exc!r}")
     return False
 
 
@@ -396,7 +410,7 @@ def main() -> int:
     append_log(log_path, f"[{now_iso()}] Kappa deploy watcher started")
 
     while True:
-        if refresh_in_progress(args.rre_root.resolve(), log_path):
+        if refresh_in_progress(args.rre_root.resolve(), log_path, int(args.refresh_wait_seconds)):
             time.sleep(max(60, int(args.interval_seconds)))
             continue
         state = load_json(state_path)
