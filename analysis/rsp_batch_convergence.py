@@ -242,15 +242,30 @@ def append_cumulative_rows(
         return combined
     if not combined:
         offset = 0.0
+        keep_periods_after: float | None = None
     else:
         last_cumulative_period = float(combined[-1]["period_number"])
         first_segment_period = float(rows[0]["period_number"])
-        offset = last_cumulative_period if first_segment_period <= last_cumulative_period else 0.0
+        last_segment_period = float(rows[-1]["period_number"])
+        if first_segment_period <= last_cumulative_period < last_segment_period:
+            # Resume histories can overlap the previous history while retaining
+            # absolute period numbers. Keep only the new cycles in that case.
+            offset = 0.0
+            keep_periods_after = last_cumulative_period
+        elif first_segment_period <= last_cumulative_period:
+            offset = last_cumulative_period
+            keep_periods_after = None
+        else:
+            offset = 0.0
+            keep_periods_after = None
     for row in rows:
+        original_period = float(row["period_number"])
+        if keep_periods_after is not None and original_period <= keep_periods_after:
+            continue
         copied = dict(row)
-        copied["segment_period_number"] = float(row["period_number"])
+        copied["segment_period_number"] = original_period
         copied["segment_label"] = source_label
-        copied["period_number"] = float(row["period_number"]) + offset
+        copied["period_number"] = original_period + offset
         if combined and copied["period_number"] <= float(combined[-1]["period_number"]):
             continue
         combined.append(copied)
