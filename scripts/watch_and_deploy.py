@@ -89,6 +89,30 @@ def status_signature(rre_root: Path) -> dict[str, object]:
     quality = load_json(output_dir / "quality_extension_status.json")
     convergence = load_json(output_dir / "convergence_summary_last100.json")
     convergence_trends = load_json(output_dir / "convergence_trends_last100.json")
+    growth_diagnostics = []
+    for path in sorted(output_dir.glob("*_growth_diagnostic.json")):
+        data = load_json(path)
+        png_path = output_dir / path.name.replace(".json", ".png")
+        if not isinstance(data, dict):
+            continue
+        outlook = data.get("growth_outlook", {})
+        growth_diagnostics.append(
+            {
+                "name": path.name,
+                "png_exists": png_path.exists(),
+                "cycle_count": data.get("cycle_count"),
+                "latest_period": data.get("latest_period"),
+                "max_vsurf_div_cs_latest": (
+                    outlook.get("max_vsurf_div_cs_latest") if isinstance(outlook, dict) else None
+                ),
+                "delta_r_criterion_factor": (
+                    outlook.get("delta_r_criterion_factor") if isinstance(outlook, dict) else None
+                ),
+                "cycles_to_vsurf_div_cs_0p8": (
+                    outlook.get("cycles_to_vsurf_div_cs_0p8") if isinstance(outlook, dict) else None
+                ),
+            }
+        )
     live_models = []
     if isinstance(live, dict):
         for model in live.get("models", []):
@@ -169,6 +193,7 @@ def status_signature(rre_root: Path) -> dict[str, object]:
         "quality_complete": quality.get("complete") if isinstance(quality, dict) else None,
         "convergence_models": convergence_models,
         "convergence_trend_models": convergence_trend_models,
+        "growth_diagnostics": growth_diagnostics,
         "models": live_models,
     }
 
