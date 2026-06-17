@@ -149,11 +149,6 @@ def cycle_modulation_signature(rre_root: Path) -> dict[str, object]:
                 "diagnostic_png_size_bytes": (
                     diagnostic_png.stat().st_size if diagnostic_png is not None and diagnostic_png.exists() else None
                 ),
-                "diagnostic_png_mtime_bucket_60s": (
-                    int(diagnostic_png.stat().st_mtime // 60)
-                    if diagnostic_png is not None and diagnostic_png.exists()
-                    else None
-                ),
             }
         )
     overview = output_dir / "cycle_diagnostics" / "cycle_modulation_overview.png"
@@ -162,7 +157,6 @@ def cycle_modulation_signature(rre_root: Path) -> dict[str, object]:
         "generated_at": data.get("generated_at") if isinstance(data, dict) else None,
         "overview_png_exists": overview.exists(),
         "overview_png_size_bytes": overview.stat().st_size if overview.exists() else None,
-        "overview_png_mtime_bucket_60s": int(overview.stat().st_mtime // 60) if overview.exists() else None,
         "models": models,
     }
 
