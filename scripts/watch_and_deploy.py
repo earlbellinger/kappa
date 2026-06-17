@@ -112,7 +112,6 @@ def status_signature(rre_root: Path) -> dict[str, object]:
         "audit_status": audit.get("status") if isinstance(audit, dict) else None,
         "quality_status": quality.get("status") if isinstance(quality, dict) else None,
         "quality_complete": quality.get("complete") if isinstance(quality, dict) else None,
-        "convergence_generated_at": convergence.get("generated_at") if isinstance(convergence, dict) else None,
         "convergence_models": convergence_models,
         "models": live_models,
     }
