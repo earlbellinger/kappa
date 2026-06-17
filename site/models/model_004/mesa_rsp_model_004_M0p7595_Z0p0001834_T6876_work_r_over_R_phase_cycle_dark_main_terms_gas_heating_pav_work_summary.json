@@ -8,7 +8,7 @@
   "frame_generation": "fixed-q linear interpolation between bracketing nonlinear profiles on a uniform phase grid",
   "coordinate": "r_over_R",
   "main_terms_only": true,
-  "scaling_method_version": "per-panel-visible-window-v3",
+  "scaling_method_version": "per-panel-visible-window-v4",
   "layout": "left panel: phase-local power diagnostics versus r/R_sun; right column top: photosphere radial velocity curve; right column bottom: photosphere luminosity curve",
   "zone_boundary_smoothing": "ionization-zone boundaries are converted from temperature spans to q spans, then the q-space zone centers and widths are smoothed over phase with a low-order periodic Fourier fit before being mapped to the displayed coordinate",
   "left_panel_quantity": "phase-local specific power diagnostics",
@@ -62,12 +62,12 @@
     4.422665240370844,
     5.604763755803331
   ],
-  "left_panel_scaling_method": "per-panel visible-window extrema; power y-limits use the minimum and maximum specific-power values between the minimum and maximum shown x coordinate, with zero included and panel-local padding, matching the model_000 reference convention",
+  "left_panel_scaling_method": "per-panel visible-window extrema; power y-limits use the minimum and maximum specific-power values between the minimum and maximum shown x coordinate, with zero included and separate lower/upper panel-local padding, matching the model_000 reference convention",
   "panel_y_ranges": {
     "left_power": {
       "limits": [
-        -2.1441406221015358,
-        1.3875166664589869
+        -2.052624294514806,
+        1.235470422420853
       ],
       "visible_data_bounds": [
         -1.9005780504766723,
@@ -78,7 +78,7 @@
         4.422665240370844,
         5.604763755803331
       ],
-      "method": "minimum and maximum of the plotted power curves within this panel's shown x range; the axis includes zero and is padded from the local visible extrema rather than using a global or symmetric fixed range"
+      "method": "minimum and maximum of the plotted power curves within this panel's shown x range; the axis includes zero and pads the lower and upper sides from their own local visible extrema rather than using a global, symmetric, or opposite-side-dominated range"
     },
     "photosphere_radial_velocity": {
       "limits": [
@@ -108,12 +108,12 @@
     1.1439540948341231
   ],
   "left_power_ylim_raw": [
-    -2144140622.1015358,
-    1387516666.4589868
+    -2052624294.514806,
+    1235470422.4208531
   ],
   "left_power_ylim": [
-    -2.1441406221015358,
-    1.3875166664589869
+    -2.052624294514806,
+    1.235470422420853
   ],
   "scaled_diagnostic_bounds": {
     "opacity": [
@@ -122,7 +122,7 @@
     ]
   },
   "opacity_scaling": {
-    "method": "left-panel visible-window min opacity maps to zero; left-panel visible-window max opacity maps to a fixed fraction of that panel's positive y-limit",
+    "method": "left-panel visible-window min opacity maps to zero; left-panel visible-window max opacity maps to a fixed fraction of that same panel's positive y-limit",
     "panel": "left_power",
     "panel_top_fraction": 0.88,
     "x_field_for_scaling": "radius_rsun_plot",
@@ -134,10 +134,15 @@
       0.0086388156794484,
       55.822611865807104
     ],
+    "reference_convention": "model_000-inspired per-panel rule: measure opacity min and max only in the shown radius range, subtract the shown minimum, and scale the shown maximum to a fixed fraction of the panel's positive specific-power axis",
     "display_min_value": 0.0,
-    "display_units_per_opacity_unit": 0.021876505107194046,
+    "display_units_per_opacity_unit": 0.01947924349972187,
     "opacity_min_baseline": 0.0086388156794484,
-    "opacity_max_display_value": 1.2210146664839086
+    "opacity_max_display_value": 1.0872139717303506,
+    "scaled_visible_display_bounds": [
+      0.0,
+      1.0872139717303506
+    ]
   },
   "radius_rsun_xlim": [
     3.9321182915174973,
