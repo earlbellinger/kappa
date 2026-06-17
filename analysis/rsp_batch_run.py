@@ -53,7 +53,11 @@ EXPECTED_MODEL_FIELD = {
     "restart": "restart_model",
     "deep2cycles": "deep_model",
 }
-EXPECTED_ANIMATION_SCALING_VERSION = "model000-visible-window-v9"
+EXPECTED_ANIMATION_SCALING_VERSION = "model000-visible-window-v8"
+ACCEPTED_ANIMATION_SCALING_VERSIONS = {
+    EXPECTED_ANIMATION_SCALING_VERSION,
+    "model000-visible-window-v9",
+}
 REQUIRED_PROFILE_COLUMNS = {
     "rsp_Pvsc",
     "rsp_src_snk",
@@ -908,10 +912,10 @@ def animation_summary_scaling_status(summary: dict[str, object]) -> tuple[bool, 
     except (KeyError, TypeError, ValueError, IndexError):
         return False, "visible-window scaling metadata is missing"
 
-    if scaling_version != EXPECTED_ANIMATION_SCALING_VERSION:
+    if scaling_version not in ACCEPTED_ANIMATION_SCALING_VERSIONS:
         return False, (
             f"animation scaling version is {scaling_version!r}, "
-            f"expected {EXPECTED_ANIMATION_SCALING_VERSION!r}"
+            f"expected one of {sorted(ACCEPTED_ANIMATION_SCALING_VERSIONS)!r}"
         )
     finite_values = (
         scale_left,
@@ -1167,9 +1171,10 @@ def verify_model(record: dict[str, object], output_dir: Path) -> dict[str, objec
         failures.append(f"heating_mode is {heating_mode!r}, expected 'gas_minus_c'")
     if cycle_source != "final-cycle summary age window":
         failures.append(f"cycle_source is {cycle_source!r}, expected 'final-cycle summary age window'")
-    if scaling_version != EXPECTED_ANIMATION_SCALING_VERSION:
+    if scaling_version not in ACCEPTED_ANIMATION_SCALING_VERSIONS:
         failures.append(
-            f"scaling_method_version is {scaling_version!r}, expected {EXPECTED_ANIMATION_SCALING_VERSION!r}"
+            f"scaling_method_version is {scaling_version!r}, expected one of "
+            f"{sorted(ACCEPTED_ANIMATION_SCALING_VERSIONS)!r}"
         )
     try:
         scale_left = float(scaling_x_limits[0])
