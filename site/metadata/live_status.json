@@ -1,8 +1,9 @@
 {
   "batch_status": {
-    "driver_pid": 46412,
-    "ended_at": "2026-06-17T04:05:41.306383+00:00",
-    "log": "<local-rre-root>/rsp_batch_runs/output/batch_remaining_007_009_recovery.log",
+    "current_model": "model_007",
+    "driver_pid": 114616,
+    "ended_at": null,
+    "log": "<local-rre-root>/rsp_batch_runs/output/batch_remaining_007_009_after_history_fix.log",
     "models": [
       "model_007",
       "model_008",
@@ -10,40 +11,17 @@
     ],
     "results": {
       "model_007": {
-        "continuation_resume_returncode": 1,
-        "ended_at": "2026-06-17T04:04:05.270469+00:00",
-        "resume_returncode": 1,
-        "resume_stage": "continue_saturation",
-        "returncode": 1,
-        "started_at": "2026-06-17T02:51:07.432498+00:00",
-        "status": "failed"
-      },
-      "model_008": {
-        "continuation_resume_returncode": null,
-        "ended_at": "2026-06-17T04:04:52.677364+00:00",
-        "resume_returncode": 1,
-        "resume_stage": "create",
-        "returncode": 1,
-        "started_at": "2026-06-17T04:04:05.271473+00:00",
-        "status": "failed"
-      },
-      "model_009": {
-        "continuation_resume_returncode": null,
-        "ended_at": "2026-06-17T04:05:41.305882+00:00",
-        "resume_returncode": 1,
-        "resume_stage": "create",
-        "returncode": 1,
-        "started_at": "2026-06-17T04:04:52.677864+00:00",
-        "status": "failed"
+        "started_at": "2026-06-17T04:07:24.230275+00:00",
+        "status": "running"
       }
     },
     "stage": "all",
-    "started_at": "2026-06-17T02:51:07.431996+00:00",
-    "status": "failed",
+    "started_at": "2026-06-17T04:07:24.229728+00:00",
+    "status": "running",
     "workspace": "<local-rre-root>/rsp_batch_runs"
   },
   "completed_gif_count": 7,
-  "generated_at": "2026-06-17T04:18:06.777820+00:00",
+  "generated_at": "2026-06-17T04:19:14.258173+00:00",
   "models": [
     {
       "active_stage": null,
@@ -258,22 +236,22 @@
       "active_stage": "continue_saturation",
       "active_stage_started_at": "2026-06-17T04:07:24.291766+00:00",
       "estimate_basis": "linear extrapolation from active stage start time and latest period count",
-      "estimated_stage_eta": "2026-06-17T17:14:45.684045+00:00",
-      "estimated_stage_seconds_elapsed": 642.482935,
-      "estimated_stage_seconds_remaining": 46598.90934441176,
-      "estimated_stage_seconds_total": 47241.39227941176,
+      "estimated_stage_eta": "2026-06-17T17:16:15.151966+00:00",
+      "estimated_stage_seconds_elapsed": 709.962903,
+      "estimated_stage_seconds_remaining": 46620.897297,
+      "estimated_stage_seconds_total": 47330.8602,
       "gif_exists": false,
       "gif_path": null,
-      "latest_history_model": "550270",
-      "latest_history_mtime": "2026-06-17T04:18:06.685869+00:00",
-      "latest_period": "68",
+      "latest_history_model": "557020",
+      "latest_history_mtime": "2026-06-17T04:19:14.099349+00:00",
+      "latest_period": "75",
       "latest_period_log": "continue_saturation.log",
       "latest_photo": "<local-rre-root>/rsp_batch_runs/runs/model_007_M0p6887_Z0p004060_T6669/photos_continue_saturation/550000",
       "max_periods": "5000",
       "model_id": "model_007",
       "output_dir": "<local-rre-root>/rsp_batch_runs/output/model_007_M0p6887_Z0p004060_T6669",
-      "period_progress_fraction": 0.0136,
-      "period_progress_percent": 1.36,
+      "period_progress_fraction": 0.015,
+      "period_progress_percent": 1.5,
       "profile_count": null,
       "registered_existing": false,
       "run_dir": "<local-rre-root>/rsp_batch_runs/runs/model_007_M0p6887_Z0p004060_T6669",

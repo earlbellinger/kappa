@@ -31,6 +31,20 @@ def read_json(path: Path) -> dict | list:
         return {}
 
 
+def read_active_batch_status(output_dir: Path) -> dict | list:
+    candidates: list[tuple[float, Path, dict | list]] = []
+    for path in output_dir.glob("batch*_status.json"):
+        data = read_json(path)
+        if isinstance(data, dict):
+            candidates.append((path.stat().st_mtime, path, data))
+    if not candidates:
+        return {}
+    running = [item for item in candidates if isinstance(item[2], dict) and item[2].get("status") == "running"]
+    if running:
+        return max(running, key=lambda item: item[0])[2]
+    return max(candidates, key=lambda item: item[0])[2]
+
+
 def parse_iso_datetime(value: object) -> datetime | None:
     if value is None:
         return None
@@ -234,7 +248,7 @@ def main() -> int:
     manifest = read_json(workspace / "inputs" / "manifest.json")
     if not isinstance(manifest, list):
         raise RuntimeError(f"Missing manifest under {workspace}")
-    batch_status_path = workspace / "output" / "batch_remaining_006_009_status.json"
+    workspace_output = workspace / "output"
     models = [model_summary(row) for row in manifest]
     registered_existing_gif_count = sum(1 for row in models if row["registered_existing"] and row["gif_exists"])
     new_batch_gif_count = sum(1 for row in models if not row["registered_existing"] and row["gif_exists"])
@@ -242,7 +256,7 @@ def main() -> int:
     summary = {
         "generated_at": now_iso(),
         "workspace": str(workspace),
-        "batch_status": read_json(batch_status_path),
+        "batch_status": read_active_batch_status(workspace_output),
         "total_gif_count": sum(1 for row in models if row["gif_exists"]),
         "completed_gif_count": sum(1 for row in models if row["gif_exists"]),
         "registered_existing_gif_count": registered_existing_gif_count,
