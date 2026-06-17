@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import subprocess
 import sys
 import time
@@ -18,6 +19,7 @@ LIVE_STATUS_SCRIPT = ROOT / "rsp_batch_live_status.py"
 AUDIT_SCRIPT = ROOT / "rsp_batch_audit.py"
 CYCLE_DIAGNOSTICS_SCRIPT = ROOT / "rsp_batch_cycle_diagnostics.py"
 CONVERGENCE_SCRIPT = ROOT / "rsp_batch_convergence.py"
+CONVERGENCE_TRENDS_SCRIPT = ROOT / "rsp_batch_convergence_trends.py"
 
 
 def now_iso() -> str:
@@ -63,95 +65,134 @@ def append_log(path: Path, line: str) -> None:
         handle.write(line.rstrip() + "\n")
 
 
+def write_refresh_marker(workspace: Path, log_path: Path, status: str) -> Path:
+    marker = workspace / "output" / "gallery_refresh_in_progress.json"
+    marker.write_text(
+        json.dumps(
+            {
+                "status": status,
+                "updated_at": now_iso(),
+                "pid": os.getpid(),
+                "log": str(log_path),
+            },
+            indent=2,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    return marker
+
+
 def rebuild(args: argparse.Namespace, log_path: Path) -> int:
+    marker = write_refresh_marker(args.workspace, log_path, "running")
     status_command = [
         str(args.python),
         str(LIVE_STATUS_SCRIPT),
         "--workspace",
         str(args.workspace),
     ]
-    status_completed = subprocess.run(status_command, cwd=ROOT, capture_output=True, text=True)
-    append_log(log_path, f"[{now_iso()}] live status returncode={status_completed.returncode}")
-    if status_completed.stdout.strip():
-        append_log(log_path, status_completed.stdout.strip())
-    if status_completed.stderr.strip():
-        append_log(log_path, status_completed.stderr.strip())
+    try:
+        status_completed = subprocess.run(status_command, cwd=ROOT, capture_output=True, text=True)
+        append_log(log_path, f"[{now_iso()}] live status returncode={status_completed.returncode}")
+        if status_completed.stdout.strip():
+            append_log(log_path, status_completed.stdout.strip())
+        if status_completed.stderr.strip():
+            append_log(log_path, status_completed.stderr.strip())
 
-    audit_command = [
-        str(args.python),
-        str(AUDIT_SCRIPT),
-        "--workspace",
-        str(args.workspace),
-        "--allow-incomplete",
-    ]
-    audit_completed = subprocess.run(audit_command, cwd=ROOT, capture_output=True, text=True)
-    append_log(log_path, f"[{now_iso()}] audit returncode={audit_completed.returncode}")
-    if audit_completed.stdout.strip():
-        append_log(log_path, audit_completed.stdout.strip())
-    if audit_completed.stderr.strip():
-        append_log(log_path, audit_completed.stderr.strip())
+        audit_command = [
+            str(args.python),
+            str(AUDIT_SCRIPT),
+            "--workspace",
+            str(args.workspace),
+            "--allow-incomplete",
+        ]
+        audit_completed = subprocess.run(audit_command, cwd=ROOT, capture_output=True, text=True)
+        append_log(log_path, f"[{now_iso()}] audit returncode={audit_completed.returncode}")
+        if audit_completed.stdout.strip():
+            append_log(log_path, audit_completed.stdout.strip())
+        if audit_completed.stderr.strip():
+            append_log(log_path, audit_completed.stderr.strip())
 
-    cycle_command = [
-        str(args.python),
-        str(CYCLE_DIAGNOSTICS_SCRIPT),
-        "--workspace",
-        str(args.workspace),
-    ]
-    cycle_completed = subprocess.run(cycle_command, cwd=ROOT, capture_output=True, text=True)
-    append_log(log_path, f"[{now_iso()}] cycle diagnostics returncode={cycle_completed.returncode}")
-    if cycle_completed.stdout.strip():
-        append_log(log_path, cycle_completed.stdout.strip())
-    if cycle_completed.stderr.strip():
-        append_log(log_path, cycle_completed.stderr.strip())
+        cycle_command = [
+            str(args.python),
+            str(CYCLE_DIAGNOSTICS_SCRIPT),
+            "--workspace",
+            str(args.workspace),
+        ]
+        cycle_completed = subprocess.run(cycle_command, cwd=ROOT, capture_output=True, text=True)
+        append_log(log_path, f"[{now_iso()}] cycle diagnostics returncode={cycle_completed.returncode}")
+        if cycle_completed.stdout.strip():
+            append_log(log_path, cycle_completed.stdout.strip())
+        if cycle_completed.stderr.strip():
+            append_log(log_path, cycle_completed.stderr.strip())
 
-    convergence_command = [
-        str(args.python),
-        str(CONVERGENCE_SCRIPT),
-        "--workspace",
-        str(args.workspace),
-    ]
-    convergence_completed = subprocess.run(convergence_command, cwd=ROOT, capture_output=True, text=True)
-    append_log(log_path, f"[{now_iso()}] convergence returncode={convergence_completed.returncode}")
-    if convergence_completed.stdout.strip():
-        append_log(log_path, convergence_completed.stdout.strip())
-    if convergence_completed.stderr.strip():
-        append_log(log_path, convergence_completed.stderr.strip())
+        convergence_command = [
+            str(args.python),
+            str(CONVERGENCE_SCRIPT),
+            "--workspace",
+            str(args.workspace),
+        ]
+        convergence_completed = subprocess.run(convergence_command, cwd=ROOT, capture_output=True, text=True)
+        append_log(log_path, f"[{now_iso()}] convergence returncode={convergence_completed.returncode}")
+        if convergence_completed.stdout.strip():
+            append_log(log_path, convergence_completed.stdout.strip())
+        if convergence_completed.stderr.strip():
+            append_log(log_path, convergence_completed.stderr.strip())
 
-    command = [
-        str(args.python),
-        str(GALLERY_SCRIPT),
-        "--workspace",
-        str(args.workspace),
-        "--refresh-seconds",
-        str(args.refresh_seconds),
-    ]
-    completed = subprocess.run(command, cwd=ROOT, capture_output=True, text=True)
-    append_log(log_path, f"[{now_iso()}] gallery rebuild returncode={completed.returncode}")
-    if completed.stdout.strip():
-        append_log(log_path, completed.stdout.strip())
-    if completed.stderr.strip():
-        append_log(log_path, completed.stderr.strip())
+        convergence_trends_command = [
+            str(args.python),
+            str(CONVERGENCE_TRENDS_SCRIPT),
+            "--workspace",
+            str(args.workspace),
+        ]
+        convergence_trends_completed = subprocess.run(convergence_trends_command, cwd=ROOT, capture_output=True, text=True)
+        append_log(log_path, f"[{now_iso()}] convergence trends returncode={convergence_trends_completed.returncode}")
+        if convergence_trends_completed.stdout.strip():
+            append_log(log_path, convergence_trends_completed.stdout.strip())
+        if convergence_trends_completed.stderr.strip():
+            append_log(log_path, convergence_trends_completed.stderr.strip())
 
-    viewer_command = [
-        str(args.python),
-        str(FINISHED_VIEWER_SCRIPT),
-        "--workspace",
-        str(args.workspace),
-    ]
-    viewer_completed = subprocess.run(viewer_command, cwd=ROOT, capture_output=True, text=True)
-    append_log(log_path, f"[{now_iso()}] finished viewer rebuild returncode={viewer_completed.returncode}")
-    if viewer_completed.stdout.strip():
-        append_log(log_path, viewer_completed.stdout.strip())
-    if viewer_completed.stderr.strip():
-        append_log(log_path, viewer_completed.stderr.strip())
-    return (
-        status_completed.returncode
-        or audit_completed.returncode
-        or cycle_completed.returncode
-        or convergence_completed.returncode
-        or completed.returncode
-        or viewer_completed.returncode
-    )
+        command = [
+            str(args.python),
+            str(GALLERY_SCRIPT),
+            "--workspace",
+            str(args.workspace),
+            "--refresh-seconds",
+            str(args.refresh_seconds),
+        ]
+        completed = subprocess.run(command, cwd=ROOT, capture_output=True, text=True)
+        append_log(log_path, f"[{now_iso()}] gallery rebuild returncode={completed.returncode}")
+        if completed.stdout.strip():
+            append_log(log_path, completed.stdout.strip())
+        if completed.stderr.strip():
+            append_log(log_path, completed.stderr.strip())
+
+        viewer_command = [
+            str(args.python),
+            str(FINISHED_VIEWER_SCRIPT),
+            "--workspace",
+            str(args.workspace),
+        ]
+        viewer_completed = subprocess.run(viewer_command, cwd=ROOT, capture_output=True, text=True)
+        append_log(log_path, f"[{now_iso()}] finished viewer rebuild returncode={viewer_completed.returncode}")
+        if viewer_completed.stdout.strip():
+            append_log(log_path, viewer_completed.stdout.strip())
+        if viewer_completed.stderr.strip():
+            append_log(log_path, viewer_completed.stderr.strip())
+        return (
+            status_completed.returncode
+            or audit_completed.returncode
+            or cycle_completed.returncode
+            or convergence_completed.returncode
+            or convergence_trends_completed.returncode
+            or completed.returncode
+            or viewer_completed.returncode
+        )
+    finally:
+        try:
+            marker.unlink(missing_ok=True)
+        except OSError as exc:
+            append_log(log_path, f"[{now_iso()}] could not remove refresh marker: {exc!r}")
 
 
 def strict_audit(args: argparse.Namespace, log_path: Path) -> int:

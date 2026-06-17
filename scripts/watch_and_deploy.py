@@ -14,6 +14,8 @@ DEFAULT_PYTHON = Path(r"C:\Program Files\Python311\python.exe")
 DEFAULT_RRE_ROOT = Path(r"C:\Users\earlb\Downloads\rre")
 DEFAULT_KAPPA_ROOT = Path(r"C:\Users\earlb\Downloads\kappa")
 DEFAULT_PAGES_ROOT = Path(r"C:\Users\earlb\Downloads\earlbellinger.github.io")
+REFRESH_MARKER_NAME = "gallery_refresh_in_progress.json"
+REFRESH_MARKER_STALE_SECONDS = 1800
 
 
 def now_iso() -> str:
@@ -51,6 +53,22 @@ def load_json(path: Path) -> object | None:
 def write_json(path: Path, value: object) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(value, indent=2) + "\n", encoding="utf-8")
+
+
+def refresh_in_progress(rre_root: Path, log_path: Path) -> bool:
+    marker = rre_root / "rsp_batch_runs" / "output" / REFRESH_MARKER_NAME
+    if not marker.exists():
+        return False
+    age = time.time() - marker.stat().st_mtime
+    if age <= REFRESH_MARKER_STALE_SECONDS:
+        append_log(log_path, f"[{now_iso()}] local refresh in progress; deferring deploy")
+        return True
+    append_log(log_path, f"[{now_iso()}] ignoring stale refresh marker age={age:.0f}s")
+    try:
+        marker.unlink()
+    except OSError as exc:
+        append_log(log_path, f"[{now_iso()}] could not remove stale refresh marker: {exc!r}")
+    return False
 
 
 def run_command(command: list[str], cwd: Path, log_path: Path) -> subprocess.CompletedProcess[str]:
@@ -202,6 +220,9 @@ def main() -> int:
     append_log(log_path, f"[{now_iso()}] Kappa deploy watcher started")
 
     while True:
+        if refresh_in_progress(args.rre_root.resolve(), log_path):
+            time.sleep(max(60, int(args.interval_seconds)))
+            continue
         state = load_json(state_path)
         previous_signature = state.get("signature") if isinstance(state, dict) else None
         signature = status_signature(args.rre_root.resolve())
