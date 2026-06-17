@@ -82,6 +82,41 @@ def parse_manifest_number(value: object) -> float | None:
         return None
 
 
+def normalized_trend_row(row: dict[str, object]) -> dict[str, object]:
+    window_start = row.get("window_start_period")
+    window_end = row.get("window_end_period")
+    if isinstance(window_start, (float, int)) and float(window_start).is_integer():
+        window_start = int(window_start)
+    if isinstance(window_end, (float, int)) and float(window_end).is_integer():
+        window_end = int(window_end)
+    return {
+        "source_kind": row.get("source_kind"),
+        "source": row.get("source"),
+        "cycle_count": window_end,
+        "last_cycle_count_used": row.get("window_cycles"),
+        "window_start_period_number": window_start,
+        "window_end_period_number": window_end,
+        "last_period_number": window_end,
+        "gamma_peak_to_peak_last_window": row.get("gamma_peak_to_peak"),
+        "period_fractional_peak_to_peak_last_window": row.get("period_fractional_peak_to_peak"),
+        "delta_r_fractional_peak_to_peak_last_window": row.get("delta_r_fractional_peak_to_peak"),
+        "steps_median_last_window": row.get("steps_median"),
+        "steps_min_last_window": row.get("steps_min"),
+        "steps_max_last_window": row.get("steps_max"),
+        "has_full_window": row.get("window_cycles") is not None,
+        "converged_gamma": row.get("converged_gamma"),
+        "converged_period": row.get("converged_period"),
+        "converged_delta_r": row.get("converged_delta_r"),
+        "converged_exact": row.get("converged_exact"),
+        "limit_cycle_converged": row.get("converged_exact"),
+        "display_source": "convergence_trends_last100.latest_by_model",
+    }
+
+
+def convergence_window_end(row: dict[str, object]) -> float | None:
+    return parse_manifest_number(row.get("window_end_period_number") or row.get("last_period_number") or row.get("cycle_count"))
+
+
 def fmt_float(value: object, digits: int = 4) -> str:
     number = parse_manifest_number(value)
     if number is None:
@@ -114,11 +149,23 @@ def convergence_by_model(rre_root: Path) -> dict[str, dict[str, object]]:
     path = rre_root / "rsp_batch_runs" / "output" / "convergence_summary_last100.json"
     data = load_json(path)
     rows = data.get("models", []) if isinstance(data, dict) else []
-    return {
+    by_model = {
         str(row.get("model_id")): row
         for row in rows
         if isinstance(row, dict) and row.get("model_id")
     }
+    trends = load_json(rre_root / "rsp_batch_runs" / "output" / "convergence_trends_last100.json")
+    trend_rows = trends.get("latest_by_model", {}) if isinstance(trends, dict) else {}
+    if isinstance(trend_rows, dict):
+        for model_id, row in trend_rows.items():
+            if not isinstance(row, dict):
+                continue
+            normalized = normalized_trend_row(row)
+            trend_end = convergence_window_end(normalized)
+            current_end = convergence_window_end(by_model.get(str(model_id), {}))
+            if trend_end is not None and (current_end is None or trend_end > current_end):
+                by_model[str(model_id)] = normalized
+    return by_model
 
 
 def convergence_text(convergence: dict[str, object] | None) -> str:

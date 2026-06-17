@@ -30,6 +30,66 @@ def read_json(path: Path) -> dict | list:
     return json.loads(path.read_text())
 
 
+def parse_float(value: object) -> float | None:
+    if value is None:
+        return None
+    try:
+        return float(str(value).replace("d", "e").replace("D", "e"))
+    except ValueError:
+        return None
+
+
+def normalized_trend_row(row: dict) -> dict:
+    window_start = row.get("window_start_period")
+    window_end = row.get("window_end_period")
+    if isinstance(window_start, (float, int)) and float(window_start).is_integer():
+        window_start = int(window_start)
+    if isinstance(window_end, (float, int)) and float(window_end).is_integer():
+        window_end = int(window_end)
+    return {
+        "source_kind": row.get("source_kind"),
+        "source": row.get("source"),
+        "cycle_count": window_end,
+        "last_cycle_count_used": row.get("window_cycles"),
+        "window_start_period_number": window_start,
+        "window_end_period_number": window_end,
+        "last_period_number": window_end,
+        "gamma_peak_to_peak_last_window": row.get("gamma_peak_to_peak"),
+        "period_fractional_peak_to_peak_last_window": row.get("period_fractional_peak_to_peak"),
+        "delta_r_fractional_peak_to_peak_last_window": row.get("delta_r_fractional_peak_to_peak"),
+        "steps_median_last_window": row.get("steps_median"),
+        "steps_min_last_window": row.get("steps_min"),
+        "steps_max_last_window": row.get("steps_max"),
+        "has_full_window": row.get("window_cycles") is not None,
+        "converged_gamma": row.get("converged_gamma"),
+        "converged_period": row.get("converged_period"),
+        "converged_delta_r": row.get("converged_delta_r"),
+        "converged_exact": row.get("converged_exact"),
+        "limit_cycle_converged": row.get("converged_exact"),
+        "display_source": "convergence_trends_last100.latest_by_model",
+    }
+
+
+def convergence_window_end(row: dict) -> float | None:
+    return parse_float(row.get("window_end_period_number") or row.get("last_period_number") or row.get("cycle_count"))
+
+
+def merge_fresher_trend_rows(convergence_by_model: dict[str, dict], trends_data: dict | list) -> dict[str, dict]:
+    merged = dict(convergence_by_model)
+    trend_rows = trends_data.get("latest_by_model", {}) if isinstance(trends_data, dict) else {}
+    if not isinstance(trend_rows, dict):
+        return merged
+    for model_id, row in trend_rows.items():
+        if not isinstance(row, dict):
+            continue
+        normalized = normalized_trend_row(row)
+        trend_end = convergence_window_end(normalized)
+        current_end = convergence_window_end(merged.get(str(model_id), {}))
+        if trend_end is not None and (current_end is None or trend_end > current_end):
+            merged[str(model_id)] = normalized
+    return merged
+
+
 def read_active_batch_status(output_root: Path) -> tuple[dict | list, Path | None]:
     candidates: list[tuple[float, Path, dict | list]] = []
     for path in output_root.glob("batch*_status.json"):
@@ -527,6 +587,7 @@ def main() -> int:
     live_status = read_json(live_status_path)
     modulation_data = read_json(modulation_path)
     convergence_data = read_json(convergence_path)
+    convergence_trends_data = read_json(convergence_trends_path)
     modulation_models = modulation_data.get("models", []) if isinstance(modulation_data, dict) else []
     modulation_by_model = {
         str(row.get("model_id")): row
@@ -539,6 +600,7 @@ def main() -> int:
         for row in convergence_models
         if isinstance(row, dict) and row.get("model_id")
     }
+    convergence_by_model = merge_fresher_trend_rows(convergence_by_model, convergence_trends_data)
     batch_status, selected_batch_status_path = read_active_batch_status(output_root)
     if selected_batch_status_path is not None:
         batch_status_path = selected_batch_status_path

@@ -88,6 +88,7 @@ def status_signature(rre_root: Path) -> dict[str, object]:
     audit = load_json(output_dir / "batch_audit_summary.json")
     quality = load_json(output_dir / "quality_extension_status.json")
     convergence = load_json(output_dir / "convergence_summary_last100.json")
+    convergence_trends = load_json(output_dir / "convergence_trends_last100.json")
     live_models = []
     if isinstance(live, dict):
         for model in live.get("models", []):
@@ -123,6 +124,21 @@ def status_signature(rre_root: Path) -> dict[str, object]:
                     "converged_exact": model.get("converged_exact"),
                 }
             )
+    convergence_trend_models = []
+    if isinstance(convergence_trends, dict):
+        latest_by_model = convergence_trends.get("latest_by_model", {})
+        if isinstance(latest_by_model, dict):
+            for model_id, model in latest_by_model.items():
+                if not isinstance(model, dict):
+                    continue
+                convergence_trend_models.append(
+                    {
+                        "model_id": model_id,
+                        "source_kind": model.get("source_kind"),
+                        "window_end_period": model.get("window_end_period"),
+                        "converged_exact": model.get("converged_exact"),
+                    }
+                )
     return {
         "batch_status": live.get("batch_status", {}).get("status") if isinstance(live, dict) else None,
         "completed_gif_count": live.get("completed_gif_count") if isinstance(live, dict) else None,
@@ -132,6 +148,7 @@ def status_signature(rre_root: Path) -> dict[str, object]:
         "quality_status": quality.get("status") if isinstance(quality, dict) else None,
         "quality_complete": quality.get("complete") if isinstance(quality, dict) else None,
         "convergence_models": convergence_models,
+        "convergence_trend_models": convergence_trend_models,
         "models": live_models,
     }
 
