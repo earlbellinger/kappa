@@ -419,18 +419,23 @@ def commit_and_push(repo: Path, message: str, log_path: Path, branch: str) -> No
     for command in (
         ["git", "add", "."],
         ["git", "commit", "-m", message],
-        ["git", "pull", "--rebase", "-X", "theirs", "origin", branch],
-        ["git", "push", "origin", branch],
     ):
         completed = run_command(command, repo, log_path)
         if completed.returncode != 0:
             raise RuntimeError(f"Command failed in {repo}: {' '.join(command)}")
+    update_branch(repo, log_path, branch)
+    completed = run_command(["git", "push", "origin", branch], repo, log_path)
+    if completed.returncode != 0:
+        raise RuntimeError(f"Command failed in {repo}: git push origin {branch}")
 
 
 def update_branch(repo: Path, log_path: Path, branch: str) -> None:
-    completed = run_command(["git", "pull", "--rebase", "-X", "theirs", "origin", branch], repo, log_path)
+    completed = run_command(["git", "fetch", "origin", branch], repo, log_path)
     if completed.returncode != 0:
-        raise RuntimeError(f"Command failed in {repo}: git pull --rebase -X theirs origin {branch}")
+        raise RuntimeError(f"Command failed in {repo}: git fetch origin {branch}")
+    completed = run_command(["git", "rebase", "-X", "theirs", f"origin/{branch}"], repo, log_path)
+    if completed.returncode != 0:
+        raise RuntimeError(f"Command failed in {repo}: git rebase -X theirs origin/{branch}")
 
 
 def copy_site_to_pages(kappa_root: Path, pages_root: Path) -> None:
