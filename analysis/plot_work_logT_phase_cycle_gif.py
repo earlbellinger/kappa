@@ -338,6 +338,60 @@ def resolve_phase_panel_layout(
     }
 
 
+def offset_image_half_height_data(
+    fig: plt.Figure,
+    ax: plt.Axes,
+    panel_ylim: tuple[float, float],
+    *,
+    zoom: float,
+) -> float:
+    fig.canvas.draw()
+    renderer = fig.canvas.get_renderer()
+    image = OffsetImage(np.zeros((SPHERE_IMAGE_SIZE, SPHERE_IMAGE_SIZE, 4), dtype=float), zoom=float(zoom))
+    height_px = image.get_window_extent(renderer).height
+    _, y0_px = ax.transData.transform((0.0, float(panel_ylim[0])))
+    _, y1_px = ax.transData.transform((0.0, float(panel_ylim[1])))
+    axis_height_px = max(abs(float(y1_px) - float(y0_px)), 1.0e-12)
+    data_per_pixel = abs(float(panel_ylim[1]) - float(panel_ylim[0])) / axis_height_px
+    return 0.5 * float(height_px) * data_per_pixel
+
+
+def adjust_teff_gauge_below_luminosity_sphere(
+    fig: plt.Figure,
+    ax: plt.Axes,
+    phase_panel_layout: dict[str, object],
+    luminosity_ylim: tuple[float, float],
+    frame_data: list[dict[str, object]],
+) -> None:
+    if not frame_data:
+        return
+    sphere_center = tuple(phase_panel_layout["luminosity_sphere_center"])
+    teff_center = tuple(phase_panel_layout["luminosity_teff_visual_center"])
+    gauge_half_height = float(phase_panel_layout["luminosity_gauge_half_height"])
+    max_zoom = max(float(frame["photosphere_sphere_zoom"]) for frame in frame_data)
+    sphere_half_height = offset_image_half_height_data(fig, ax, luminosity_ylim, zoom=max_zoom)
+    _, y0_px = ax.transData.transform((0.0, float(luminosity_ylim[0])))
+    _, y1_px = ax.transData.transform((0.0, float(luminosity_ylim[1])))
+    axis_height_px = max(abs(float(y1_px) - float(y0_px)), 1.0e-12)
+    gap = LUM_TEFF_GAUGE_SPHERE_GAP_PX * abs(float(luminosity_ylim[1]) - float(luminosity_ylim[0])) / axis_height_px
+    requested_center_y = float(sphere_center[1]) - sphere_half_height - gap - gauge_half_height
+    panel_span = max(float(luminosity_ylim[1]) - float(luminosity_ylim[0]), 1.0e-12)
+    lower_limit = float(luminosity_ylim[0]) + 0.08 * panel_span + gauge_half_height
+    upper_limit = float(sphere_center[1]) - sphere_half_height - gap - gauge_half_height
+    adjusted_center_y = clamp(requested_center_y, lower_limit, upper_limit)
+    phase_panel_layout["luminosity_teff_visual_center"] = (float(teff_center[0]), float(adjusted_center_y))
+    fractions = phase_panel_layout.get("fractions")
+    if isinstance(fractions, dict):
+        fractions["teff_y_fraction"] = float((adjusted_center_y - float(luminosity_ylim[0])) / panel_span)
+    phase_panel_layout["teff_gauge_sphere_clearance"] = {
+        "max_sphere_zoom": float(max_zoom),
+        "sphere_half_height_lsun": float(sphere_half_height),
+        "gap_lsun": float(gap),
+        "gap_px": float(LUM_TEFF_GAUGE_SPHERE_GAP_PX),
+        "center_y_lsun": float(adjusted_center_y),
+    }
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Animate scaled phase-local power diagnostics versus temperature across one pulsation cycle."
@@ -2922,6 +2976,16 @@ def main() -> None:
         style_axis_for_theme(ax_left_inset, dark_mode)
     style_axis_for_theme(ax_rv, dark_mode)
     style_axis_for_theme(ax_lum, dark_mode)
+    ax_lum.set_xlim(0.0, 2.0)
+    ax_lum.set_ylim(*luminosity_ylim)
+    adjust_teff_gauge_below_luminosity_sphere(
+        fig,
+        ax_lum,
+        phase_panel_layout,
+        luminosity_ylim,
+        frame_data,
+    )
+    luminosity_teff_visual_center = phase_panel_layout["luminosity_teff_visual_center"]
 
     annotation_style = {
         "color": theme_value(dark_mode, "text", "black"),
@@ -4045,6 +4109,7 @@ def main() -> None:
                     "source": str(phase_panel_layout["source"]),
                     "fractions": phase_panel_layout["fractions"],
                 },
+                "teff_gauge_sphere_clearance": phase_panel_layout.get("teff_gauge_sphere_clearance"),
                 "sphere_image_size_px": int(SPHERE_IMAGE_SIZE),
                 "sphere_base_zoom": float(SPHERE_BASE_ZOOM),
                 "limb_darkening_law": "phase-dependent quadratic limb darkening with coefficients parameterized by photosphere Teff, log g, and inferred [Fe/H]",
