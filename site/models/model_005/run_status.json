@@ -6,7 +6,7 @@
   "output_dir": "<local-rre-root>/rsp_batch_runs/output/model_005_M0p6238_Z0p00007156_T6925",
   "prefix": "mesa_rsp_model_005_M0p6238_Z0p00007156_T6925",
   "product_stem": "mesa_rsp_model_005_M0p6238_Z0p00007156_T6925_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work",
-  "updated_at": "2026-06-18T09:13:27.034142+00:00",
+  "updated_at": "2026-06-18T09:27:12.128704+00:00",
   "stages": {
     "prepared": {
       "status": "complete",
@@ -70,17 +70,17 @@
       "started_at": "2026-06-17T02:45:54.593288+00:00"
     },
     "plot": {
-      "status": "running",
-      "updated_at": "2026-06-18T09:13:27.034142+00:00",
+      "status": "complete",
+      "updated_at": "2026-06-18T09:27:12.128198+00:00",
       "expected_output": "<local-rre-root>/rsp_batch_runs/output/model_005_M0p6238_Z0p00007156_T6925/mesa_rsp_model_005_M0p6238_Z0p00007156_T6925_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work.gif",
-      "started_at": "2026-06-18T09:13:27.034142+00:00"
+      "started_at": "2026-06-18T09:25:40.143355+00:00"
     },
     "verify": {
       "status": "failed",
-      "updated_at": "2026-06-18T06:17:32.466297+00:00",
+      "updated_at": "2026-06-18T09:14:59.205208+00:00",
       "error": "RuntimeError('radius_rsun phase seam is 0.3245 of amplitude, expected <= 0.025; teff_k phase seam is 0.1056 of amplitude, expected <= 0.025')",
       "expected_output": "<local-rre-root>/rsp_batch_runs/output/model_005_M0p6238_Z0p00007156_T6925/verification_summary.json",
-      "started_at": "2026-06-18T06:17:32.425067+00:00"
+      "started_at": "2026-06-18T09:14:59.161930+00:00"
     }
   },
   "validation": {
