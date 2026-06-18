@@ -17,6 +17,28 @@ DEFAULT_PAGES_ROOT = Path(r"C:\Users\earlb\Downloads\earlbellinger.github.io")
 REFRESH_MARKER_NAME = "gallery_refresh_in_progress.json"
 REFRESH_MARKER_STALE_SECONDS = 1800
 ANIMATION_SUFFIX = "_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work"
+PERIOD_PROGRESS_BUCKET = 50
+CREATE_MODEL_BUCKET = 1000
+SURFACE_VELOCITY_BUCKET = 0.02
+MODULATION_FRACTION_BUCKET = 0.01
+DELTA_R_CRITERION_BUCKET = 1.0
+CYCLES_TO_THRESHOLD_BUCKET = 50
+
+
+def bucket_int(value: object, size: int) -> int | None:
+    try:
+        parsed = int(float(str(value)))
+    except (TypeError, ValueError):
+        return None
+    return parsed // size
+
+
+def bucket_float(value: object, size: float) -> int | None:
+    try:
+        parsed = float(str(value))
+    except (TypeError, ValueError):
+        return None
+    return int(parsed / size)
 
 
 def now_iso() -> str:
@@ -148,25 +170,27 @@ def cycle_modulation_signature(rre_root: Path) -> dict[str, object]:
             {
                 "model_id": row.get("model_id"),
                 "history_source": row.get("history_source"),
-                "cycle_count": row.get("cycle_count"),
+                "cycle_count_bucket_50": bucket_int(row.get("cycle_count"), PERIOD_PROGRESS_BUCKET),
                 "last_cycle_count_used": row.get("last_cycle_count_used"),
-                "max_l_modulation_fraction": row.get("max_l_modulation_fraction"),
-                "min_v_modulation_mag": row.get("min_v_modulation_mag"),
-                "period_modulation_fraction": row.get("period_modulation_fraction"),
-                "radius_amplitude_modulation_fraction": row.get("radius_amplitude_modulation_fraction"),
-                "history_candidate_cycle_counts": row.get("history_candidate_cycle_counts"),
-                "diagnostic_png_exists": diagnostic_png.exists() if diagnostic_png is not None else False,
-                "diagnostic_png_size_bytes": (
-                    diagnostic_png.stat().st_size if diagnostic_png is not None and diagnostic_png.exists() else None
+                "max_l_modulation_bucket_0p01": bucket_float(
+                    row.get("max_l_modulation_fraction"), MODULATION_FRACTION_BUCKET
                 ),
+                "min_v_modulation_bucket_0p01": bucket_float(
+                    row.get("min_v_modulation_mag"), MODULATION_FRACTION_BUCKET
+                ),
+                "period_modulation_bucket_0p01": bucket_float(
+                    row.get("period_modulation_fraction"), MODULATION_FRACTION_BUCKET
+                ),
+                "radius_amplitude_modulation_bucket_0p01": bucket_float(
+                    row.get("radius_amplitude_modulation_fraction"), MODULATION_FRACTION_BUCKET
+                ),
+                "diagnostic_png_exists": diagnostic_png.exists() if diagnostic_png is not None else False,
             }
         )
     overview = output_dir / "cycle_diagnostics" / "cycle_modulation_overview.png"
     return {
         "summary_exists": isinstance(data, dict),
-        "generated_at": data.get("generated_at") if isinstance(data, dict) else None,
         "overview_png_exists": overview.exists(),
-        "overview_png_size_bytes": overview.stat().st_size if overview.exists() else None,
         "models": models,
     }
 
@@ -236,16 +260,22 @@ def status_signature(rre_root: Path) -> dict[str, object]:
             {
                 "name": path.name,
                 "png_exists": png_path.exists(),
-                "cycle_count": data.get("cycle_count"),
-                "latest_period": data.get("latest_period"),
-                "max_vsurf_div_cs_latest": (
-                    outlook.get("max_vsurf_div_cs_latest") if isinstance(outlook, dict) else None
+                "cycle_count_bucket_50": bucket_int(data.get("cycle_count"), PERIOD_PROGRESS_BUCKET),
+                "latest_period_bucket_50": bucket_int(data.get("latest_period"), PERIOD_PROGRESS_BUCKET),
+                "max_vsurf_div_cs_latest_bucket_0p02": (
+                    bucket_float(outlook.get("max_vsurf_div_cs_latest"), SURFACE_VELOCITY_BUCKET)
+                    if isinstance(outlook, dict)
+                    else None
                 ),
-                "delta_r_criterion_factor": (
-                    outlook.get("delta_r_criterion_factor") if isinstance(outlook, dict) else None
+                "delta_r_criterion_factor_bucket_1": (
+                    bucket_float(outlook.get("delta_r_criterion_factor"), DELTA_R_CRITERION_BUCKET)
+                    if isinstance(outlook, dict)
+                    else None
                 ),
-                "cycles_to_vsurf_div_cs_0p8": (
-                    outlook.get("cycles_to_vsurf_div_cs_0p8") if isinstance(outlook, dict) else None
+                "cycles_to_vsurf_div_cs_0p8_bucket_50": (
+                    bucket_float(outlook.get("cycles_to_vsurf_div_cs_0p8"), CYCLES_TO_THRESHOLD_BUCKET)
+                    if isinstance(outlook, dict)
+                    else None
                 ),
             }
         )
@@ -271,31 +301,19 @@ def status_signature(rre_root: Path) -> dict[str, object]:
         for model in live.get("models", []):
             if not isinstance(model, dict):
                 continue
-            try:
-                period = int(float(str(model.get("latest_period"))))
-            except (TypeError, ValueError):
-                period = None
-            try:
-                history_model = int(float(str(model.get("latest_history_model"))))
-            except (TypeError, ValueError):
-                history_model = None
-            try:
-                max_vsurf = float(str(model.get("latest_max_vsurf_div_cs")))
-            except (TypeError, ValueError):
-                max_vsurf = None
             active_stage = model.get("active_stage")
             live_models.append(
                 {
                     "model_id": model.get("model_id"),
                     "active_stage": active_stage,
-                    "period_progress_bucket_50": period // 50 if period is not None else None,
+                    "period_progress_bucket_50": bucket_int(model.get("latest_period"), PERIOD_PROGRESS_BUCKET),
                     "history_model_bucket_1000": (
-                        history_model // 1000
-                        if history_model is not None and active_stage == "create"
+                        bucket_int(model.get("latest_history_model"), CREATE_MODEL_BUCKET)
+                        if active_stage == "create"
                         else None
                     ),
                     "max_vsurf_div_cs_bucket_0p02": (
-                        int(max_vsurf / 0.02) if max_vsurf is not None else None
+                        bucket_float(model.get("latest_max_vsurf_div_cs"), SURFACE_VELOCITY_BUCKET)
                     ),
                     "latest_surface_velocity_status": model.get("latest_surface_velocity_status"),
                     "gif_exists": bool(model.get("gif_exists")),
@@ -315,11 +333,13 @@ def status_signature(rre_root: Path) -> dict[str, object]:
                 {
                     "model_id": model.get("model_id"),
                     "source_kind": model.get("source_kind"),
-                    "cycle_count": model.get("cycle_count"),
-                    "last_period_number": model.get("last_period_number"),
+                    "cycle_count_bucket_50": bucket_int(model.get("cycle_count"), PERIOD_PROGRESS_BUCKET),
+                    "last_period_bucket_50": bucket_int(model.get("last_period_number"), PERIOD_PROGRESS_BUCKET),
                     "has_full_window": model.get("has_full_window"),
                     "converged_exact": model.get("converged_exact"),
-                    "max_vsurf_div_cs_max_last_window": model.get("max_vsurf_div_cs_max_last_window"),
+                    "max_vsurf_div_cs_max_bucket_0p02": bucket_float(
+                        model.get("max_vsurf_div_cs_max_last_window"), SURFACE_VELOCITY_BUCKET
+                    ),
                 }
             )
     convergence_trend_models = []
@@ -333,9 +353,13 @@ def status_signature(rre_root: Path) -> dict[str, object]:
                     {
                         "model_id": model_id,
                         "source_kind": model.get("source_kind"),
-                        "window_end_period": model.get("window_end_period"),
+                        "window_end_period_bucket_50": bucket_int(
+                            model.get("window_end_period"), PERIOD_PROGRESS_BUCKET
+                        ),
                         "converged_exact": model.get("converged_exact"),
-                        "max_vsurf_div_cs_max": model.get("max_vsurf_div_cs_max"),
+                        "max_vsurf_div_cs_max_bucket_0p02": bucket_float(
+                            model.get("max_vsurf_div_cs_max"), SURFACE_VELOCITY_BUCKET
+                        ),
                     }
                 )
     phase_seam_models = []
