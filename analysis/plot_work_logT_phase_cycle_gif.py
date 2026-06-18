@@ -110,7 +110,7 @@ PLOT_SCALE_FACTORS = {
     "pdv_power": 1.0,
 }
 DISPLAY_POWER_SCALE = 1.0e9
-ANIMATION_SCALING_VERSION = "model000-visible-window-v13"
+ANIMATION_SCALING_VERSION = "model000-visible-window-v15"
 ZONE_LABEL_COLOR = "#2B2B2B"
 ZONE_LABEL_FONT_SIZE = 9.2
 ZONE_LABEL_STROKE_WIDTH = 1.3
@@ -126,6 +126,9 @@ SCALED_KAPPA_COLOR = "#CFA8FF"
 SCALED_DIAGNOSTIC_PAD_FRACTION = 0.08
 POWER_PANEL_PAD_FRACTION = 0.08
 POWER_PANEL_MIN_HALF_RANGE = 0.05
+POWER_PANEL_AXIS_PERCENTILE_LOW = 2.0
+POWER_PANEL_AXIS_PERCENTILE_HIGH = 98.0
+POWER_PANEL_SPIKE_SPAN_REFERENCE_FACTOR = 4.0
 OPACITY_PANEL_BOTTOM_FRACTION = 0.76
 OPACITY_PANEL_TOP_FRACTION = 0.92
 HIGH_OPACITY_REGION_THRESHOLD = 0.9
@@ -588,6 +591,20 @@ def finite_visible_scaled_power_bounds(
     x_field_name: str,
     x_limits: tuple[float, float],
 ) -> tuple[float, float]:
+    return finite_visible_scaled_power_bounds_with_raw(
+        frame_data,
+        series_names,
+        x_field_name,
+        x_limits,
+    )[0]
+
+
+def finite_visible_scaled_power_bounds_with_raw(
+    frame_data: list[dict[str, object]],
+    series_names: tuple[str, ...],
+    x_field_name: str,
+    x_limits: tuple[float, float],
+) -> tuple[tuple[float, float], tuple[float, float]]:
     finite_values: list[np.ndarray] = []
     for frame in frame_data:
         mask = visible_window_mask(frame, x_field_name, x_limits)
@@ -598,16 +615,33 @@ def finite_visible_scaled_power_bounds(
                 scale = float(PLOT_SCALE_FACTORS[series_name]) / DISPLAY_POWER_SCALE
                 finite_values.append(values[series_mask] * scale)
     if not finite_values:
-        return -1.0, 1.0
+        return (-1.0, 1.0), (-1.0, 1.0)
     concatenated = np.concatenate(finite_values)
-    data_min = float(np.nanmin(concatenated))
-    data_max = float(np.nanmax(concatenated))
-    if not np.isfinite(data_min) or not np.isfinite(data_max):
-        return -1.0, 1.0
-    if data_max <= data_min:
-        pad = max(abs(data_min), POWER_PANEL_MIN_HALF_RANGE) * POWER_PANEL_PAD_FRACTION
-        return data_min - pad, data_max + pad
-    return data_min, data_max
+    finite = concatenated[np.isfinite(concatenated)]
+    if finite.size == 0:
+        return (-1.0, 1.0), (-1.0, 1.0)
+    raw_min = float(np.nanmin(finite))
+    raw_max = float(np.nanmax(finite))
+    if not np.isfinite(raw_min) or not np.isfinite(raw_max):
+        return (-1.0, 1.0), (-1.0, 1.0)
+    if raw_max <= raw_min:
+        pad = max(abs(raw_min), POWER_PANEL_MIN_HALF_RANGE) * POWER_PANEL_PAD_FRACTION
+        bounds = (raw_min - pad, raw_max + pad)
+        return bounds, bounds
+
+    robust_min, robust_max = np.nanpercentile(
+        finite,
+        [POWER_PANEL_AXIS_PERCENTILE_LOW, POWER_PANEL_AXIS_PERCENTILE_HIGH],
+    )
+    axis_min = float(robust_min)
+    axis_max = float(robust_max)
+    if not np.isfinite(axis_min) or not np.isfinite(axis_max) or axis_max <= axis_min:
+        axis_min, axis_max = raw_min, raw_max
+    if axis_max <= axis_min:
+        pad = max(abs(axis_min), POWER_PANEL_MIN_HALF_RANGE) * POWER_PANEL_PAD_FRACTION
+        axis_min -= pad
+        axis_max += pad
+    return (float(axis_min), float(axis_max)), (raw_min, raw_max)
 
 
 def finite_pair_or_none(value: object) -> tuple[float, float] | None:
@@ -624,18 +658,9 @@ def finite_pair_or_none(value: object) -> tuple[float, float] | None:
     return pair
 
 
-def bounds_with_reference_floor(
-    data_bounds: tuple[float, float],
-    reference_bounds: tuple[float, float] | None,
-) -> tuple[float, float]:
+def finite_effective_bounds(data_bounds: tuple[float, float]) -> tuple[float, float]:
     data_min = float(data_bounds[0])
     data_max = float(data_bounds[1])
-    if reference_bounds is not None:
-        ref_min = float(reference_bounds[0])
-        ref_max = float(reference_bounds[1])
-        if np.isfinite(ref_min) and np.isfinite(ref_max) and ref_max > ref_min:
-            data_min = min(data_min, ref_min)
-            data_max = max(data_max, ref_max)
     if not np.isfinite(data_min) or not np.isfinite(data_max):
         return 0.0, 1.0
     if data_max <= data_min:
@@ -687,9 +712,13 @@ def load_scaling_reference(summary_path: Path | None) -> dict[str, object]:
     if y_limits is None and isinstance(left_panel, dict):
         y_limits = finite_pair_or_none(left_panel.get("limits"))
 
-    visible_bounds = finite_pair_or_none(summary.get("left_power_visible_data_bounds"))
+    visible_bounds = finite_pair_or_none(summary.get("left_power_raw_visible_data_bounds"))
+    if visible_bounds is None:
+        visible_bounds = finite_pair_or_none(summary.get("left_power_visible_data_bounds"))
     if visible_bounds is None and isinstance(left_panel, dict):
-        visible_bounds = finite_pair_or_none(left_panel.get("visible_data_bounds"))
+        visible_bounds = finite_pair_or_none(left_panel.get("raw_visible_data_bounds"))
+        if visible_bounds is None:
+            visible_bounds = finite_pair_or_none(left_panel.get("visible_data_bounds"))
 
     opacity_scaling = summary.get("opacity_scaling", {})
     opacity_display_max: float | None = None
@@ -800,6 +829,34 @@ def power_panel_limits_from_visible_bounds(
         y_max += deficit
 
     return float(y_min), float(y_max)
+
+
+def select_power_axis_bounds(
+    robust_bounds: tuple[float, float],
+    raw_bounds: tuple[float, float],
+    reference_visible_bounds: tuple[float, float] | None,
+) -> tuple[tuple[float, float], str]:
+    raw_min, raw_max = float(raw_bounds[0]), float(raw_bounds[1])
+    robust_min, robust_max = float(robust_bounds[0]), float(robust_bounds[1])
+    if not all(np.isfinite(value) for value in (raw_min, raw_max, robust_min, robust_max)):
+        return robust_bounds, "robust percentiles; non-finite raw extrema"
+    if raw_max <= raw_min:
+        return robust_bounds, "robust percentiles; degenerate raw extrema"
+    if reference_visible_bounds is None:
+        return raw_bounds, "raw shown-radius extrema; no model_000 reference span available"
+    ref_min, ref_max = float(reference_visible_bounds[0]), float(reference_visible_bounds[1])
+    ref_span = ref_max - ref_min
+    raw_span = raw_max - raw_min
+    if not np.isfinite(ref_span) or ref_span <= 0.0:
+        return raw_bounds, "raw shown-radius extrema; invalid model_000 reference span"
+    threshold = float(POWER_PANEL_SPIKE_SPAN_REFERENCE_FACTOR) * ref_span
+    if raw_span <= threshold:
+        return raw_bounds, (
+            "raw shown-radius extrema; raw span is within the model_000-inspired spike threshold"
+        )
+    return robust_bounds, (
+        "robust shown-radius extrema; raw span exceeds the model_000-inspired spike threshold"
+    )
 
 
 def opacity_display_mapping(
@@ -2477,7 +2534,7 @@ def main() -> None:
     else:
         left_panel_x_field = "radius_rsun_plot"
         left_panel_x_limits = main_radius_xlim
-    visible_power_bounds = finite_visible_scaled_power_bounds(
+    robust_visible_power_bounds, raw_visible_power_bounds = finite_visible_scaled_power_bounds_with_raw(
         frame_data,
         visible_power_series_names(main_terms_only),
         left_panel_x_field,
@@ -2561,6 +2618,12 @@ def main() -> None:
         ):
             reference_opacity_band_fractions = (candidate_bottom, candidate_top)
 
+    visible_power_bounds, power_axis_bounds_rule = select_power_axis_bounds(
+        robust_visible_power_bounds,
+        raw_visible_power_bounds,
+        reference_power_visible_bounds,
+    )
+
     if args.ymin is not None and args.ymax is not None:
         left_power_ylim_raw = (float(args.ymin), float(args.ymax))
         left_power_ylim = (
@@ -2581,10 +2644,7 @@ def main() -> None:
     scaled_diagnostic_bounds = {
         "opacity": finite_visible_bounds(frame_data, "opacity_plot", left_panel_x_field, left_panel_x_limits),
     }
-    opacity_effective_bounds = bounds_with_reference_floor(
-        scaled_diagnostic_bounds["opacity"],
-        None,
-    )
+    opacity_effective_bounds = finite_effective_bounds(scaled_diagnostic_bounds["opacity"])
     opacity_display = opacity_display_mapping(
         opacity_effective_bounds,
         left_power_ylim,
@@ -3566,9 +3626,10 @@ def main() -> None:
             float(left_panel_x_limits[1]),
         ],
         "left_panel_scaling_method": (
-            "panel-local visible-window extrema; the y-axis is set from the minimum and maximum plotted "
-            "specific-power values inside this panel's shown x range, with zero included. model_000 "
-            "contributes the padding and opacity-band placement convention only, not a hard numerical floor."
+            "panel-local visible-window extrema; the y-axis is set from robust percentiles of the plotted "
+            "specific-power values inside this panel's shown x range, with zero included. The raw extrema "
+            "are retained separately. model_000 contributes the padding and opacity-band placement "
+            "convention only, not a hard numerical floor."
         ),
         "scaling_reference": scaling_reference,
         "panel_scaling": {
@@ -3582,11 +3643,15 @@ def main() -> None:
                 "x_limits": [float(left_panel_x_limits[0]), float(left_panel_x_limits[1])],
                 "visible_minimum": float(visible_power_bounds[0]),
                 "visible_maximum": float(visible_power_bounds[1]),
+                "raw_visible_minimum": float(raw_visible_power_bounds[0]),
+                "raw_visible_maximum": float(raw_visible_power_bounds[1]),
+                "robust_visible_minimum": float(robust_visible_power_bounds[0]),
+                "robust_visible_maximum": float(robust_visible_power_bounds[1]),
+                "axis_percentile_low": float(POWER_PANEL_AXIS_PERCENTILE_LOW),
+                "axis_percentile_high": float(POWER_PANEL_AXIS_PERCENTILE_HIGH),
+                "spike_span_reference_factor": float(POWER_PANEL_SPIKE_SPAN_REFERENCE_FACTOR),
                 "limits": [float(left_power_ylim[0]), float(left_power_ylim[1])],
-                "rule": (
-                    "minimum/maximum of the displayed power curves in the shown radius window; "
-                    "zero is included before applying the model_000 padding fraction"
-                ),
+                "rule": power_axis_bounds_rule,
             },
             "opacity_on_left_power": {
                 "x_field": left_panel_x_field,
@@ -3605,6 +3670,14 @@ def main() -> None:
             "left_power": {
                 "limits": [float(left_power_ylim[0]), float(left_power_ylim[1])],
                 "visible_data_bounds": [float(visible_power_bounds[0]), float(visible_power_bounds[1])],
+                "raw_visible_data_bounds": [
+                    float(raw_visible_power_bounds[0]),
+                    float(raw_visible_power_bounds[1]),
+                ],
+                "robust_visible_data_bounds": [
+                    float(robust_visible_power_bounds[0]),
+                    float(robust_visible_power_bounds[1]),
+                ],
                 "x_field_for_scaling": left_panel_x_field,
                 "x_limits_for_scaling": [float(left_panel_x_limits[0]), float(left_panel_x_limits[1])],
                 "reference_example_limits": (
@@ -3618,11 +3691,10 @@ def main() -> None:
                     else None
                 ),
                 "pad_fraction": float(reference_power_pad_fraction),
-                "method": (
-                    "minimum and maximum of the plotted power curves within this panel's shown x range; "
-                    "the axis includes zero and uses the model_000 visible extrema only to inherit the "
-                    "reference padding convention, not as a shared y-limit"
-                ),
+                "axis_percentile_low": float(POWER_PANEL_AXIS_PERCENTILE_LOW),
+                "axis_percentile_high": float(POWER_PANEL_AXIS_PERCENTILE_HIGH),
+                "spike_span_reference_factor": float(POWER_PANEL_SPIKE_SPAN_REFERENCE_FACTOR),
+                "method": power_axis_bounds_rule,
             },
             "photosphere_radial_velocity": {
                 "limits": [float(rv_ylim[0]), float(rv_ylim[1])],
@@ -3645,6 +3717,15 @@ def main() -> None:
             float(visible_power_bounds[0]),
             float(visible_power_bounds[1]),
         ],
+        "left_power_raw_visible_data_bounds": [
+            float(raw_visible_power_bounds[0]),
+            float(raw_visible_power_bounds[1]),
+        ],
+        "left_power_robust_visible_data_bounds": [
+            float(robust_visible_power_bounds[0]),
+            float(robust_visible_power_bounds[1]),
+        ],
+        "left_power_axis_bounds_rule": power_axis_bounds_rule,
         "left_power_ylim_raw": [float(left_power_ylim_raw[0]), float(left_power_ylim_raw[1])],
         "left_power_ylim": [float(left_power_ylim[0]), float(left_power_ylim[1])],
         "scaled_diagnostic_bounds": {

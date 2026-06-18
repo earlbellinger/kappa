@@ -53,7 +53,7 @@ EXPECTED_MODEL_FIELD = {
     "restart": "restart_model",
     "deep2cycles": "deep_model",
 }
-EXPECTED_ANIMATION_SCALING_VERSION = "model000-visible-window-v13"
+EXPECTED_ANIMATION_SCALING_VERSION = "model000-visible-window-v15"
 ACCEPTED_ANIMATION_SCALING_VERSIONS = {
     EXPECTED_ANIMATION_SCALING_VERSION,
 }
