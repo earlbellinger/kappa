@@ -603,6 +603,65 @@ def pressure_work_mode_stem_suffix(pressure_work_mode: str, subtract_rsp_eq: boo
     return ""
 
 
+def parse_fortran_float(value: object) -> float | None:
+    if value is None:
+        return None
+    try:
+        return float(str(value).strip().replace("d", "e").replace("D", "e"))
+    except ValueError:
+        return None
+
+
+def candidate_manifest_paths(run_dir: Path, output_dir: Path) -> list[Path]:
+    candidates: list[Path] = []
+    for base in (output_dir, *output_dir.parents, run_dir, *run_dir.parents, Path(__file__).resolve().parent):
+        candidates.append(base / "inputs" / "manifest.json")
+        candidates.append(base / "rsp_batch_runs" / "inputs" / "manifest.json")
+    unique: list[Path] = []
+    seen: set[Path] = set()
+    for candidate in candidates:
+        resolved = candidate.resolve()
+        if resolved not in seen:
+            seen.add(resolved)
+            unique.append(resolved)
+    return unique
+
+
+def load_manifest_record(prefix: str, run_dir: Path, output_dir: Path) -> dict[str, object] | None:
+    for manifest_path in candidate_manifest_paths(run_dir, output_dir):
+        if not manifest_path.exists():
+            continue
+        try:
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            continue
+        if not isinstance(manifest, list):
+            continue
+        for record in manifest:
+            if not isinstance(record, dict):
+                continue
+            if str(record.get("prefix", "")) == str(prefix):
+                return record
+        for record in manifest:
+            if not isinstance(record, dict):
+                continue
+            record_run_dir = record.get("run_dir")
+            if record_run_dir is None:
+                continue
+            try:
+                if Path(str(record_run_dir)).resolve() == run_dir.resolve():
+                    return record
+            except OSError:
+                continue
+    return None
+
+
+def z_order_of_magnitude_label(z_value: float) -> str:
+    z = max(float(z_value), 1.0e-99)
+    exponent = int(round(math.log10(z)))
+    return rf"$10^{{{exponent:d}}}$"
+
+
 def phase_reference_positions(phase: float) -> np.ndarray:
     phase_value = float(phase)
     return np.asarray([phase_value, phase_value + 1.0], dtype=float)
@@ -2768,9 +2827,18 @@ def main() -> None:
         )
     if dark_mode and blackbody_color_table is not None:
         photosphere_visual_metadata = add_photosphere_visual_state(frame_data, blackbody_color_table)
-    star_mass_msun = float(mean_light_profile["header"]["star_mass"])
-    initial_z_model = float(frame_data[0].get("initial_z", SOLAR_Z_REFERENCE))
-    left_panel_caption = rf"RR Lyrae  {star_mass_msun:.3f} M$_\odot$, Z = {initial_z_model:.2f}"
+    manifest_record = load_manifest_record(prefix, run_dir, output_dir)
+    star_mass_msun = (
+        parse_fortran_float(manifest_record.get("RSP_mass")) if isinstance(manifest_record, dict) else None
+    )
+    if star_mass_msun is None:
+        star_mass_msun = float(mean_light_profile["header"]["star_mass"])
+    initial_z_model = (
+        parse_fortran_float(manifest_record.get("RSP_Z")) if isinstance(manifest_record, dict) else None
+    )
+    if initial_z_model is None:
+        initial_z_model = float(frame_data[0].get("initial_z", SOLAR_Z_REFERENCE))
+    left_panel_caption = rf"RR Lyrae  {star_mass_msun:.3f} M$_\odot$, Z $\approx$ {z_order_of_magnitude_label(initial_z_model)}"
     heating_total_legend_expression = heating_total_expression(heating_mode)
 
     outermost_temperature = float(min(float(frame["outermost_temperature_K"]) for frame in frame_data))
@@ -3909,6 +3977,12 @@ def main() -> None:
         "left_panel_units": "10^9 erg g^-1 s^-1",
         "left_panel_display_scale": float(DISPLAY_POWER_SCALE),
         "left_panel_caption": left_panel_caption,
+        "left_panel_caption_parameters": {
+            "source": "batch manifest" if isinstance(manifest_record, dict) else "profile header fallback",
+            "RSP_mass": float(star_mass_msun),
+            "RSP_Z": float(initial_z_model),
+            "Z_order_of_magnitude": int(round(math.log10(max(float(initial_z_model), 1.0e-99)))),
+        },
         "heating_mode": heating_mode,
         "guide_label_source": {
             "shell": "photosphere",

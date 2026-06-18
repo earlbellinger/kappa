@@ -11,6 +11,25 @@ from pathlib import Path
 
 
 ANIMATION_SUFFIX = "_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work"
+PARAMETER_GROUPS = {
+    "Stellar": (
+        ("RSP_mass", "M", "M_sun", 4),
+        ("RSP_Teff", "Teff", "K", 5),
+        ("RSP_L", "L", "L_sun", 4),
+        ("RSP_X", "X", "", 4),
+        ("RSP_Z", "Z", "", 4),
+    ),
+    "Convection": (
+        ("RSP_alfa", "alpha_MLT", "", 4),
+        ("RSP_alfac", "alpha_c", "", 4),
+        ("RSP_alfas", "alpha_s", "", 4),
+        ("RSP_alfad", "alpha_d", "", 4),
+        ("RSP_alfam", "alpha_m", "", 4),
+        ("RSP_gammar", "gamma_r", "", 4),
+        ("RSP_alfap", "alpha_p", "", 4),
+        ("RSP_alfat", "alpha_t", "", 4),
+    ),
+}
 
 
 def load_json(path: Path) -> object | None:
@@ -139,6 +158,43 @@ def fmt_float(value: object, digits: int = 4) -> str:
     if number is None:
         return "..."
     return f"{number:.{digits}g}"
+
+
+def manifest_field_varies(manifest: list[dict[str, object]], field: str) -> bool:
+    values: list[float] = []
+    for record in manifest:
+        number = parse_manifest_number(record.get(field))
+        if number is None:
+            continue
+        if not any(abs(number - existing) <= max(1.0e-12, 1.0e-9 * max(abs(number), abs(existing), 1.0)) for existing in values):
+            values.append(number)
+    return len(values) > 1
+
+
+def varied_parameter_groups(manifest: list[dict[str, object]]) -> dict[str, list[tuple[str, str, str, int]]]:
+    groups: dict[str, list[tuple[str, str, str, int]]] = {}
+    for group_name, fields in PARAMETER_GROUPS.items():
+        varied = [field for field in fields if manifest_field_varies(manifest, field[0])]
+        if varied:
+            groups[group_name] = varied
+    return groups
+
+
+def parameter_groups_for_record(
+    record: dict[str, object],
+    groups: dict[str, list[tuple[str, str, str, int]]],
+) -> dict[str, list[dict[str, str]]]:
+    rendered: dict[str, list[dict[str, str]]] = {}
+    for group_name, fields in groups.items():
+        cells: list[dict[str, str]] = []
+        for field, label, unit, digits in fields:
+            value = fmt_float(record.get(field), digits)
+            if unit:
+                value = f"{value} {unit}"
+            cells.append({"label": label, "value": value})
+        if cells:
+            rendered[group_name] = cells
+    return rendered
 
 
 def fmt_cycles(value: object) -> str:
@@ -517,6 +573,27 @@ def write_manifest_csv(output_dir: Path, models: list[dict[str, object]]) -> Non
             )
 
 
+def parameter_table_html(parameter_groups: object) -> str:
+    if not isinstance(parameter_groups, dict) or not parameter_groups:
+        return ""
+    rows: list[str] = []
+    for group_name, cells in parameter_groups.items():
+        if not isinstance(cells, list) or not cells:
+            continue
+        rendered_cells = []
+        for cell in cells:
+            if not isinstance(cell, dict):
+                continue
+            label = html.escape(str(cell.get("label", "")))
+            value = html.escape(str(cell.get("value", "")))
+            rendered_cells.append(f"<td><span>{label}</span>{value}</td>")
+        if rendered_cells:
+            rows.append(f'<tr><th scope="row">{html.escape(str(group_name))}</th>{"".join(rendered_cells)}</tr>')
+    if not rows:
+        return ""
+    return '<table class="param-table"><tbody>' + "".join(rows) + "</tbody></table>"
+
+
 def card_html(model: dict[str, object]) -> str:
     assets = model["assets"]
     assert isinstance(assets, dict)
@@ -624,6 +701,7 @@ def card_html(model: dict[str, object]) -> str:
     failures = model.get("verification_failures") or []
     if failures:
         progress_bits.append("; ".join(str(item) for item in failures[:2]))
+    parameter_table = parameter_table_html(model.get("parameter_groups"))
     return f"""
       <article class="card">
         <div class="card-head">
@@ -635,7 +713,7 @@ def card_html(model: dict[str, object]) -> str:
         </div>
         {image_html}
         <div class="body">
-          <p class="params">M={fmt_float(model.get("M"))} M_sun &nbsp; Teff={fmt_float(model.get("Teff"), 5)} K &nbsp; L={fmt_float(model.get("L"))} L_sun &nbsp; Z={fmt_float(model.get("Z"))}</p>
+          {parameter_table}
           <p class="details">{html.escape(" | ".join(progress_bits))} {break_text}</p>
           <p class="links">{" ".join(links)}</p>
         </div>
@@ -782,12 +860,15 @@ def write_index(output_dir: Path, models: list[dict[str, object]], metadata_link
     img {{ display:block; width:100%; height:auto; background:#000; }}
     .placeholder {{ min-height:260px; display:grid; place-items:center; color:#656977; background:repeating-linear-gradient(135deg,#07080b,#07080b 14px,#0d0f14 14px,#0d0f14 28px); }}
     .body {{ padding: 14px 18px 18px; }}
-    .params {{ margin:0 0 8px; font-weight:650; }}
+    .param-table {{ width:100%; border-collapse:collapse; margin:0 0 10px; font-size:13px; color:var(--text); }}
+    .param-table th {{ text-align:left; color:var(--muted); font-weight:700; padding:4px 12px 4px 0; white-space:nowrap; vertical-align:top; }}
+    .param-table td {{ padding:4px 14px 4px 0; white-space:nowrap; }}
+    .param-table td span {{ display:block; color:var(--muted); font-size:11px; text-transform:uppercase; letter-spacing:0; }}
     .details {{ margin:0 0 12px; color:var(--muted); }}
     .details span {{ margin-left:10px; color:var(--gold); }}
     .links {{ margin:0; display:flex; flex-wrap:wrap; gap:12px; }}
     .muted {{ color:#777b85; }}
-    @media (max-width:700px) {{ .grid {{ grid-template-columns:1fr; }} }}
+    @media (max-width:700px) {{ .grid {{ grid-template-columns:1fr; }} .param-table th {{ display:block; padding-top:6px; }} .param-table tr {{ display:block; }} .param-table td {{ display:inline-block; min-width:88px; }} }}
   </style>
 </head>
 <body>
@@ -843,6 +924,7 @@ def build_site(rre_root: Path, output_dir: Path) -> None:
     manifest, live_by_id = discover_models(rre_root)
     convergence_by_id = convergence_by_model(rre_root)
     boundary_by_id = cycle_boundary_by_model(rre_root)
+    varied_groups = varied_parameter_groups([record for record in manifest if isinstance(record, dict)])
     models = [
         copy_model_assets(
             rre_root,
@@ -855,6 +937,15 @@ def build_site(rre_root: Path, output_dir: Path) -> None:
         for record in manifest
         if isinstance(record, dict)
     ]
+    manifest_by_id = {
+        str(record["model_id"]): record
+        for record in manifest
+        if isinstance(record, dict) and record.get("model_id") is not None
+    }
+    for model in models:
+        record = manifest_by_id.get(str(model.get("model_id")))
+        if record is not None:
+            model["parameter_groups"] = parameter_groups_for_record(record, varied_groups)
     metadata_links = copy_batch_assets(rre_root, output_dir)
     write_manifest_csv(output_dir, models)
     write_index(output_dir, models, metadata_links)
