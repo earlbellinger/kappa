@@ -49,7 +49,7 @@
   "cycle_profile_count": 1061,
   "frame_count": 180,
   "closing_frame_added_for_seamless_loop": false,
-  "phase_panel_repeat_mode": "repeated cycle copies are separated by NaN gaps; the plot does not connect the last sample of one cycle to the first sample of the next",
+  "phase_panel_repeat_mode": "repeated cycle copies are connected periodically in the phase panels; no NaN gap is inserted at the repeated radius-maximum boundary",
   "phase_panel_repeat_count": 3,
   "fps": 35,
   "period_days_used": 0.7214516813364753,
@@ -64,7 +64,30 @@
     6.995969579647836
   ],
   "left_panel_scaling_method": "panel-local visible-window extrema; the y-axis is set from robust percentiles of the plotted specific-power values inside this panel's shown x range, with zero included. The raw extrema are retained separately. model_000 contributes the padding and opacity-band placement convention only, not a hard numerical floor.",
-  "scaling_reference": {},
+  "scaling_reference": {
+    "summary_path": "<local-rre-root>/output/combined_14507_full_pressure_minus_eq/mesa_rsp_combined_14507_full_pressure_minus_eq_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work_summary.json",
+    "loaded": true,
+    "scaling_method_version": "model000-visible-window-v15",
+    "left_power_ylim_reference": [
+      -1.0538880567035844,
+      0.9359095347404265
+    ],
+    "left_power_visible_data_bounds": [
+      -0.9758222747255412,
+      0.866582902537432
+    ],
+    "power_panel_pad_fraction_reference": 0.07999999999999996,
+    "opacity_visible_data_bounds": [
+      0.0020449198640830274,
+      149.03239726657318
+    ],
+    "opacity_band_fractions_reference": [
+      0.76,
+      0.92
+    ],
+    "opacity_display_max_reference": 0.7767257274249058,
+    "reason": null
+  },
   "panel_scaling": {
     "reference_model": "model_000",
     "reference_use": "style only: inherit model_000's fractional padding and opacity-band placement after measuring model_000 inside its shown radius range",
@@ -87,7 +110,7 @@
         -1.0538880567035844,
         0.9359095347404265
       ],
-      "rule": "raw shown-radius extrema; no model_000 reference span available"
+      "rule": "raw shown-radius extrema; raw span is within the model_000-inspired spike threshold"
     },
     "opacity_on_left_power": {
       "x_field": "radius_rsun_plot",
@@ -125,13 +148,19 @@
         5.387294668462144,
         6.995969579647836
       ],
-      "reference_example_limits": null,
-      "reference_example_visible_data_bounds": null,
-      "pad_fraction": 0.08,
+      "reference_example_limits": [
+        -1.0538880567035844,
+        0.9359095347404265
+      ],
+      "reference_example_visible_data_bounds": [
+        -0.9758222747255412,
+        0.866582902537432
+      ],
+      "pad_fraction": 0.07999999999999996,
       "axis_percentile_low": 2.0,
       "axis_percentile_high": 98.0,
       "spike_span_reference_factor": 4.0,
-      "method": "raw shown-radius extrema; no model_000 reference span available"
+      "method": "raw shown-radius extrema; raw span is within the model_000-inspired spike threshold"
     },
     "photosphere_radial_velocity": {
       "limits": [
@@ -168,7 +197,7 @@
     -0.552512022750966,
     0.5140850239942818
   ],
-  "left_power_axis_bounds_rule": "raw shown-radius extrema; no model_000 reference span available",
+  "left_power_axis_bounds_rule": "raw shown-radius extrema; raw span is within the model_000-inspired spike threshold",
   "left_power_ylim_raw": [
     -1053888056.7035844,
     935909534.7404265
@@ -188,7 +217,7 @@
     "panel": "left_power",
     "panel_bottom_fraction": 0.76,
     "panel_top_fraction": 0.92,
-    "reference_opacity_max_display_value": null,
+    "reference_opacity_max_display_value": 0.7767257274249058,
     "x_field_for_scaling": "radius_rsun_plot",
     "x_limits_for_scaling": [
       5.387294668462144,
@@ -198,7 +227,10 @@
       0.0020449198640830274,
       149.03239726657318
     ],
-    "reference_visible_data_bounds": null,
+    "reference_visible_data_bounds": [
+      0.0020449198640830274,
+      149.03239726657318
+    ],
     "effective_data_bounds": [
       0.0020449198640830274,
       149.03239726657318
