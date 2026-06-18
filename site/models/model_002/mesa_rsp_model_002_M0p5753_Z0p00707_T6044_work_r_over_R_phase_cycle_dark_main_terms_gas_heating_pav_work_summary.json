@@ -8,7 +8,7 @@
   "frame_generation": "fixed-q linear interpolation between bracketing nonlinear profiles on a uniform phase grid",
   "coordinate": "r_over_R",
   "main_terms_only": true,
-  "scaling_method_version": "model000-visible-window-v14",
+  "scaling_method_version": "model000-visible-window-v15",
   "layout": "left panel: phase-local power diagnostics versus r/R_sun; right column top: photosphere radial velocity curve; right column bottom: photosphere luminosity curve",
   "zone_boundary_smoothing": "ionization-zone boundaries are converted from temperature spans to q spans, then the q-space zone centers and widths are smoothed over phase with a low-order periodic Fourier fit before being mapped to the displayed coordinate",
   "left_panel_quantity": "phase-local specific power diagnostics",
@@ -62,11 +62,11 @@
     4.711042152452866,
     5.865910760003436
   ],
-  "left_panel_scaling_method": "panel-local visible-window extrema; the y-axis is set from the minimum and maximum plotted specific-power values inside this panel's shown x range, with zero included. model_000 contributes the padding and opacity-band placement convention only, not a hard numerical floor.",
+  "left_panel_scaling_method": "panel-local visible-window extrema; the y-axis is set from robust percentiles of the plotted specific-power values inside this panel's shown x range, with zero included. The raw extrema are retained separately. model_000 contributes the padding and opacity-band placement convention only, not a hard numerical floor.",
   "scaling_reference": {
     "summary_path": "<local-rre-root>/output/combined_14507_full_pressure_minus_eq/mesa_rsp_combined_14507_full_pressure_minus_eq_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work_summary.json",
     "loaded": true,
-    "scaling_method_version": "model000-visible-window-v14",
+    "scaling_method_version": "model000-visible-window-v15",
     "left_power_ylim_reference": [
       -1.0538880567035844,
       0.9359095347404265
@@ -98,11 +98,18 @@
       ],
       "visible_minimum": -0.06679456788040478,
       "visible_maximum": 0.06864911001415866,
+      "raw_visible_minimum": -0.06679456788040478,
+      "raw_visible_maximum": 0.06864911001415866,
+      "robust_visible_minimum": -0.047004674533895396,
+      "robust_visible_maximum": 0.04847365906320867,
+      "axis_percentile_low": 2.0,
+      "axis_percentile_high": 98.0,
+      "spike_span_reference_factor": 4.0,
       "limits": [
         -0.07213813331083715,
         0.07414103881529135
       ],
-      "rule": "minimum/maximum of the displayed power curves in the shown radius window; zero is included before applying the model_000 padding fraction"
+      "rule": "raw shown-radius extrema; raw span is within the model_000-inspired spike threshold"
     },
     "opacity_on_left_power": {
       "x_field": "radius_rsun_plot",
@@ -127,6 +134,14 @@
         -0.06679456788040478,
         0.06864911001415866
       ],
+      "raw_visible_data_bounds": [
+        -0.06679456788040478,
+        0.06864911001415866
+      ],
+      "robust_visible_data_bounds": [
+        -0.047004674533895396,
+        0.04847365906320867
+      ],
       "x_field_for_scaling": "radius_rsun_plot",
       "x_limits_for_scaling": [
         4.711042152452866,
@@ -141,7 +156,10 @@
         0.866582902537432
       ],
       "pad_fraction": 0.07999999999999996,
-      "method": "minimum and maximum of the plotted power curves within this panel's shown x range; the axis includes zero and uses the model_000 visible extrema only to inherit the reference padding convention, not as a shared y-limit"
+      "axis_percentile_low": 2.0,
+      "axis_percentile_high": 98.0,
+      "spike_span_reference_factor": 4.0,
+      "method": "raw shown-radius extrema; raw span is within the model_000-inspired spike threshold"
     },
     "photosphere_radial_velocity": {
       "limits": [
@@ -170,6 +188,15 @@
     -0.06679456788040478,
     0.06864911001415866
   ],
+  "left_power_raw_visible_data_bounds": [
+    -0.06679456788040478,
+    0.06864911001415866
+  ],
+  "left_power_robust_visible_data_bounds": [
+    -0.047004674533895396,
+    0.04847365906320867
+  ],
+  "left_power_axis_bounds_rule": "raw shown-radius extrema; raw span is within the model_000-inspired spike threshold",
   "left_power_ylim_raw": [
     -72138133.31083715,
     74141038.81529136

@@ -8,7 +8,7 @@
   "frame_generation": "fixed-q linear interpolation between bracketing nonlinear profiles on a uniform phase grid",
   "coordinate": "r_over_R",
   "main_terms_only": true,
-  "scaling_method_version": "model000-visible-window-v14",
+  "scaling_method_version": "model000-visible-window-v15",
   "layout": "left panel: phase-local power diagnostics versus r/R_sun; right column top: photosphere radial velocity curve; right column bottom: photosphere luminosity curve",
   "zone_boundary_smoothing": "ionization-zone boundaries are converted from temperature spans to q spans, then the q-space zone centers and widths are smoothed over phase with a low-order periodic Fourier fit before being mapped to the displayed coordinate",
   "left_panel_quantity": "phase-local specific power diagnostics",
@@ -62,11 +62,11 @@
     4.066853418827715,
     5.427216374489275
   ],
-  "left_panel_scaling_method": "panel-local visible-window extrema; the y-axis is set from the minimum and maximum plotted specific-power values inside this panel's shown x range, with zero included. model_000 contributes the padding and opacity-band placement convention only, not a hard numerical floor.",
+  "left_panel_scaling_method": "panel-local visible-window extrema; the y-axis is set from robust percentiles of the plotted specific-power values inside this panel's shown x range, with zero included. The raw extrema are retained separately. model_000 contributes the padding and opacity-band placement convention only, not a hard numerical floor.",
   "scaling_reference": {
     "summary_path": "<local-rre-root>/output/combined_14507_full_pressure_minus_eq/mesa_rsp_combined_14507_full_pressure_minus_eq_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work_summary.json",
     "loaded": true,
-    "scaling_method_version": "model000-visible-window-v14",
+    "scaling_method_version": "model000-visible-window-v15",
     "left_power_ylim_reference": [
       -1.0538880567035844,
       0.9359095347404265
@@ -96,13 +96,20 @@
         4.066853418827715,
         5.427216374489275
       ],
-      "visible_minimum": -10.997023850332909,
-      "visible_maximum": 2.8640932665745327,
+      "visible_minimum": -0.6080934554580268,
+      "visible_maximum": 1.4065477234249608,
+      "raw_visible_minimum": -10.997023850332909,
+      "raw_visible_maximum": 2.8640932665745327,
+      "robust_visible_minimum": -0.6080934554580268,
+      "robust_visible_maximum": 1.4065477234249608,
+      "axis_percentile_low": 2.0,
+      "axis_percentile_high": 98.0,
+      "spike_span_reference_factor": 4.0,
       "limits": [
-        -11.87678575835954,
-        3.093220727900495
+        -0.656740931894669,
+        1.5190715412989577
       ],
-      "rule": "minimum/maximum of the displayed power curves in the shown radius window; zero is included before applying the model_000 padding fraction"
+      "rule": "robust shown-radius extrema; raw span exceeds the model_000-inspired spike threshold"
     },
     "opacity_on_left_power": {
       "x_field": "radius_rsun_plot",
@@ -112,20 +119,28 @@
       ],
       "visible_minimum": 0.004499435969574968,
       "visible_maximum": 97.98145439523309,
-      "display_minimum": -0.49958082880191235,
-      "display_maximum": 1.8956202089996932,
+      "display_minimum": 0.9968765477324874,
+      "display_maximum": 1.3450065434434673,
       "rule": "opacity is min-max scaled from this panel's own shown-radius opacity extrema into the model_000 fractional opacity band"
     }
   },
   "panel_y_ranges": {
     "left_power": {
       "limits": [
-        -11.87678575835954,
-        3.093220727900495
+        -0.656740931894669,
+        1.5190715412989577
       ],
       "visible_data_bounds": [
+        -0.6080934554580268,
+        1.4065477234249608
+      ],
+      "raw_visible_data_bounds": [
         -10.997023850332909,
         2.8640932665745327
+      ],
+      "robust_visible_data_bounds": [
+        -0.6080934554580268,
+        1.4065477234249608
       ],
       "x_field_for_scaling": "radius_rsun_plot",
       "x_limits_for_scaling": [
@@ -141,7 +156,10 @@
         0.866582902537432
       ],
       "pad_fraction": 0.07999999999999996,
-      "method": "minimum and maximum of the plotted power curves within this panel's shown x range; the axis includes zero and uses the model_000 visible extrema only to inherit the reference padding convention, not as a shared y-limit"
+      "axis_percentile_low": 2.0,
+      "axis_percentile_high": 98.0,
+      "spike_span_reference_factor": 4.0,
+      "method": "robust shown-radius extrema; raw span exceeds the model_000-inspired spike threshold"
     },
     "photosphere_radial_velocity": {
       "limits": [
@@ -167,16 +185,25 @@
     }
   },
   "left_power_visible_data_bounds": [
+    -0.6080934554580268,
+    1.4065477234249608
+  ],
+  "left_power_raw_visible_data_bounds": [
     -10.997023850332909,
     2.8640932665745327
   ],
+  "left_power_robust_visible_data_bounds": [
+    -0.6080934554580268,
+    1.4065477234249608
+  ],
+  "left_power_axis_bounds_rule": "robust shown-radius extrema; raw span exceeds the model_000-inspired spike threshold",
   "left_power_ylim_raw": [
-    -11876785758.35954,
-    3093220727.900495
+    -656740931.8946689,
+    1519071541.2989578
   ],
   "left_power_ylim": [
-    -11.87678575835954,
-    3.093220727900495
+    -0.656740931894669,
+    1.5190715412989577
   ],
   "scaled_diagnostic_bounds": {
     "opacity": [
@@ -208,18 +235,18 @@
       97.98145439523309
     ],
     "reference_convention": "model_000 example rule: measure opacity min and max only in the shown radius range, then use that example only to set the reserved opacity-band placement for each panel",
-    "display_min_value": -0.49958082880191235,
-    "display_units_per_opacity_unit": 0.02444657561359682,
+    "display_min_value": 0.9968765477324874,
+    "display_units_per_opacity_unit": 0.003553182438214416,
     "opacity_min_baseline": 0.004499435969574968,
-    "opacity_max_display_value": 1.8956202089996932,
-    "opacity_display_span": 2.3952010378016055,
+    "opacity_max_display_value": 1.3450065434434673,
+    "opacity_display_span": 0.3481299957109799,
     "scaled_visible_display_bounds": [
-      -0.49958082880191235,
-      1.8956202089996932
+      0.9968765477324874,
+      1.3450065434434673
     ],
     "scaled_effective_display_bounds": [
-      -0.49958082880191235,
-      1.8956202089996932
+      0.9968765477324874,
+      1.3450065434434673
     ]
   },
   "radius_rsun_xlim": [
