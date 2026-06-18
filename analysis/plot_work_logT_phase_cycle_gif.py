@@ -764,7 +764,7 @@ def photosphere_marker_size(radius_scale: float) -> float:
 
 
 def rounded_temperature_text(temperature_K: float) -> str:
-    rounded_temperature = int(100.0 * round(float(temperature_K) / 100.0))
+    rounded_temperature = int(10.0 * round(float(temperature_K) / 10.0))
     return f"{rounded_temperature:,.0f} K"
 
 
@@ -3396,9 +3396,10 @@ def main() -> None:
             **annotation_style,
         )
         for teff_index, marker_text in ((max_teff_index, "↑"), (min_teff_index, "↓")):
+            teff_positions = phase_reference_positions(float(sampled_phase[teff_index]))
             ax.plot(
-                [float(sampled_phase[teff_index])],
-                [float(y_series[teff_index])],
+                teff_positions,
+                np.full(teff_positions.shape, float(y_series[teff_index]), dtype=float),
                 marker=rf"${marker_text}$",
                 markersize=7.0,
                 color=theme_value(dark_mode, "text", "white"),

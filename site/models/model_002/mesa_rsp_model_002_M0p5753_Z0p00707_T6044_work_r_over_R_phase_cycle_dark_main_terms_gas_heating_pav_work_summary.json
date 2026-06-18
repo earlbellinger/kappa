@@ -52,6 +52,35 @@
   "phase_panel_repeat_version": "connected-periodic-v1",
   "phase_panel_repeat_mode": "repeated cycle copies are connected periodically in the phase panels; no NaN gap is inserted at the repeated radius-maximum boundary",
   "phase_panel_repeat_count": 3,
+  "phase_panel_repeat_connects": true,
+  "phase_panel_seam": {
+    "connect_repeats": true,
+    "threshold_fraction": 0.025,
+    "worst_metric": "radial_velocity",
+    "worst_seam_fraction": 0.016213987114702462,
+    "metrics": {
+      "luminosity": {
+        "amplitude": 0.8698621397359716,
+        "seam_abs": 0.009740809641748172,
+        "seam_fraction": 0.011198107374468315
+      },
+      "radial_velocity": {
+        "amplitude": 3.8898421680663198,
+        "seam_abs": 0.0630698507912536,
+        "seam_fraction": 0.016213987114702462
+      },
+      "radius": {
+        "amplitude": 0.05486860755056977,
+        "seam_abs": 1.3693353803745367e-05,
+        "seam_fraction": 0.0002495662714080152
+      },
+      "temperature": {
+        "amplitude": 64.15014424538458,
+        "seam_abs": 0.3524172118250135,
+        "seam_fraction": 0.005493630855715011
+      }
+    }
+  },
   "fps": 35,
   "period_days_used": 0.7306847876498068,
   "phase_reference_days_used": 1918.2362494949748,
@@ -1219,7 +1248,7 @@
     ],
     "teff_text_anchor_data_luminosity": [
       0.126,
-      36.05901308216937
+      36.1878498117288
     ],
     "radius_gauge_x_phase": 0.092,
     "radius_gauge_half_height_lsun": 0.03531640287328067,
@@ -1232,11 +1261,18 @@
         "radius_phase": 0.12,
         "radius_y_fraction": 0.91,
         "teff_phase": 0.12,
-        "teff_y_fraction": 0.33,
+        "teff_y_fraction": 0.45768246955274683,
         "rv_sphere_phase": 1.24,
         "rv_sphere_y_fraction": 0.72,
         "lum_gauge_half_height_fraction": 0.035
       }
+    },
+    "teff_gauge_sphere_clearance": {
+      "max_sphere_zoom": 0.4219707931878735,
+      "sphere_half_height_lsun": 0.16028357779359698,
+      "gap_lsun": 0.008546516864616903,
+      "gap_px": 3.0,
+      "center_y_lsun": 36.1878498117288
     },
     "sphere_image_size_px": 192,
     "sphere_base_zoom": 0.42,

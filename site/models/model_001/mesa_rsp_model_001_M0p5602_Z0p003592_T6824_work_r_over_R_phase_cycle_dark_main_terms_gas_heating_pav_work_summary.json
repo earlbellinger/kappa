@@ -52,6 +52,35 @@
   "phase_panel_repeat_version": "connected-periodic-v1",
   "phase_panel_repeat_mode": "repeated cycle copies are connected periodically in the phase panels; no NaN gap is inserted at the repeated radius-maximum boundary",
   "phase_panel_repeat_count": 3,
+  "phase_panel_repeat_connects": true,
+  "phase_panel_seam": {
+    "connect_repeats": true,
+    "threshold_fraction": 0.025,
+    "worst_metric": "temperature",
+    "worst_seam_fraction": 0.010721759008238702,
+    "metrics": {
+      "luminosity": {
+        "amplitude": 33.36248184326093,
+        "seam_abs": 0.35151061538871886,
+        "seam_fraction": 0.010536105108730764
+      },
+      "radial_velocity": {
+        "amplitude": 44.73375096004187,
+        "seam_abs": 0.39460374200094517,
+        "seam_fraction": 0.008821163741744402
+      },
+      "radius": {
+        "amplitude": 0.4370272080274864,
+        "seam_abs": 0.0022320628660912334,
+        "seam_fraction": 0.005107377355669924
+      },
+      "temperature": {
+        "amplitude": 1204.1148941198499,
+        "seam_abs": 12.910229712983892,
+        "seam_fraction": 0.010721759008238702
+      }
+    }
+  },
   "fps": 35,
   "period_days_used": 0.5919831873266048,
   "phase_reference_days_used": 1498.126194580616,
@@ -1219,7 +1248,7 @@
     ],
     "teff_text_anchor_data_luminosity": [
       0.14600000000000002,
-      52.83046580396497
+      56.81761241947747
     ],
     "radius_gauge_x_phase": 0.11200000000000002,
     "radius_gauge_half_height_lsun": 0.967511973454567,
@@ -1232,11 +1261,18 @@
         "radius_phase": 0.14,
         "radius_y_fraction": 0.91,
         "teff_phase": 0.14,
-        "teff_y_fraction": 0.43,
+        "teff_y_fraction": 0.5330257693162215,
         "rv_sphere_phase": 1.32,
         "rv_sphere_y_fraction": 0.74,
         "lum_gauge_half_height_fraction": 0.025
       }
+    },
+    "teff_gauge_sphere_clearance": {
+      "max_sphere_zoom": 0.43434108841178165,
+      "sphere_half_height_lsun": 6.327694054467097,
+      "gap_lsun": 0.3277910380206336,
+      "gap_px": 3.0,
+      "center_y_lsun": 56.81761241947747
     },
     "sphere_image_size_px": 192,
     "sphere_base_zoom": 0.42,

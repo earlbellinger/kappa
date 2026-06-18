@@ -52,6 +52,35 @@
   "phase_panel_repeat_version": "connected-periodic-v1",
   "phase_panel_repeat_mode": "repeated cycle copies are connected periodically in the phase panels; no NaN gap is inserted at the repeated radius-maximum boundary",
   "phase_panel_repeat_count": 3,
+  "phase_panel_repeat_connects": true,
+  "phase_panel_seam": {
+    "connect_repeats": true,
+    "threshold_fraction": 0.025,
+    "worst_metric": "radial_velocity",
+    "worst_seam_fraction": 0.013474936478866805,
+    "metrics": {
+      "luminosity": {
+        "amplitude": 12.745861747805847,
+        "seam_abs": 0.10188970304346867,
+        "seam_fraction": 0.007993943843068015
+      },
+      "radial_velocity": {
+        "amplitude": 36.19163805463667,
+        "seam_abs": 0.48768002385236775,
+        "seam_fraction": 0.013474936478866805
+      },
+      "radius": {
+        "amplitude": 0.5086749111856923,
+        "seam_abs": 5.5796549807141105e-05,
+        "seam_fraction": 0.00010968999763932238
+      },
+      "temperature": {
+        "amplitude": 583.4872552993302,
+        "seam_abs": 2.3889199380510036,
+        "seam_fraction": 0.004094210998362736
+      }
+    }
+  },
   "fps": 35,
   "period_days_used": 0.7214516813364753,
   "phase_reference_days_used": 1440.228833972221,
