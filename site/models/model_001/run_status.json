@@ -6,7 +6,7 @@
   "output_dir": "<local-rre-root>/rsp_batch_runs/output/model_001_M0p5602_Z0p003592_T6824",
   "prefix": "mesa_rsp_model_001_M0p5602_Z0p003592_T6824",
   "product_stem": "mesa_rsp_model_001_M0p5602_Z0p003592_T6824_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work",
-  "updated_at": "2026-06-18T10:36:14.272086+00:00",
+  "updated_at": "2026-06-18T10:46:40.382649+00:00",
   "stages": {
     "prepared": {
       "status": "complete",
@@ -19,10 +19,12 @@
       "expected_output": "<local-rre-root>/rsp_batch_runs/runs/model_001_M0p5602_Z0p003592_T6824/final_model_001_M0p5602_Z0p003592_T6824_create.mod"
     },
     "continue_saturation": {
-      "status": "complete",
-      "updated_at": "2026-06-15T03:21:51.692743+00:00",
-      "skipped": true,
-      "expected_output": "<local-rre-root>/rsp_batch_runs/runs/model_001_M0p5602_Z0p003592_T6824/final_model_001_M0p5602_Z0p003592_T6824_saturated.mod"
+      "status": "running",
+      "updated_at": "2026-06-18T10:46:40.382649+00:00",
+      "expected_output": "<local-rre-root>/rsp_batch_runs/runs/model_001_M0p5602_Z0p003592_T6824/final_model_001_M0p5602_Z0p003592_T6824_saturated.mod",
+      "resume_photo": "<local-rre-root>/rsp_batch_runs/runs/model_001_M0p5602_Z0p003592_T6824/photos_continue_saturation/2500000",
+      "resume_max_num_periods": 5000,
+      "started_at": "2026-06-18T10:46:40.382649+00:00"
     },
     "restart": {
       "status": "complete",

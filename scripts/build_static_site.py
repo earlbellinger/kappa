@@ -4,6 +4,7 @@ import argparse
 import csv
 import html
 import json
+import re
 import shutil
 from datetime import datetime, timezone
 from pathlib import Path
@@ -40,6 +41,8 @@ def sanitize_json_value(value: object, rre_root: Path) -> object:
             .replace(root_text, "<local-rre-root>")
             .replace(root_forward, "<local-rre-root>")
         )
+        if re.match(r"^[A-Za-z]:[\\/]", sanitized):
+            return "<local-path>"
         return sanitized.replace("\\", "/") if "<local-rre-root>" in sanitized else sanitized
     return value
 
@@ -58,11 +61,12 @@ def copy_json_if_exists(source: Path, destination: Path, site_root: Path, rre_ro
 
 
 def sanitize_text_value(text: str, rre_root: Path) -> str:
-    return (
+    sanitized = (
         text.replace(str(rre_root), "<local-rre-root>")
         .replace(rre_root.as_posix(), "<local-rre-root>")
         .replace("\\", "/")
     )
+    return re.sub(r"\b[A-Za-z]:/[^,\]\}\s]+", "<local-path>", sanitized)
 
 
 def copy_text_if_exists(source: Path, destination: Path, site_root: Path, rre_root: Path) -> str | None:
