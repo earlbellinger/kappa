@@ -217,6 +217,8 @@ def convergence_by_model(rre_root: Path) -> dict[str, dict[str, object]]:
         target.update(
             {
                 "gate_blocking_metrics": row.get("blocking_metrics"),
+                "gate_blocking_requirements": row.get("blocking_requirements"),
+                "gate_quality_flags": row.get("quality_flags"),
                 "gate_forecast_status": row.get("forecast_status"),
                 "gate_post_convergence_action": row.get("post_convergence_action"),
                 "gate_latest_surface_velocity_status": row.get("latest_surface_velocity_status"),
@@ -234,6 +236,12 @@ def metric_label(metric: str) -> str:
         "gamma": "Gamma",
         "period": "P",
         "delta_r": "DeltaR",
+        "100_cycle_window": "100-cycle window",
+        "gamma_missing": "Gamma",
+        "period_missing": "P",
+        "delta_r_missing": "DeltaR",
+        "surface_velocity_supersonic": "surface velocity supersonic",
+        "surface_velocity_watch": "surface velocity watch",
     }
     return labels.get(metric.strip().lower(), metric.strip())
 
@@ -250,7 +258,7 @@ def convergence_text(convergence: dict[str, object] | None) -> str:
     delta_r = convergence.get("delta_r_fractional_peak_to_peak_last_window")
     max_vsurf = convergence.get("max_vsurf_div_cs_max_last_window")
     bits = [f"strict convergence pending", f"{source}", f"{cycles} cycles"]
-    blocking = convergence.get("gate_blocking_metrics")
+    blocking = convergence.get("gate_blocking_requirements") or convergence.get("gate_blocking_metrics")
     if blocking:
         metrics = "/".join(metric_label(item) for item in str(blocking).split(",") if item.strip())
         gate_text = f"waiting on {metrics}"
@@ -261,6 +269,10 @@ def convergence_text(convergence: dict[str, object] | None) -> str:
         if delta_r_ratio is not None and "delta_r" in str(blocking).lower():
             gate_text += f"; DeltaR {float(delta_r_ratio):.3g}x tol"
         bits.append(gate_text)
+    quality_flags = convergence.get("gate_quality_flags")
+    if quality_flags:
+        flags = "/".join(metric_label(item) for item in str(quality_flags).split(",") if item.strip())
+        bits.append(f"quality flag: {flags}")
     if convergence.get("has_full_window") is not True:
         used = convergence.get("last_cycle_count_used") or cycles or 0
         bits.append(f"{used}/100-cycle window")
