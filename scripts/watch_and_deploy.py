@@ -224,6 +224,7 @@ def status_signature(rre_root: Path) -> dict[str, object]:
     convergence = load_json(output_dir / "convergence_summary_last100.json")
     convergence_trends = load_json(output_dir / "convergence_trends_last100.json")
     phase_seam = load_json(output_dir / "phase_seam_audit.json")
+    cycle_boundary = load_json(output_dir / "cycle_boundary_audit.json")
     growth_diagnostics = []
     for path in sorted(output_dir.glob("*_growth_diagnostic.json")):
         data = load_json(path)
@@ -353,6 +354,25 @@ def status_signature(rre_root: Path) -> dict[str, object]:
                     "trusted_animation_reason": row.get("trusted_animation_reason"),
                 }
             )
+    cycle_boundary_models = []
+    if isinstance(cycle_boundary, dict):
+        for row in cycle_boundary.get("rows", []):
+            if not isinstance(row, dict) or not row.get("model_id"):
+                continue
+            cycle_boundary_models.append(
+                {
+                    "model_id": row.get("model_id"),
+                    "period_days": row.get("period_days"),
+                    "boundary_luminosity_lsun_seam_fraction": row.get(
+                        "boundary_luminosity_lsun_seam_fraction"
+                    ),
+                    "boundary_radius_rsun_seam_fraction": row.get("boundary_radius_rsun_seam_fraction"),
+                    "boundary_teff_k_seam_fraction": row.get("boundary_teff_k_seam_fraction"),
+                    "latest_radius_maximum_radius_change_rsun": row.get(
+                        "latest_radius_maximum_radius_change_rsun"
+                    ),
+                }
+            )
     return {
         "batch_status": live.get("batch_status", {}).get("status") if isinstance(live, dict) else None,
         "completed_gif_count": live.get("completed_gif_count") if isinstance(live, dict) else None,
@@ -373,6 +393,10 @@ def status_signature(rre_root: Path) -> dict[str, object]:
                 phase_seam.get("untrusted_animation_count") if isinstance(phase_seam, dict) else None
             ),
             "models": phase_seam_models,
+        },
+        "cycle_boundary": {
+            "row_count": cycle_boundary.get("row_count") if isinstance(cycle_boundary, dict) else None,
+            "models": cycle_boundary_models,
         },
         "growth_diagnostics": growth_diagnostics,
         "animation_artifacts": animation_artifacts_signature(rre_root),

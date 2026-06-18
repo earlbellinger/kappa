@@ -233,6 +233,17 @@ def convergence_by_model(rre_root: Path) -> dict[str, dict[str, object]]:
     return by_model
 
 
+def cycle_boundary_by_model(rre_root: Path) -> dict[str, dict[str, object]]:
+    path = rre_root / "rsp_batch_runs" / "output" / "cycle_boundary_audit.json"
+    data = load_json(path)
+    rows = data.get("rows", []) if isinstance(data, dict) else []
+    return {
+        str(row.get("model_id")): row
+        for row in rows
+        if isinstance(row, dict) and row.get("model_id")
+    }
+
+
 def metric_label(metric: str) -> str:
     labels = {
         "gamma": "Gamma",
@@ -315,6 +326,7 @@ def copy_model_assets(
     record: dict[str, object],
     live_record: dict[str, object] | None,
     convergence: dict[str, object] | None,
+    boundary: dict[str, object] | None,
 ) -> dict[str, object]:
     model_id = str(record["model_id"])
     source_output_dir = Path(str(record["output_dir"]))
@@ -427,6 +439,7 @@ def copy_model_assets(
         "animation_trusted": trusted_animation,
         "animation_trusted_reason": trusted_animation_reason,
         "phase_curve_break_phases": phase_breaks,
+        "cycle_boundary": boundary or {},
     }
 
 
@@ -455,6 +468,8 @@ def copy_batch_assets(rre_root: Path, output_dir: Path) -> dict[str, str | None]
         "convergence_gate_audit.csv",
         "phase_seam_audit.json",
         "phase_seam_audit.csv",
+        "cycle_boundary_audit.json",
+        "cycle_boundary_audit.csv",
         "post_convergence_products_status.json",
         "quality_extension_status.json",
     ):
@@ -587,6 +602,20 @@ def card_html(model: dict[str, object]) -> str:
         progress_bits.append(f"{model['latest_steps']} steps/cycle")
     if model.get("convergence"):
         progress_bits.append(str(model["convergence"]))
+    boundary = model.get("cycle_boundary")
+    if isinstance(boundary, dict) and boundary:
+        l_fraction = parse_manifest_number(boundary.get("boundary_luminosity_lsun_seam_fraction"))
+        r_fraction = parse_manifest_number(boundary.get("boundary_radius_rsun_seam_fraction"))
+        t_fraction = parse_manifest_number(boundary.get("boundary_teff_k_seam_fraction"))
+        fractions = [value for value in (l_fraction, r_fraction, t_fraction) if value is not None]
+        worst_fraction = max(fractions) if fractions else None
+        if worst_fraction is not None and worst_fraction >= 0.01:
+            progress_bits.append(
+                "cycle boundary not closed: "
+                f"L {100.0 * (l_fraction or 0.0):.2g}%, "
+                f"R {100.0 * (r_fraction or 0.0):.2g}%, "
+                f"Teff {100.0 * (t_fraction or 0.0):.2g}%"
+            )
     if image and not model.get("animation_trusted"):
         reason = str(model.get("animation_trusted_reason") or "not trusted")
         progress_bits.append(f"diagnostic animation: {reason}")
@@ -704,6 +733,8 @@ def write_index(output_dir: Path, models: list[dict[str, object]], metadata_link
         ("convergence gate audit", metadata_links.get("convergence_gate_audit.json")),
         ("phase seam audit", metadata_links.get("phase_seam_audit.json")),
         ("phase seam CSV", metadata_links.get("phase_seam_audit.csv")),
+        ("cycle boundary audit", metadata_links.get("cycle_boundary_audit.json")),
+        ("cycle boundary CSV", metadata_links.get("cycle_boundary_audit.csv")),
         ("product gate status", metadata_links.get("post_convergence_products_status.json")),
         ("models CSV", "metadata/models.csv"),
     ):
@@ -811,6 +842,7 @@ def build_site(rre_root: Path, output_dir: Path) -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
     manifest, live_by_id = discover_models(rre_root)
     convergence_by_id = convergence_by_model(rre_root)
+    boundary_by_id = cycle_boundary_by_model(rre_root)
     models = [
         copy_model_assets(
             rre_root,
@@ -818,6 +850,7 @@ def build_site(rre_root: Path, output_dir: Path) -> None:
             record,
             live_by_id.get(str(record["model_id"])),
             convergence_by_id.get(str(record["model_id"])),
+            boundary_by_id.get(str(record["model_id"])),
         )
         for record in manifest
         if isinstance(record, dict)
