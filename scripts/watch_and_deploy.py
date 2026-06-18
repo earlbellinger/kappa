@@ -392,9 +392,6 @@ def status_signature(rre_root: Path) -> dict[str, object]:
                     ),
                     "boundary_radius_rsun_seam_fraction": row.get("boundary_radius_rsun_seam_fraction"),
                     "boundary_teff_k_seam_fraction": row.get("boundary_teff_k_seam_fraction"),
-                    "latest_radius_maximum_radius_change_rsun": row.get(
-                        "latest_radius_maximum_radius_change_rsun"
-                    ),
                 }
             )
     return {
