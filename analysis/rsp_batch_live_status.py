@@ -14,6 +14,8 @@ PERIOD_LINE_RE = re.compile(
     r"delta R\s+(?P<delta_r>[+\-0-9.EeDd]+)\s+"
     r"(?:max\s+vsurf/cs\s+(?P<max_vsurf_div_cs>[+\-0-9.EeDd]+)\s+)?"
     r".*?"
+    r"(?:retries\s+(?P<retries>[+\-]?\d+)\s+)?"
+    r".*?"
     r"steps\s+(?P<steps>\d+)"
 )
 
@@ -196,6 +198,9 @@ def parse_period_line(line: str) -> dict[str, object] | None:
         "latest_delta_r": fortran_float(match.group("delta_r")),
         "latest_steps": int(match.group("steps")),
     }
+    retries = match.group("retries")
+    if retries is not None:
+        result["latest_retries"] = int(retries)
     max_vsurf = match.group("max_vsurf_div_cs")
     if max_vsurf is not None:
         parsed_vsurf = fortran_float(max_vsurf)
@@ -208,17 +213,31 @@ def latest_period_metrics(output_dir: Path) -> dict[str, object]:
     logs_dir = output_dir / "logs"
     if not logs_dir.exists():
         return {}
+    best: dict[str, object] | None = None
+    best_key: tuple[int, int, float, int] | None = None
     for log_file in sorted(logs_dir.glob("*.log"), key=lambda path: path.stat().st_mtime, reverse=True):
         try:
             lines = log_file.read_text(errors="ignore").splitlines()
         except OSError:
             continue
-        for line in reversed(lines):
+        log_mtime = log_file.stat().st_mtime
+        for line_number, line in enumerate(lines, start=1):
             parsed = parse_period_line(line)
-            if parsed is not None:
+            if parsed is None:
+                continue
+            period_number = parse_int(parsed.get("latest_period"))
+            if period_number is None:
+                continue
+            retries = parse_int(parsed.get("latest_retries"))
+            accepted = 0 if retries is not None and retries < 0 else 1
+            candidate_key = (accepted, period_number, log_mtime, line_number)
+            if best_key is None or candidate_key > best_key:
                 parsed["latest_period_log"] = log_file.name
-                return parsed
-    return {}
+                parsed["latest_period_line_number"] = line_number
+                parsed["latest_period_selection"] = "max accepted period across stage logs"
+                best = parsed
+                best_key = candidate_key
+    return best or {}
 
 
 def latest_period(output_dir: Path) -> tuple[str | None, str | None]:

@@ -179,6 +179,7 @@ PHASE_PANEL_LAYOUT_OVERRIDES = {
         "radius_y_fraction": 0.87,
         "teff_phase": 0.48,
         "teff_y_fraction": 0.41,
+        "rv_sphere_phase": 1.20,
         "rv_sphere_y_fraction": 0.77,
     },
     "model_001": {
@@ -188,17 +189,19 @@ PHASE_PANEL_LAYOUT_OVERRIDES = {
         "radius_y_fraction": 0.88,
         "teff_phase": 0.31,
         "teff_y_fraction": 0.43,
+        "rv_sphere_phase": 1.26,
         "rv_sphere_y_fraction": 0.77,
     },
     "model_002": {
-        "lum_sphere_phase": 1.25,
-        "lum_sphere_y_fraction": 0.50,
-        "radius_phase": 0.98,
-        "radius_y_fraction": 0.63,
-        "teff_phase": 0.98,
-        "teff_y_fraction": 0.31,
+        "lum_sphere_phase": 0.27,
+        "lum_sphere_y_fraction": 0.68,
+        "radius_phase": 0.19,
+        "radius_y_fraction": 0.85,
+        "teff_phase": 0.20,
+        "teff_y_fraction": 0.43,
+        "rv_sphere_phase": 1.24,
         "rv_sphere_y_fraction": 0.76,
-        "lum_gauge_half_height_fraction": 0.035,
+        "lum_gauge_half_height_fraction": 0.03,
     },
     "model_003": {
         "lum_sphere_phase": 0.36,
@@ -207,6 +210,7 @@ PHASE_PANEL_LAYOUT_OVERRIDES = {
         "radius_y_fraction": 0.86,
         "teff_phase": 0.30,
         "teff_y_fraction": 0.39,
+        "rv_sphere_phase": 1.25,
         "rv_sphere_y_fraction": 0.77,
     },
     "model_004": {
@@ -216,6 +220,7 @@ PHASE_PANEL_LAYOUT_OVERRIDES = {
         "radius_y_fraction": 0.84,
         "teff_phase": 0.21,
         "teff_y_fraction": 0.28,
+        "rv_sphere_phase": 1.23,
         "rv_sphere_y_fraction": 0.76,
     },
     "model_005": {
@@ -225,6 +230,7 @@ PHASE_PANEL_LAYOUT_OVERRIDES = {
         "radius_y_fraction": 0.85,
         "teff_phase": 0.30,
         "teff_y_fraction": 0.36,
+        "rv_sphere_phase": 1.27,
         "rv_sphere_y_fraction": 0.77,
     },
     "model_006": {
@@ -234,6 +240,7 @@ PHASE_PANEL_LAYOUT_OVERRIDES = {
         "radius_y_fraction": 0.86,
         "teff_phase": 0.30,
         "teff_y_fraction": 0.37,
+        "rv_sphere_phase": 1.22,
         "rv_sphere_y_fraction": 0.77,
     },
 }
@@ -538,6 +545,11 @@ def pressure_work_mode_stem_suffix(pressure_work_mode: str, subtract_rsp_eq: boo
 def phase_reference_positions(phase: float) -> np.ndarray:
     phase_value = float(phase)
     return np.asarray([phase_value, phase_value + 1.0], dtype=float)
+
+
+def centered_phase_reference(phase: float, target: float = 1.0) -> float:
+    positions = phase_reference_positions(phase)
+    return float(positions[int(np.argmin(np.abs(positions - float(target))))])
 
 
 def phase_moving_positions(phase: float) -> np.ndarray:
@@ -3177,19 +3189,32 @@ def main() -> None:
             **annotation_style,
         )
 
+        if visual_mode == "rv":
+            max_radius_label_x = clamp(float(sampled_phase[max_radius_index]) + 0.045, 0.08, 1.92)
+            max_radius_label_ha = "left"
+        else:
+            max_radius_label_x = clamp(
+                centered_phase_reference(float(sampled_phase[max_radius_index])) - 0.045, 0.08, 1.92
+            )
+            max_radius_label_ha = "right"
         ax.text(
-            float(sampled_phase[max_radius_index]) - 0.045,
+            max_radius_label_x,
             float(y_series[max_radius_index]),
             "max radius",
-            ha="right",
+            ha=max_radius_label_ha,
             va="center",
             **annotation_style,
         )
+        min_radius_label_phase = (
+            centered_phase_reference(float(sampled_phase[min_radius_index]), target=1.0)
+            if visual_mode == "rv"
+            else centered_phase_reference(float(sampled_phase[min_radius_index]), target=1.55)
+        )
         ax.text(
             (
-                float(sampled_phase[min_radius_index]) + 0.045
+                clamp(min_radius_label_phase + 0.045, 0.08, 1.92)
                 if visual_mode == "rv"
-                else float(sampled_phase[min_radius_index] + 1.0) - 0.045
+                else clamp(min_radius_label_phase - 0.045, 0.08, 1.92)
             ),
             float(y_series[min_radius_index]),
             "min radius",
