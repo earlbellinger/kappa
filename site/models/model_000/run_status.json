@@ -9,13 +9,13 @@
   "stages": {
     "plot": {
       "status": "complete",
-      "updated_at": "2026-06-18T08:20:20.901980+00:00",
+      "updated_at": "2026-06-18T09:07:20.370470+00:00",
       "expected_output": "<local-rre-root>/output/combined_14507_full_pressure_minus_eq/mesa_rsp_combined_14507_full_pressure_minus_eq_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work.gif",
-      "started_at": "2026-06-18T08:18:47.245405+00:00"
+      "started_at": "2026-06-18T09:05:47.750588+00:00"
     },
     "verify": {
       "status": "complete",
-      "updated_at": "2026-06-18T06:09:49.993815+00:00",
+      "updated_at": "2026-06-18T09:07:20.510161+00:00",
       "expected_output": "<local-rre-root>/output/combined_14507_full_pressure_minus_eq/verification_summary.json",
       "result": {
         "model_id": "model_000",
@@ -90,14 +90,14 @@
               6.995969579647836
             ],
             "reference_example_limits": [
-              -0.5967129845710433,
-              0.5552118259138243
+              -1.0538880567035844,
+              0.9359095347404265
             ],
             "reference_example_visible_data_bounds": [
               -0.9758222747255412,
               0.866582902537432
             ],
-            "pad_fraction": 0.08,
+            "pad_fraction": 0.07999999999999996,
             "axis_percentile_low": 2.0,
             "axis_percentile_high": 98.0,
             "spike_span_reference_factor": 4.0,
@@ -148,7 +148,7 @@
           "panel": "left_power",
           "panel_bottom_fraction": 0.76,
           "panel_top_fraction": 0.92,
-          "reference_opacity_max_display_value": 0.463057841075035,
+          "reference_opacity_max_display_value": 0.7767257274249058,
           "x_field_for_scaling": "radius_rsun_plot",
           "x_limits_for_scaling": [
             5.387294668462144,
@@ -236,10 +236,10 @@
         "phase_seam_ok": true,
         "passed": true,
         "failures": [],
-        "verified_at": "2026-06-18T06:09:49.992302+00:00"
+        "verified_at": "2026-06-18T09:07:20.509155+00:00"
       },
-      "started_at": "2026-06-18T06:09:49.956653+00:00"
+      "started_at": "2026-06-18T09:07:20.472884+00:00"
     }
   },
-  "updated_at": "2026-06-18T08:20:20.901980+00:00"
+  "updated_at": "2026-06-18T09:07:20.510161+00:00"
 }
