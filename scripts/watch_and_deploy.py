@@ -419,12 +419,18 @@ def commit_and_push(repo: Path, message: str, log_path: Path, branch: str) -> No
     for command in (
         ["git", "add", "."],
         ["git", "commit", "-m", message],
-        ["git", "pull", "--rebase", "origin", branch],
+        ["git", "pull", "--rebase", "-X", "theirs", "origin", branch],
         ["git", "push", "origin", branch],
     ):
         completed = run_command(command, repo, log_path)
         if completed.returncode != 0:
             raise RuntimeError(f"Command failed in {repo}: {' '.join(command)}")
+
+
+def update_branch(repo: Path, log_path: Path, branch: str) -> None:
+    completed = run_command(["git", "pull", "--rebase", "-X", "theirs", "origin", branch], repo, log_path)
+    if completed.returncode != 0:
+        raise RuntimeError(f"Command failed in {repo}: git pull --rebase -X theirs origin {branch}")
 
 
 def copy_site_to_pages(kappa_root: Path, pages_root: Path) -> None:
@@ -478,6 +484,7 @@ def deploy(args: argparse.Namespace, log_path: Path) -> None:
         raise RuntimeError("Path leak check found local paths in Kappa site")
 
     commit_and_push(kappa_root, "Refresh batch status snapshot", log_path, "main")
+    update_branch(pages_root, log_path, "master")
     copy_site_to_pages(kappa_root, pages_root)
     commit_and_push(pages_root, "Refresh Kappa batch status", log_path, "master")
 
