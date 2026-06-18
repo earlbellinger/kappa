@@ -8,8 +8,8 @@
   "summary_path": "<local-rre-root>/output/combined_14507_full_pressure_minus_eq/mesa_rsp_combined_14507_full_pressure_minus_eq_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work_summary.json",
   "pressure_work_mode": "gas_plus_pav",
   "heating_mode": "gas_minus_c",
-  "scaling_method_version": "model000-visible-window-v13",
-  "expected_scaling_method_version": "model000-visible-window-v13",
+  "scaling_method_version": "model000-visible-window-v15",
+  "expected_scaling_method_version": "model000-visible-window-v15",
   "panel_scaling": {
     "reference_model": "model_000",
     "reference_use": "style only: inherit model_000's fractional padding and opacity-band placement after measuring model_000 inside its shown radius range",
@@ -21,11 +21,18 @@
       ],
       "visible_minimum": -0.9758222747255412,
       "visible_maximum": 0.866582902537432,
+      "raw_visible_minimum": -0.9758222747255412,
+      "raw_visible_maximum": 0.866582902537432,
+      "robust_visible_minimum": -0.552512022750966,
+      "robust_visible_maximum": 0.5140850239942818,
+      "axis_percentile_low": 2.0,
+      "axis_percentile_high": 98.0,
+      "spike_span_reference_factor": 4.0,
       "limits": [
         -1.0538880567035844,
         0.9359095347404265
       ],
-      "rule": "minimum/maximum of the displayed power curves in the shown radius window; zero is included before applying the model_000 padding fraction"
+      "rule": "raw shown-radius extrema; raw span is within the model_000-inspired spike threshold"
     },
     "opacity_on_left_power": {
       "x_field": "radius_rsun_plot",
@@ -50,21 +57,32 @@
         -0.9758222747255412,
         0.866582902537432
       ],
+      "raw_visible_data_bounds": [
+        -0.9758222747255412,
+        0.866582902537432
+      ],
+      "robust_visible_data_bounds": [
+        -0.552512022750966,
+        0.5140850239942818
+      ],
       "x_field_for_scaling": "radius_rsun_plot",
       "x_limits_for_scaling": [
         5.387294668462144,
         6.995969579647836
       ],
       "reference_example_limits": [
-        -1.0538880567035844,
-        0.9359095347404265
+        -0.5967129845710433,
+        0.5552118259138243
       ],
       "reference_example_visible_data_bounds": [
         -0.9758222747255412,
         0.866582902537432
       ],
-      "pad_fraction": 0.07999999999999996,
-      "method": "minimum and maximum of the plotted power curves within this panel's shown x range; the axis includes zero and uses the model_000 visible extrema only to inherit the reference padding convention, not as a shared y-limit"
+      "pad_fraction": 0.08,
+      "axis_percentile_low": 2.0,
+      "axis_percentile_high": 98.0,
+      "spike_span_reference_factor": 4.0,
+      "method": "raw shown-radius extrema; raw span is within the model_000-inspired spike threshold"
     },
     "photosphere_radial_velocity": {
       "limits": [
@@ -111,7 +129,7 @@
     "panel": "left_power",
     "panel_bottom_fraction": 0.76,
     "panel_top_fraction": 0.92,
-    "reference_opacity_max_display_value": 0.7767257274249058,
+    "reference_opacity_max_display_value": 0.463057841075035,
     "x_field_for_scaling": "radius_rsun_plot",
     "x_limits_for_scaling": [
       5.387294668462144,
@@ -199,5 +217,5 @@
   "phase_seam_ok": true,
   "passed": true,
   "failures": [],
-  "verified_at": "2026-06-18T03:46:19.797467+00:00"
+  "verified_at": "2026-06-18T06:09:49.992302+00:00"
 }
