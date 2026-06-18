@@ -355,6 +355,9 @@ def copy_batch_assets(rre_root: Path, output_dir: Path) -> dict[str, str | None]
         "convergence_trends_last100.csv",
         "convergence_trends_last100.png",
         "convergence_trends_exact_last100.png",
+        "convergence_forecast_last100.json",
+        "convergence_forecast_last100.csv",
+        "convergence_forecast_last100.png",
         "quality_extension_status.json",
     ):
         source = batch_source_dir / name
@@ -538,6 +541,15 @@ def write_index(output_dir: Path, models: list[dict[str, object]], metadata_link
       <a href="{html.escape(str(convergence_trends_exact_png))}"><img src="{html.escape(str(convergence_trends_exact_png))}" alt="Rolling final-100-cycle convergence trends for exact-history runs"></a>
     </section>
 """
+    convergence_forecast_figure = ""
+    convergence_forecast_png = metadata_links.get("convergence_forecast_last100.png")
+    if convergence_forecast_png:
+        convergence_forecast_figure = f"""
+    <section class="diagnostic">
+      <h2>Convergence Forecast</h2>
+      <a href="{html.escape(str(convergence_forecast_png))}"><img src="{html.escape(str(convergence_forecast_png))}" alt="Rolling convergence forecast"></a>
+    </section>
+"""
     growth_diagnostic_figures = ""
     growth_items = []
     for name, href in sorted(metadata_links.items()):
@@ -582,6 +594,8 @@ def write_index(output_dir: Path, models: list[dict[str, object]], metadata_link
         ("convergence trends", metadata_links.get("convergence_trends_last100.json")),
         ("convergence trend plot", convergence_trends_png),
         ("exact-history trend plot", convergence_trends_exact_png),
+        ("convergence forecast", metadata_links.get("convergence_forecast_last100.json")),
+        ("convergence forecast plot", convergence_forecast_png),
         ("models CSV", "metadata/models.csv"),
     ):
         if href:
@@ -647,6 +661,7 @@ def write_index(output_dir: Path, models: list[dict[str, object]], metadata_link
 {convergence_figure}
 {convergence_trends_figure}
 {convergence_trends_exact_figure}
+{convergence_forecast_figure}
 {growth_diagnostic_figures}
     <section class="grid">
 {cards}
