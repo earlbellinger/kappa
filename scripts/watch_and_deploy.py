@@ -59,10 +59,10 @@ def stable_animation_summary(summary: dict[str, object]) -> dict[str, object]:
     opacity_scaling = summary.get("opacity_scaling", {})
     if not isinstance(opacity_scaling, dict):
         opacity_scaling = {}
-    panel_limits = summary.get("panel_limits", {})
-    if not isinstance(panel_limits, dict):
-        panel_limits = {}
-    left_power_panel = panel_limits.get("left_power", {})
+    panel_y_ranges = summary.get("panel_y_ranges", {})
+    if not isinstance(panel_y_ranges, dict):
+        panel_y_ranges = {}
+    left_power_panel = panel_y_ranges.get("left_power", {})
     if not isinstance(left_power_panel, dict):
         left_power_panel = {}
     scaled_diagnostic_bounds = summary.get("scaled_diagnostic_bounds", {})
@@ -83,12 +83,16 @@ def stable_animation_summary(summary: dict[str, object]) -> dict[str, object]:
         "scaled_opacity_visible_data_bounds": scaled_diagnostic_bounds.get("opacity"),
         "opacity_scaling": {
             "method": opacity_scaling.get("method"),
+            "panel_bottom_fraction": opacity_scaling.get("panel_bottom_fraction"),
             "panel_top_fraction": opacity_scaling.get("panel_top_fraction"),
             "visible_data_bounds": opacity_scaling.get("visible_data_bounds"),
+            "reference_visible_data_bounds": opacity_scaling.get("reference_visible_data_bounds"),
+            "effective_data_bounds": opacity_scaling.get("effective_data_bounds"),
             "display_units_per_opacity_unit": opacity_scaling.get("display_units_per_opacity_unit"),
             "opacity_min_baseline": opacity_scaling.get("opacity_min_baseline"),
             "opacity_max_display_value": opacity_scaling.get("opacity_max_display_value"),
             "scaled_visible_display_bounds": opacity_scaling.get("scaled_visible_display_bounds"),
+            "scaled_effective_display_bounds": opacity_scaling.get("scaled_effective_display_bounds"),
         },
     }
 

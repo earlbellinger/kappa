@@ -8,7 +8,7 @@
   "frame_generation": "fixed-q linear interpolation between bracketing nonlinear profiles on a uniform phase grid",
   "coordinate": "r_over_R",
   "main_terms_only": true,
-  "scaling_method_version": "model000-visible-window-v10",
+  "scaling_method_version": "model000-visible-window-v11",
   "layout": "left panel: phase-local power diagnostics versus r/R_sun; right column top: photosphere radial velocity curve; right column bottom: photosphere luminosity curve",
   "zone_boundary_smoothing": "ionization-zone boundaries are converted from temperature spans to q spans, then the q-space zone centers and widths are smoothed over phase with a low-order periodic Fourier fit before being mapped to the displayed coordinate",
   "left_panel_quantity": "phase-local specific power diagnostics",
@@ -62,11 +62,11 @@
     4.422665240370844,
     5.604763755803331
   ],
-  "left_panel_scaling_method": "reference-guided panel-local visible-window extrema; each model's power extrema are measured only between the minimum and maximum shown x coordinate, zero is included, model_000's shown left-panel limits set the minimum displayed range, and the panel expands only when its own visible extrema exceed that reference range",
+  "left_panel_scaling_method": "reference-guided panel-local visible-window extrema; each model's power extrema are measured only between the minimum and maximum shown x coordinate, zero is included, model_000's visible minimum and maximum in that same kind of shown radius window set the reference floor, and the panel expands only when its own visible extrema exceed that example range",
   "scaling_reference": {
     "summary_path": "<local-rre-root>/output/combined_14507_full_pressure_minus_eq/mesa_rsp_combined_14507_full_pressure_minus_eq_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work_summary.json",
     "loaded": true,
-    "scaling_method_version": "model000-visible-window-v10",
+    "scaling_method_version": "model000-visible-window-v11",
     "left_power_ylim_reference": [
       -1.0538880567035844,
       0.9359095347404265
@@ -106,8 +106,12 @@
         -1.0538880567035844,
         0.9359095347404265
       ],
+      "reference_example_visible_data_bounds": [
+        -0.9758222747255412,
+        0.866582902537432
+      ],
       "pad_fraction": 0.07999999999999996,
-      "method": "minimum and maximum of the plotted power curves within this panel's shown x range; the axis includes zero, uses the model_000 shown y-limits as a reference floor, and expands beyond that floor when this panel's own local visible extrema require it"
+      "method": "minimum and maximum of the plotted power curves within this panel's shown x range; the axis includes zero, uses the model_000 visible extrema as a reference floor, and expands beyond that floor when this panel's own local visible extrema require it"
     },
     "photosphere_radial_velocity": {
       "limits": [
@@ -151,7 +155,7 @@
     ]
   },
   "opacity_scaling": {
-    "method": "left-panel visible-window min and max opacity are mapped into the same fractional band used by the model_000 reference, but inside this panel's own y-axis range",
+    "method": "left-panel visible-window opacity is scaled inside this panel's own y-axis range. The effective opacity span is the union of this panel's visible opacity extrema and model_000's visible opacity extrema, so weak-opacity panels are not visually over-amplified.",
     "panel": "left_power",
     "panel_bottom_fraction": 0.76,
     "panel_top_fraction": 0.92,
@@ -165,13 +169,25 @@
       0.0086388156794484,
       55.822611865807104
     ],
-    "reference_convention": "model_000 example rule: measure opacity min and max only in the shown radius range, then map those two extrema into a reserved band of each panel's own y-axis range",
+    "reference_visible_data_bounds": [
+      0.0020449198640830274,
+      149.03239726657318
+    ],
+    "effective_data_bounds": [
+      0.0020449198640830274,
+      149.03239726657318
+    ],
+    "reference_convention": "model_000 example rule: measure opacity min and max only in the shown radius range, then use that visible span as the reference floor for the reserved opacity band in each panel",
     "display_min_value": 0.44632769035629494,
-    "display_units_per_opacity_unit": 0.00942586821829023,
-    "opacity_min_baseline": 0.0086388156794484,
+    "display_units_per_opacity_unit": 0.0035301208540779714,
+    "opacity_min_baseline": 0.0020449198640830274,
     "opacity_max_display_value": 0.9724228450660006,
     "opacity_display_span": 0.5260951547097057,
     "scaled_visible_display_bounds": [
+      0.44635096760542237,
+      0.6433810378186239
+    ],
+    "scaled_effective_display_bounds": [
       0.44632769035629494,
       0.9724228450660006
     ]
