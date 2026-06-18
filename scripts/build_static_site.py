@@ -724,6 +724,119 @@ def write_fourier_inventory(output_dir: Path, models: list[dict[str, object]]) -
     }
 
 
+def write_analysis_completion_status(output_dir: Path, models: list[dict[str, object]]) -> dict[str, str]:
+    metadata_dir = output_dir / "metadata"
+    metadata_dir.mkdir(parents=True, exist_ok=True)
+    rows: list[dict[str, object]] = []
+    for model in models:
+        assets = model.get("assets")
+        assets = assets if isinstance(assets, dict) else {}
+        registered_reference = bool(model.get("registered_existing"))
+        strict_convergence = registered_reference or model.get("converged_exact") is True
+        canonical_animation_present = bool(assets.get("gif") and assets.get("summary") and assets.get("verify"))
+        fixed_cell_fourier_present = bool(
+            assets.get("fourier_fixed_png")
+            and assets.get("fourier_fixed_csv")
+            and assets.get("fourier_fixed_summary")
+        )
+        final_cycle_products_present = bool(
+            assets.get("final_cycle_summary")
+            and assets.get("lightcurve_csv")
+        )
+        animation_trusted = bool(model.get("animation_trusted"))
+        verification_passed = model.get("verification_passed") is True or model.get("status") == "verified"
+        final_ready = (
+            strict_convergence
+            and canonical_animation_present
+            and fixed_cell_fourier_present
+            and final_cycle_products_present
+            and (animation_trusted or registered_reference)
+            and (verification_passed or registered_reference)
+        )
+        missing = []
+        if not strict_convergence:
+            missing.append("strict convergence")
+        if not canonical_animation_present:
+            missing.append("canonical animation")
+        if not fixed_cell_fourier_present:
+            missing.append("fixed-cell Fourier depth diagnostic")
+        if not final_cycle_products_present:
+            missing.append("final-cycle products")
+        if not animation_trusted and not registered_reference:
+            missing.append("trusted animation")
+        if not verification_passed and not registered_reference:
+            missing.append("verification")
+        rows.append(
+            {
+                "model_id": model.get("model_id"),
+                "run_name": model.get("run_name"),
+                "final_ready": final_ready,
+                "registered_reference": registered_reference,
+                "strict_convergence": strict_convergence,
+                "canonical_animation_present": canonical_animation_present,
+                "fixed_cell_fourier_present": fixed_cell_fourier_present,
+                "final_cycle_products_present": final_cycle_products_present,
+                "animation_trusted": animation_trusted,
+                "verification_passed": verification_passed,
+                "missing": ", ".join(missing),
+                "active_stage": str(model.get("status")).removeprefix("running: ") if "running:" in str(model.get("status")) else "",
+                "latest_period": model.get("latest_period"),
+                "max_periods": model.get("max_periods"),
+                "convergence_blocking_requirements": model.get("convergence_blocking_requirements"),
+                "convergence_quality_flags": model.get("convergence_quality_flags"),
+                "convergence_forecast_status": model.get("convergence_forecast_status"),
+                "delta_r_ratio_to_tolerance": model.get("delta_r_ratio_to_tolerance"),
+                "gamma_ratio_to_tolerance": model.get("gamma_ratio_to_tolerance"),
+                "period_ratio_to_tolerance": model.get("period_ratio_to_tolerance"),
+            }
+        )
+
+    summary = {
+        "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "analysis_complete": all(row["final_ready"] for row in rows),
+        "models_total": len(rows),
+        "models_final_ready": sum(1 for row in rows if row["final_ready"]),
+        "models_waiting": sum(1 for row in rows if not row["final_ready"]),
+        "models_with_fixed_cell_fourier": sum(1 for row in rows if row["fixed_cell_fourier_present"]),
+        "models_with_trusted_animation": sum(1 for row in rows if row["animation_trusted"] or row["registered_reference"]),
+        "models_with_strict_convergence": sum(1 for row in rows if row["strict_convergence"]),
+    }
+    json_path = metadata_dir / "analysis_completion_status.json"
+    csv_path = metadata_dir / "analysis_completion_status.csv"
+    json_path.write_text(json.dumps({"summary": summary, "models": rows}, indent=2) + "\n", encoding="utf-8")
+    fieldnames = [
+        "model_id",
+        "run_name",
+        "final_ready",
+        "registered_reference",
+        "strict_convergence",
+        "canonical_animation_present",
+        "fixed_cell_fourier_present",
+        "final_cycle_products_present",
+        "animation_trusted",
+        "verification_passed",
+        "missing",
+        "active_stage",
+        "latest_period",
+        "max_periods",
+        "convergence_blocking_requirements",
+        "convergence_quality_flags",
+        "convergence_forecast_status",
+        "delta_r_ratio_to_tolerance",
+        "gamma_ratio_to_tolerance",
+        "period_ratio_to_tolerance",
+    ]
+    with csv_path.open("w", newline="", encoding="utf-8") as handle:
+        writer = csv.DictWriter(handle, fieldnames=fieldnames, lineterminator="\n")
+        writer.writeheader()
+        for row in rows:
+            writer.writerow({field: row.get(field) for field in fieldnames})
+    return {
+        "analysis_completion_status.json": str(json_path.relative_to(output_dir)).replace("\\", "/"),
+        "analysis_completion_status.csv": str(csv_path.relative_to(output_dir)).replace("\\", "/"),
+    }
+
+
 def parameter_table_html(parameter_groups: object) -> str:
     if not isinstance(parameter_groups, dict) or not parameter_groups:
         return ""
@@ -1007,6 +1120,8 @@ def write_index(output_dir: Path, models: list[dict[str, object]], metadata_link
         ("live status", metadata_links.get("live_status.json")),
         ("audit", metadata_links.get("batch_audit_summary.json")),
         ("manifest", metadata_links.get("manifest.json")),
+        ("completion status", metadata_links.get("analysis_completion_status.json")),
+        ("completion CSV", metadata_links.get("analysis_completion_status.csv")),
         ("Fourier inventory", metadata_links.get("fourier_inventory.json")),
         ("Fourier inventory CSV", metadata_links.get("fourier_inventory.csv")),
         ("cycle modulation", metadata_links.get("cycle_modulation_summary.json")),
@@ -1166,6 +1281,7 @@ def build_site(rre_root: Path, output_dir: Path) -> None:
     metadata_links = copy_batch_assets(rre_root, output_dir)
     write_manifest_csv(output_dir, models)
     metadata_links.update(write_fourier_inventory(output_dir, models))
+    metadata_links.update(write_analysis_completion_status(output_dir, models))
     write_index(output_dir, models, metadata_links)
     validate_static_site(output_dir, models)
 
