@@ -8,8 +8,38 @@
   "summary_path": "<local-rre-root>/rsp_batch_runs/output/model_006_M0p7194_Z0p001620_T6711/mesa_rsp_model_006_M0p7194_Z0p001620_T6711_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work_summary.json",
   "pressure_work_mode": "gas_plus_pav",
   "heating_mode": "gas_minus_c",
-  "scaling_method_version": "model000-visible-window-v12",
-  "expected_scaling_method_version": "model000-visible-window-v12",
+  "scaling_method_version": "model000-visible-window-v13",
+  "expected_scaling_method_version": "model000-visible-window-v13",
+  "panel_scaling": {
+    "reference_model": "model_000",
+    "reference_use": "style only: inherit model_000's fractional padding and opacity-band placement after measuring model_000 inside its shown radius range",
+    "left_power": {
+      "x_field": "radius_rsun_plot",
+      "x_limits": [
+        4.245867840406669,
+        5.571861508695286
+      ],
+      "visible_minimum": -4.925747443187183,
+      "visible_maximum": 2.9028710767833896,
+      "limits": [
+        -5.3198072386421575,
+        3.1351007629260605
+      ],
+      "rule": "minimum/maximum of the displayed power curves in the shown radius window; zero is included before applying the model_000 padding fraction"
+    },
+    "opacity_on_left_power": {
+      "x_field": "radius_rsun_plot",
+      "x_limits": [
+        4.245867840406669,
+        5.571861508695286
+      ],
+      "visible_minimum": 0.004567606159741239,
+      "visible_maximum": 90.94985853380467,
+      "display_minimum": 1.1059228425496874,
+      "display_maximum": 2.4587081228006022,
+      "rule": "opacity is min-max scaled from this panel's own shown-radius opacity extrema into the model_000 fractional opacity band"
+    }
+  },
   "panel_y_ranges": {
     "left_power": {
       "limits": [
@@ -77,7 +107,7 @@
     3.1351007629260605
   ],
   "opacity_scaling": {
-    "method": "left-panel visible-window opacity is scaled inside this panel's own y-axis range. The effective opacity span is this panel's own visible opacity minimum and maximum in the shown radius window. The model_000 example supplies the opacity-band placement convention, not a hard opacity floor.",
+    "method": "left-panel visible-window opacity is scaled inside this panel's own y-axis range. The effective opacity span is this panel's own visible opacity minimum and maximum in the shown radius window. The model_000 example supplies the fractional opacity-band placement convention, not a hard opacity floor.",
     "panel": "left_power",
     "panel_bottom_fraction": 0.76,
     "panel_top_fraction": 0.92,
@@ -175,5 +205,5 @@
     "luminosity_lsun phase seam is 0.05396 of amplitude, expected <= 0.025",
     "radius_rsun phase seam is 0.08457 of amplitude, expected <= 0.025"
   ],
-  "verified_at": "2026-06-18T02:03:02.876620+00:00"
+  "verified_at": "2026-06-18T03:55:08.359678+00:00"
 }

@@ -4,14 +4,13 @@
   "complete_model_count": 1,
   "failures": [
     "model_003: stages not complete: verify; verification_summary did not pass; phase_seam_ok=False",
-    "model_004: stages not complete: plot",
     "model_005: stages not complete: verify; verification_summary did not pass; phase_seam_ok=False",
     "model_006: stages not complete: verify; verification_summary did not pass; phase_seam_ok=False",
     "model_007: stages not complete: continue_saturation",
     "model_008: stages not complete: continue_saturation, restart, deep2cycles, final_cycle, plot, verify; missing files: saturated_model, restart_model, deep_model, final_cycle_summary, final_cycle_lightcurve, gif, png, animation_summary, verification_summary; verification_summary did not pass; pressure_work_mode=None; heating_mode=None; cycle_source=None; radius_window_contains_photosphere=None; phase_seam_ok=None; missing profile columns: cp, gamma1, ionization_he4, rsp_Lc, rsp_Lr, rsp_Lt, rsp_Pvsc, rsp_src_snk, tau",
     "model_009: stages not complete: create, continue_saturation, restart, deep2cycles, final_cycle, plot, verify; missing files: create_model, saturated_model, restart_model, deep_model, final_cycle_summary, final_cycle_lightcurve, gif, png, animation_summary, verification_summary; verification_summary did not pass; pressure_work_mode=None; heating_mode=None; cycle_source=None; radius_window_contains_photosphere=None; phase_seam_ok=None; missing profile columns: cp, gamma1, ionization_he4, rsp_Lc, rsp_Lr, rsp_Lt, rsp_Pvsc, rsp_src_snk, tau"
   ],
-  "generated_at": "2026-06-18T03:51:43.968795+00:00",
+  "generated_at": "2026-06-18T03:55:49.198529+00:00",
   "incomplete_models": [
     "model_001",
     "model_002",
@@ -938,12 +937,10 @@
         "run_name": "model_004_M0p7595_Z0p0001834_T6876"
       },
       "cycle_source": "final-cycle summary age window",
-      "failures": [
-        "stages not complete: plot"
-      ],
+      "failures": [],
       "files": {
         "animation_summary": {
-          "bytes": 74416,
+          "bytes": 75594,
           "exists": true,
           "path": "<local-rre-root>/rsp_batch_runs/output/model_004_M0p7595_Z0p0001834_T6876/mesa_rsp_model_004_M0p7595_Z0p0001834_T6876_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work_summary.json"
         },
@@ -988,7 +985,7 @@
           "path": "<local-rre-root>/rsp_batch_runs/runs/model_004_M0p7595_Z0p0001834_T6876/final_model_004_M0p7595_Z0p0001834_T6876_saturated.mod"
         },
         "verification_summary": {
-          "bytes": 6493,
+          "bytes": 7699,
           "exists": true,
           "path": "<local-rre-root>/rsp_batch_runs/output/model_004_M0p7595_Z0p0001834_T6876/verification_summary.json"
         }
@@ -1053,12 +1050,12 @@
         "create": "complete",
         "deep2cycles": "complete",
         "final_cycle": "complete",
-        "plot": "running",
+        "plot": "complete",
         "restart": "complete",
         "verify": "complete"
       },
       "stale_completed_stage_outputs": [],
-      "status": "running",
+      "status": "quality_warning",
       "validation_passed": true,
       "verification_passed": true
     },
@@ -1172,7 +1169,7 @@
       ],
       "files": {
         "animation_summary": {
-          "bytes": 74797,
+          "bytes": 75975,
           "exists": true,
           "path": "<local-rre-root>/rsp_batch_runs/output/model_005_M0p6238_Z0p00007156_T6925/mesa_rsp_model_005_M0p6238_Z0p00007156_T6925_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work_summary.json"
         },
@@ -1217,7 +1214,7 @@
           "path": "<local-rre-root>/rsp_batch_runs/runs/model_005_M0p6238_Z0p00007156_T6925/final_model_005_M0p6238_Z0p00007156_T6925_saturated.mod"
         },
         "verification_summary": {
-          "bytes": 6797,
+          "bytes": 8003,
           "exists": true,
           "path": "<local-rre-root>/rsp_batch_runs/output/model_005_M0p6238_Z0p00007156_T6925/verification_summary.json"
         }
@@ -1407,7 +1404,7 @@
       ],
       "files": {
         "animation_summary": {
-          "bytes": 74070,
+          "bytes": 75249,
           "exists": true,
           "path": "<local-rre-root>/rsp_batch_runs/output/model_006_M0p7194_Z0p001620_T6711/mesa_rsp_model_006_M0p7194_Z0p001620_T6711_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work_summary.json"
         },
@@ -1452,7 +1449,7 @@
           "path": "<local-rre-root>/rsp_batch_runs/runs/model_006_M0p7194_Z0p001620_T6711/final_model_006_M0p7194_Z0p001620_T6711_saturated.mod"
         },
         "verification_summary": {
-          "bytes": 6800,
+          "bytes": 8007,
           "exists": true,
           "path": "<local-rre-root>/rsp_batch_runs/output/model_006_M0p7194_Z0p001620_T6711/verification_summary.json"
         }
@@ -2113,7 +2110,7 @@
     "batch_status": "running",
     "current_model": "model_008",
     "status": "waiting_for_batch",
-    "updated_at": "2026-06-18T03:47:24.885693+00:00"
+    "updated_at": "2026-06-18T03:52:24.887571+00:00"
   },
   "quality_extension_complete": false,
   "quality_extension_required": true,
