@@ -360,6 +360,7 @@ def copy_batch_assets(rre_root: Path, output_dir: Path) -> dict[str, str | None]
         "convergence_forecast_last100.png",
         "convergence_gate_audit.json",
         "convergence_gate_audit.csv",
+        "post_convergence_products_status.json",
         "quality_extension_status.json",
     ):
         source = batch_source_dir / name
@@ -599,6 +600,7 @@ def write_index(output_dir: Path, models: list[dict[str, object]], metadata_link
         ("convergence forecast", metadata_links.get("convergence_forecast_last100.json")),
         ("convergence forecast plot", convergence_forecast_png),
         ("convergence gate audit", metadata_links.get("convergence_gate_audit.json")),
+        ("product gate status", metadata_links.get("post_convergence_products_status.json")),
         ("models CSV", "metadata/models.csv"),
     ):
         if href:
