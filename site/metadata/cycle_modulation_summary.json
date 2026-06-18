@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-18T23:07:18.052480+00:00",
+  "generated_at": "2026-06-18T23:20:39.098326+00:00",
   "models": [
     {
       "model_id": "model_000",
@@ -237,7 +237,7 @@
         {
           "history_source": "continue_saturation_resume:LOGS_continue_saturation_resume_2270000",
           "history_path": "<local-rre-root>/rsp_batch_runs/runs/model_007_M0p6887_Z0p004060_T6669/LOGS_continue_saturation_resume_2270000/history.data",
-          "cycle_count": 49
+          "cycle_count": 50
         },
         {
           "history_source": "continue_saturation_resume:LOGS_continue_saturation_resume_2180000",
@@ -275,7 +275,7 @@
         {
           "history_source": "continue_saturation_resume:LOGS_continue_saturation_resume_1620000",
           "history_path": "<local-rre-root>/rsp_batch_runs/runs/model_008_M0p6151_Z0p0004406_T6792/LOGS_continue_saturation_resume_1620000/history.data",
-          "cycle_count": 77
+          "cycle_count": 78
         },
         {
           "history_source": "continue_saturation",
@@ -301,14 +301,14 @@
     {
       "model_id": "model_009",
       "run_name": "model_009_M0p6668_Z0p0001120_T6852",
-      "history_source": "saturation",
-      "history_path": "<local-rre-root>/rsp_batch_runs/runs/model_009_M0p6668_Z0p0001120_T6852/LOGS_saturation/history.data",
+      "history_source": "saturation_resume:LOGS_saturation_resume_130000",
+      "history_path": "<local-rre-root>/rsp_batch_runs/runs/model_009_M0p6668_Z0p0001120_T6852/LOGS_saturation_resume_130000/history.data",
       "diagnostic_png": "<local-rre-root>/rsp_batch_runs/output/cycle_diagnostics/model_009_M0p6668_Z0p0001120_T6852_cycle_modulation_diagnostic.png",
       "history_candidate_cycle_counts": [
         {
           "history_source": "saturation_resume:LOGS_saturation_resume_130000",
           "history_path": "<local-rre-root>/rsp_batch_runs/runs/model_009_M0p6668_Z0p0001120_T6852/LOGS_saturation_resume_130000/history.data",
-          "cycle_count": 79
+          "cycle_count": 80
         },
         {
           "history_source": "saturation",
@@ -316,15 +316,15 @@
           "cycle_count": 147
         }
       ],
-      "cycle_count": 147,
+      "cycle_count": 80,
       "last_cycle_count_used": 80,
-      "max_l_modulation_fraction": 0.0004938811450511824,
-      "min_v_modulation_mag": 0.0006112196471933506,
-      "period_modulation_fraction": 0.06874295270099068,
-      "radius_amplitude_modulation_fraction": 0.28560926719386587,
-      "last_max_l_lsun": 51.280740451629924,
-      "last_min_abs_mag_v": 0.5079777086367111,
-      "last_period_days": 0.5141007737315277
+      "max_l_modulation_fraction": 0.000623456113738666,
+      "min_v_modulation_mag": 0.0007707268506721432,
+      "period_modulation_fraction": 0.1560520021750009,
+      "radius_amplitude_modulation_fraction": 0.28446891762920146,
+      "last_max_l_lsun": 51.31142561084041,
+      "last_min_abs_mag_v": 0.5072378262895447,
+      "last_period_days": 0.44216407661377843
     }
   ]
 }
