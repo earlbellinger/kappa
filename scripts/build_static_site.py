@@ -837,6 +837,53 @@ def write_analysis_completion_status(output_dir: Path, models: list[dict[str, ob
     }
 
 
+def completion_status_html(output_dir: Path, metadata_links: dict[str, str | None]) -> str:
+    completion_href = metadata_links.get("analysis_completion_status.json")
+    completion_csv_href = metadata_links.get("analysis_completion_status.csv")
+    if not completion_href:
+        return ""
+    data = load_json(output_dir / str(completion_href))
+    if not isinstance(data, dict):
+        return ""
+    summary = data.get("summary", {})
+    rows = data.get("models", [])
+    if not isinstance(summary, dict) or not isinstance(rows, list):
+        return ""
+    waiting_rows = [row for row in rows if isinstance(row, dict) and row.get("final_ready") is not True]
+    waiting_items = []
+    for row in waiting_rows:
+        model_id = html.escape(str(row.get("model_id") or "model"))
+        missing = html.escape(str(row.get("missing") or "awaiting final evidence"))
+        latest_period = row.get("latest_period")
+        period_text = ""
+        if latest_period not in {None, ""}:
+            period_text = f' <span>period {html.escape(str(latest_period))}</span>'
+        waiting_items.append(f"<li><strong>{model_id}</strong>{period_text}: {missing}</li>")
+    waiting_html = ""
+    if waiting_items:
+        waiting_html = '<ul class="completion-list">' + "".join(waiting_items) + "</ul>"
+    status_label = "complete" if summary.get("analysis_complete") is True else "in progress"
+    links = []
+    if completion_href:
+        links.append(f'<a href="{html.escape(str(completion_href))}">JSON</a>')
+    if completion_csv_href:
+        links.append(f'<a href="{html.escape(str(completion_csv_href))}">CSV</a>')
+    return f"""
+    <section class="diagnostic completion-status">
+      <h2>Analysis Completion</h2>
+      <p class="completion-state">{html.escape(status_label)}</p>
+      <div class="completion-stats">
+        <span><strong>{html.escape(str(summary.get("models_final_ready", 0)))}/{html.escape(str(summary.get("models_total", 0)))}</strong> final-ready</span>
+        <span><strong>{html.escape(str(summary.get("models_with_fixed_cell_fourier", 0)))}</strong> fixed-cell Fourier</span>
+        <span><strong>{html.escape(str(summary.get("models_with_trusted_animation", 0)))}</strong> trusted animations</span>
+        <span><strong>{html.escape(str(summary.get("models_with_strict_convergence", 0)))}</strong> strict convergence</span>
+      </div>
+      {waiting_html}
+      <p class="links">{" ".join(links)}</p>
+    </section>
+""".rstrip()
+
+
 def parameter_table_html(parameter_groups: object) -> str:
     if not isinstance(parameter_groups, dict) or not parameter_groups:
         return ""
@@ -1052,6 +1099,7 @@ def write_index(output_dir: Path, models: list[dict[str, object]], metadata_link
     convergence_trends_png = metadata_links.get("convergence_trends_last100.png")
     convergence_trends_exact_png = metadata_links.get("convergence_trends_exact_last100.png")
     convergence_forecast_png = metadata_links.get("convergence_forecast_last100.png")
+    completion_figure = completion_status_html(output_dir, metadata_links)
     convergence_items = []
     for title, href, alt in (
         ("Limit-Cycle Convergence", convergence_png, "Strict limit-cycle convergence summary"),
@@ -1165,6 +1213,15 @@ def write_index(output_dir: Path, models: list[dict[str, object]], metadata_link
     .diagnostic h2 {{ margin:0 0 12px; font-size:24px; }}
     .diagnostic a {{ display:block; border:0; }}
     .diagnostic img {{ display:block; width:100%; height:auto; max-height:320px; object-fit:contain; border-radius:6px; background:#fff; }}
+    .completion-status {{ max-width:1180px; }}
+    .completion-state {{ display:inline-block; margin:0 0 12px; color:var(--gold); border:1px solid rgba(255,183,3,.45); border-radius:7px; padding:4px 8px; }}
+    .completion-stats {{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; margin:0 0 12px; }}
+    .completion-stats span {{ background:#181a20; border:1px solid var(--line); border-radius:7px; padding:10px; color:var(--muted); }}
+    .completion-stats strong {{ display:block; color:var(--text); font-size:22px; }}
+    .completion-list {{ margin:0 0 12px; padding-left:20px; color:var(--muted); }}
+    .completion-list li {{ margin:5px 0; }}
+    .completion-list strong {{ color:var(--text); }}
+    .completion-list span {{ color:var(--gold); }}
     .diagnostic-grid {{ display:grid; grid-template-columns:repeat(auto-fit,minmax(min(320px,100%),1fr)); gap:14px; align-items:start; }}
     .convergence-grid {{ grid-template-columns:repeat(auto-fit,minmax(min(360px,100%),1fr)); }}
     figure {{ margin:0; }}
@@ -1211,6 +1268,7 @@ def write_index(output_dir: Path, models: list[dict[str, object]], metadata_link
   </header>
   <main>
     <nav class="toolbar">{" ".join(meta_links)}</nav>
+{completion_figure}
 {convergence_figure}
 {convergence_trends_figure}
 {convergence_trends_exact_figure}
