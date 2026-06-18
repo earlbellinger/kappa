@@ -322,6 +322,9 @@ def copy_model_assets(
         "gif_mb": file_size_mb(source_map["gif"]),
         "profile_count": live_record.get("profile_count") if live_record else None,
         "latest_period": live_record.get("latest_period") if live_record else None,
+        "active_history_period": live_record.get("active_history_period") if live_record else None,
+        "active_history_period_status": live_record.get("active_history_period_status") if live_record else None,
+        "active_history_period_gap": live_record.get("active_history_period_gap") if live_record else None,
         "latest_history_model": live_record.get("latest_history_model") if live_record else None,
         "latest_history_mtime": live_record.get("latest_history_mtime") if live_record else None,
         "latest_period_days": live_record.get("latest_period_days") if live_record else None,
@@ -476,8 +479,14 @@ def card_html(model: dict[str, object]) -> str:
     if model.get("profile_count"):
         progress_bits.append(f"{model['profile_count']} profiles")
     status_text = str(model.get("status"))
-    if model.get("latest_period") and model.get("max_periods") and "running" in status_text:
-        progress_bits.append(f"period {model['latest_period']} / {model['max_periods']}")
+    if model.get("max_periods") and "running" in status_text:
+        if model.get("active_history_period") is not None:
+            period_text = f"active period {fmt_cycles(model['active_history_period'])} / {fmt_cycles(model['max_periods'])}"
+            if model.get("active_history_period_status") == "overlap_replay" and model.get("latest_period"):
+                period_text += f" (overlap; accepted {fmt_cycles(model['latest_period'])})"
+            progress_bits.append(period_text)
+        elif model.get("latest_period"):
+            progress_bits.append(f"period {fmt_cycles(model['latest_period'])} / {fmt_cycles(model['max_periods'])}")
     if model.get("latest_history_model") and "running" in status_text and (
         ("running: create" in status_text) or not model.get("latest_period")
     ):

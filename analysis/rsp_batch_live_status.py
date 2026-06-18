@@ -172,20 +172,68 @@ def latest_photo(run_dir: Path) -> str | None:
     return str(max(candidates, key=lambda item: item[0])[1])
 
 
-def latest_history_model(run_dir: Path) -> tuple[str | None, str | None]:
+def latest_history_snapshot(run_dir: Path) -> dict[str, object]:
     history_files = sorted(run_dir.glob("LOGS*/history.data"), key=lambda path: path.stat().st_mtime, reverse=True)
     if not history_files:
-        return None, None
+        return {}
     history = history_files[0]
+    mtime = datetime.fromtimestamp(history.stat().st_mtime, timezone.utc).isoformat()
     try:
         lines = history.read_text(errors="ignore").splitlines()
     except OSError:
-        return None, datetime.fromtimestamp(history.stat().st_mtime, timezone.utc).isoformat()
+        return {
+            "latest_history_mtime": mtime,
+            "active_history_path": str(history),
+        }
+    header_idx = next(
+        (idx for idx, line in enumerate(lines) if line.strip().startswith("model_number")),
+        None,
+    )
+    if header_idx is not None:
+        names = lines[header_idx].split()
+        for line in reversed(lines[header_idx + 1 :]):
+            fields = line.split()
+            if len(fields) != len(names) or not fields or not fields[0].lstrip("+-").isdigit():
+                continue
+            row = dict(zip(names, fields))
+            snapshot: dict[str, object] = {
+                "latest_history_model": row.get("model_number"),
+                "latest_history_mtime": mtime,
+                "active_history_path": str(history),
+            }
+            column_map = {
+                "rsp_num_periods": "active_history_period",
+                "rsp_period_in_days": "active_history_period_days",
+                "rsp_GREKM": "active_history_GREKM",
+                "rsp_DeltaR": "active_history_DeltaR",
+            }
+            for source_name, output_name in column_map.items():
+                if source_name in row:
+                    try:
+                        snapshot[output_name] = fortran_float(row[source_name])
+                    except ValueError:
+                        snapshot[output_name] = row[source_name]
+            return snapshot
     for line in reversed(lines):
         fields = line.split()
         if fields and fields[0].lstrip("+-").isdigit():
-            return fields[0], datetime.fromtimestamp(history.stat().st_mtime, timezone.utc).isoformat()
-    return None, datetime.fromtimestamp(history.stat().st_mtime, timezone.utc).isoformat()
+            return {
+                "latest_history_model": fields[0],
+                "latest_history_mtime": mtime,
+                "active_history_path": str(history),
+            }
+    return {
+        "latest_history_mtime": mtime,
+        "active_history_path": str(history),
+    }
+
+
+def latest_history_model(run_dir: Path) -> tuple[str | None, str | None]:
+    snapshot = latest_history_snapshot(run_dir)
+    return (
+        str(snapshot.get("latest_history_model")) if snapshot.get("latest_history_model") is not None else None,
+        str(snapshot.get("latest_history_mtime")) if snapshot.get("latest_history_mtime") is not None else None,
+    )
 
 
 def parse_period_line(line: str) -> dict[str, object] | None:
@@ -467,7 +515,7 @@ def model_summary(record: dict, convergence_by_id: dict[str, dict[str, object]] 
     gif = output_dir / f"{product_stem}.gif"
     verification = read_json(output_dir / "verification_summary.json")
     run_status = read_run_status(output_dir)
-    hist_model, hist_mtime = latest_history_model(run_dir)
+    history_snapshot = latest_history_snapshot(run_dir)
     period_metrics = latest_period_metrics(output_dir)
     period = str(period_metrics.get("latest_period")) if period_metrics.get("latest_period") is not None else None
     period_log = (
@@ -507,8 +555,8 @@ def model_summary(record: dict, convergence_by_id: dict[str, dict[str, object]] 
         "latest_period": period,
         "max_periods": max_period,
         "latest_period_log": period_log,
-        "latest_history_model": hist_model,
-        "latest_history_mtime": hist_mtime,
+        "latest_history_model": history_snapshot.get("latest_history_model"),
+        "latest_history_mtime": history_snapshot.get("latest_history_mtime"),
         "latest_photo": latest_photo(run_dir),
         "gif_exists": gif_exists,
         "gif_path": str(gif) if gif_exists else None,
@@ -521,6 +569,22 @@ def model_summary(record: dict, convergence_by_id: dict[str, dict[str, object]] 
         "profile_count": verification.get("profile_count") if isinstance(verification, dict) else None,
     }
     summary.update(period_metrics)
+    summary.update(history_snapshot)
+    active_period = parse_int(history_snapshot.get("active_history_period"))
+    latest_period_num = parse_int(period)
+    if active_period is not None:
+        summary["period_progress_source"] = "active_history"
+    else:
+        summary["period_progress_source"] = "period_log"
+    if active_period is not None and latest_period_num is not None:
+        gap = active_period - latest_period_num
+        summary["active_history_period_gap"] = gap
+        if gap < 0:
+            summary["active_history_period_status"] = "overlap_replay"
+        elif gap > 0:
+            summary["active_history_period_status"] = "ahead_of_period_log"
+        else:
+            summary["active_history_period_status"] = "matches_period_log"
     if convergence:
         summary.update(
             {
@@ -551,7 +615,8 @@ def model_summary(record: dict, convergence_by_id: dict[str, dict[str, object]] 
                 "limit_cycle_converged": convergence.get("limit_cycle_converged", convergence.get("converged_exact")),
             }
         )
-    summary.update(progress_estimate(period, max_period, running_stage_started_at))
+    progress_period = str(active_period) if active_period is not None and running_stage else period
+    summary.update(progress_estimate(progress_period, max_period, running_stage_started_at))
     return summary
 
 
