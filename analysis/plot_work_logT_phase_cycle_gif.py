@@ -64,6 +64,7 @@ PDV_PERIODIC_FIT_HARMONICS = 24
 ZONE_BOUNDARY_FIT_HARMONICS = 6
 SECONDS_PER_DAY = 86400.0
 TWO_PI = 2.0 * np.pi
+PHASE_PANEL_SEAM_BREAK_FRACTION = 0.025
 G_CGS = 6.67430e-8
 H_CGS = 6.62607015e-27
 C_CGS = 2.99792458e10
@@ -621,6 +622,8 @@ def repeated_phase_curve(
     phase: np.ndarray,
     values: np.ndarray,
     repeat_count: int = 3,
+    *,
+    separate_repeats: bool = True,
 ) -> tuple[np.ndarray, np.ndarray]:
     phase_array = np.asarray(phase, dtype=float)
     value_array = np.asarray(values, dtype=float)
@@ -631,7 +634,7 @@ def repeated_phase_curve(
     y_segments: list[np.ndarray] = []
     separator = np.asarray([np.nan], dtype=float)
     for offset in range(int(repeat_count)):
-        if offset > 0:
+        if separate_repeats and offset > 0:
             x_segments.append(separator)
             y_segments.append(separator)
         x_segments.append(phase_array + float(offset))
@@ -642,6 +645,8 @@ def repeated_phase_curve(
 def repeated_phase_colors(
     colors: np.ndarray,
     repeat_count: int = 3,
+    *,
+    separate_repeats: bool = True,
 ) -> np.ndarray:
     color_array = np.asarray(colors, dtype=float)
     if color_array.ndim != 2 or color_array.shape[1] != 3:
@@ -650,10 +655,43 @@ def repeated_phase_colors(
     segments: list[np.ndarray] = []
     separator = np.full((1, 3), np.nan, dtype=float)
     for offset in range(int(repeat_count)):
-        if offset > 0:
+        if separate_repeats and offset > 0:
             segments.append(separator)
         segments.append(color_array)
     return np.vstack(segments)
+
+
+def phase_panel_seam_metric(series_by_name: dict[str, np.ndarray]) -> dict[str, object]:
+    metrics: dict[str, object] = {}
+    worst_name = None
+    worst_fraction = -np.inf
+    for name, values in series_by_name.items():
+        array = np.asarray(values, dtype=float)
+        finite = array[np.isfinite(array)]
+        if finite.size < 2:
+            fraction = float("nan")
+            amplitude = float("nan")
+            seam_abs = float("nan")
+        else:
+            amplitude = float(np.nanmax(finite) - np.nanmin(finite))
+            seam_abs = float(abs(finite[-1] - finite[0]))
+            fraction = seam_abs / amplitude if amplitude > 0.0 else 0.0
+        metrics[name] = {
+            "amplitude": float(amplitude),
+            "seam_abs": float(seam_abs),
+            "seam_fraction": float(fraction),
+        }
+        if np.isfinite(fraction) and fraction > worst_fraction:
+            worst_fraction = float(fraction)
+            worst_name = name
+    connect_repeats = not (np.isfinite(worst_fraction) and worst_fraction > PHASE_PANEL_SEAM_BREAK_FRACTION)
+    return {
+        "connect_repeats": bool(connect_repeats),
+        "threshold_fraction": float(PHASE_PANEL_SEAM_BREAK_FRACTION),
+        "worst_metric": worst_name,
+        "worst_seam_fraction": float(worst_fraction) if np.isfinite(worst_fraction) else None,
+        "metrics": metrics,
+    }
 
 
 def q_cell_widths(q_values: np.ndarray) -> np.ndarray:
@@ -2883,17 +2921,6 @@ def main() -> None:
     luminosity_span = float(luminosity_ylim[1] - luminosity_ylim[0])
     rv_span = float(rv_ylim[1] - rv_ylim[0])
 
-    phase_curve_repeats = 3
-    cycle_luminosity_phase_three, cycle_luminosity_curve_three = repeated_phase_curve(
-        sampled_phase,
-        sampled_photosphere_l,
-        phase_curve_repeats,
-    )
-    cycle_rv_phase_three, cycle_rv_curve_three = repeated_phase_curve(
-        sampled_phase,
-        sampled_photosphere_rv,
-        phase_curve_repeats,
-    )
     photosphere_radius_series = np.asarray(
         [float(frame["photosphere_radius_rsun"]) for frame in frame_data],
         dtype=float,
@@ -2901,6 +2928,29 @@ def main() -> None:
     photosphere_temperature_series = np.asarray(
         [float(frame["photosphere_temperature_K"]) for frame in frame_data],
         dtype=float,
+    )
+    phase_panel_seam = phase_panel_seam_metric(
+        {
+            "luminosity": sampled_photosphere_l,
+            "radial_velocity": sampled_photosphere_rv,
+            "radius": photosphere_radius_series,
+            "temperature": photosphere_temperature_series,
+        }
+    )
+    phase_panel_connect_repeats = bool(phase_panel_seam["connect_repeats"])
+
+    phase_curve_repeats = 3
+    cycle_luminosity_phase_three, cycle_luminosity_curve_three = repeated_phase_curve(
+        sampled_phase,
+        sampled_photosphere_l,
+        phase_curve_repeats,
+        separate_repeats=not phase_panel_connect_repeats,
+    )
+    cycle_rv_phase_three, cycle_rv_curve_three = repeated_phase_curve(
+        sampled_phase,
+        sampled_photosphere_rv,
+        phase_curve_repeats,
+        separate_repeats=not phase_panel_connect_repeats,
     )
     min_radius_index = int(np.nanargmin(photosphere_radius_series))
     max_radius_index = int(np.nanargmax(photosphere_radius_series))
@@ -3060,7 +3110,11 @@ def main() -> None:
                     [frame["photosphere_rv_sphere_rgb"] for frame in frame_data],
                     dtype=float,
                 )
-            cycle_point_rgb_three = repeated_phase_colors(phase_rgb_cycle, phase_curve_repeats)
+            cycle_point_rgb_three = repeated_phase_colors(
+                phase_rgb_cycle,
+                phase_curve_repeats,
+                separate_repeats=not phase_panel_connect_repeats,
+            )
             phase_curve_x, phase_curve_y, phase_curve_rgb = add_phase_curve_breaks(
                 x_curve_three,
                 y_curve_three,
@@ -3892,10 +3946,19 @@ def main() -> None:
         "frame_count": len(frame_data),
         "closing_frame_added_for_seamless_loop": False,
         "phase_panel_repeat_mode": (
-            "repeated cycle copies are separated by NaN gaps; the plot does not connect the last "
-            "sample of one cycle to the first sample of the next"
+            (
+                "repeated cycle copies are connected periodically in the phase panels; no NaN gap is "
+                "inserted at the repeated radius-maximum boundary"
+            )
+            if phase_panel_connect_repeats
+            else (
+                "repeated cycle copies are separated by NaN gaps in the phase panels because the selected "
+                "cycle does not close to the configured seam tolerance"
+            )
         ),
         "phase_panel_repeat_count": int(phase_curve_repeats),
+        "phase_panel_repeat_connects": bool(phase_panel_connect_repeats),
+        "phase_panel_seam": phase_panel_seam,
         "fps": int(args.fps),
         "period_days_used": float(period_days),
         "phase_reference_days_used": float(phase_reference_days),
