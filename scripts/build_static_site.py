@@ -328,7 +328,23 @@ def copy_model_assets(
     verified = isinstance(verify, dict) and verify.get("passed") is True
     verification_failed = isinstance(verify, dict) and verify.get("passed") is False
     convergence_passed = strict_convergence_passed(record, convergence)
-    trusted_animation = verified and convergence_passed
+    if live_record is not None and live_record.get("trusted_animation") is not None:
+        trusted_animation = live_record.get("trusted_animation") is True
+        trusted_animation_reason = str(
+            live_record.get("trusted_animation_reason")
+            or live_record.get("diagnostic_animation_reason")
+            or ""
+        )
+    else:
+        trusted_animation = verified and convergence_passed
+        if trusted_animation:
+            trusted_animation_reason = "verification passed and strict limit-cycle convergence gate passed"
+        elif not verified:
+            trusted_animation_reason = "verification has not passed"
+        elif not convergence_passed:
+            trusted_animation_reason = "strict limit-cycle convergence gate has not passed"
+        else:
+            trusted_animation_reason = "animation is not trusted"
 
     copied: dict[str, str | None] = {}
     source_map = {
@@ -409,6 +425,7 @@ def copy_model_assets(
         "verification_passed": live_record.get("verification_passed") if live_record else None,
         "verification_failures": verify.get("failures", []) if isinstance(verify, dict) else [],
         "animation_trusted": trusted_animation,
+        "animation_trusted_reason": trusted_animation_reason,
         "phase_curve_break_phases": phase_breaks,
     }
 
@@ -569,7 +586,8 @@ def card_html(model: dict[str, object]) -> str:
     if model.get("convergence"):
         progress_bits.append(str(model["convergence"]))
     if image and not model.get("animation_trusted"):
-        progress_bits.append("diagnostic animation, not trusted")
+        reason = str(model.get("animation_trusted_reason") or "not trusted")
+        progress_bits.append(f"diagnostic animation: {reason}")
     if model.get("gif_mb") is not None:
         progress_bits.append(f"{float(model['gif_mb']):.1f} MB GIF")
     failures = model.get("verification_failures") or []

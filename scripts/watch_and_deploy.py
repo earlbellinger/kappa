@@ -281,6 +281,8 @@ def status_signature(rre_root: Path) -> dict[str, object]:
                     "latest_surface_velocity_status": model.get("latest_surface_velocity_status"),
                     "gif_exists": bool(model.get("gif_exists")),
                     "trusted_animation": bool(model.get("trusted_animation")),
+                    "trusted_animation_reason": model.get("trusted_animation_reason"),
+                    "diagnostic_animation_reason": model.get("diagnostic_animation_reason"),
                     "verification_passed": bool(model.get("verification_passed")),
                     "stages": model.get("stages", {}),
                 }
