@@ -50,8 +50,37 @@
   "frame_count": 180,
   "closing_frame_added_for_seamless_loop": false,
   "phase_panel_repeat_version": "connected-periodic-v1",
-  "phase_panel_repeat_mode": "repeated cycle copies are connected periodically in the phase panels; no NaN gap is inserted at the repeated radius-maximum boundary",
+  "phase_panel_repeat_mode": "repeated cycle copies are separated by NaN gaps in the phase panels because the selected cycle does not close to the configured seam tolerance",
   "phase_panel_repeat_count": 3,
+  "phase_panel_repeat_connects": false,
+  "phase_panel_seam": {
+    "connect_repeats": false,
+    "threshold_fraction": 0.025,
+    "worst_metric": "temperature",
+    "worst_seam_fraction": 0.03336066665441232,
+    "metrics": {
+      "luminosity": {
+        "amplitude": 7.391517140100824,
+        "seam_abs": 0.21968352525069434,
+        "seam_fraction": 0.02972103305542734
+      },
+      "radial_velocity": {
+        "amplitude": 8.214143096020637,
+        "seam_abs": 0.1455954358540795,
+        "seam_fraction": 0.01772496950103214
+      },
+      "radius": {
+        "amplitude": 0.08209851543248714,
+        "seam_abs": 0.0014149415437989532,
+        "seam_fraction": 0.017234678804423885
+      },
+      "temperature": {
+        "amplitude": 235.2034014703613,
+        "seam_abs": 7.846542272436636,
+        "seam_fraction": 0.03336066665441232
+      }
+    }
+  },
   "fps": 35,
   "period_days_used": 0.5149534196523291,
   "phase_reference_days_used": 1363.250460736423,
@@ -1219,7 +1248,7 @@
     ],
     "teff_text_anchor_data_luminosity": [
       0.14600000000000002,
-      59.529737882346616
+      60.44951907524327
     ],
     "radius_gauge_x_phase": 0.11200000000000002,
     "radius_gauge_half_height_lsun": 0.2143539970629238,
@@ -1232,11 +1261,18 @@
         "radius_phase": 0.14,
         "radius_y_fraction": 0.91,
         "teff_phase": 0.14,
-        "teff_y_fraction": 0.42,
+        "teff_y_fraction": 0.5272736227804811,
         "rv_sphere_phase": 1.28,
         "rv_sphere_y_fraction": 0.73,
         "lum_gauge_half_height_fraction": 0.025
       }
+    },
+    "teff_gauge_sphere_clearance": {
+      "max_sphere_zoom": 0.423056874536771,
+      "sphere_half_height_lsun": 1.3654900878118486,
+      "gap_lsun": 0.07262268698365328,
+      "gap_px": 3.0,
+      "center_y_lsun": 60.44951907524327
     },
     "sphere_image_size_px": 192,
     "sphere_base_zoom": 0.42,
