@@ -8,7 +8,7 @@
   "frame_generation": "fixed-q linear interpolation between bracketing nonlinear profiles on a uniform phase grid",
   "coordinate": "r_over_R",
   "main_terms_only": true,
-  "scaling_method_version": "model000-visible-window-v12",
+  "scaling_method_version": "model000-visible-window-v13",
   "layout": "left panel: phase-local power diagnostics versus r/R_sun; right column top: photosphere radial velocity curve; right column bottom: photosphere luminosity curve",
   "zone_boundary_smoothing": "ionization-zone boundaries are converted from temperature spans to q spans, then the q-space zone centers and widths are smoothed over phase with a low-order periodic Fourier fit before being mapped to the displayed coordinate",
   "left_panel_quantity": "phase-local specific power diagnostics",
@@ -62,11 +62,11 @@
     5.387294668462144,
     6.995969579647836
   ],
-  "left_panel_scaling_method": "reference-guided panel-local visible-window extrema; each model's power extrema are measured only between the minimum and maximum shown x coordinate, zero is included, and model_000's shown-window minimum and maximum provide the reference padding convention without imposing a hard shared y-axis floor",
+  "left_panel_scaling_method": "panel-local visible-window extrema; the y-axis is set from the minimum and maximum plotted specific-power values inside this panel's shown x range, with zero included. model_000 contributes the padding and opacity-band placement convention only, not a hard numerical floor.",
   "scaling_reference": {
     "summary_path": "<local-rre-root>/output/combined_14507_full_pressure_minus_eq/mesa_rsp_combined_14507_full_pressure_minus_eq_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work_summary.json",
     "loaded": true,
-    "scaling_method_version": "model000-visible-window-v11",
+    "scaling_method_version": "model000-visible-window-v12",
     "left_power_ylim_reference": [
       -1.0538880567035844,
       0.9359095347404265
@@ -86,6 +86,36 @@
     ],
     "opacity_display_max_reference": 0.7767257274249058,
     "reason": null
+  },
+  "panel_scaling": {
+    "reference_model": "model_000",
+    "reference_use": "style only: inherit model_000's fractional padding and opacity-band placement after measuring model_000 inside its shown radius range",
+    "left_power": {
+      "x_field": "radius_rsun_plot",
+      "x_limits": [
+        5.387294668462144,
+        6.995969579647836
+      ],
+      "visible_minimum": -0.9758222747255412,
+      "visible_maximum": 0.866582902537432,
+      "limits": [
+        -1.0538880567035844,
+        0.9359095347404265
+      ],
+      "rule": "minimum/maximum of the displayed power curves in the shown radius window; zero is included before applying the model_000 padding fraction"
+    },
+    "opacity_on_left_power": {
+      "x_field": "radius_rsun_plot",
+      "x_limits": [
+        5.387294668462144,
+        6.995969579647836
+      ],
+      "visible_minimum": 0.0020449198640830274,
+      "visible_maximum": 149.03239726657318,
+      "display_minimum": 0.45835811279386385,
+      "display_maximum": 0.7767257274249058,
+      "rule": "opacity is min-max scaled from this panel's own shown-radius opacity extrema into the model_000 fractional opacity band"
+    }
   },
   "panel_y_ranges": {
     "left_power": {
@@ -155,7 +185,7 @@
     ]
   },
   "opacity_scaling": {
-    "method": "left-panel visible-window opacity is scaled inside this panel's own y-axis range. The effective opacity span is this panel's own visible opacity minimum and maximum in the shown radius window. The model_000 example supplies the opacity-band placement convention, not a hard opacity floor.",
+    "method": "left-panel visible-window opacity is scaled inside this panel's own y-axis range. The effective opacity span is this panel's own visible opacity minimum and maximum in the shown radius window. The model_000 example supplies the fractional opacity-band placement convention, not a hard opacity floor.",
     "panel": "left_power",
     "panel_bottom_fraction": 0.76,
     "panel_top_fraction": 0.92,

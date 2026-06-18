@@ -110,7 +110,7 @@ PLOT_SCALE_FACTORS = {
     "pdv_power": 1.0,
 }
 DISPLAY_POWER_SCALE = 1.0e9
-ANIMATION_SCALING_VERSION = "model000-visible-window-v11"
+ANIMATION_SCALING_VERSION = "model000-visible-window-v13"
 ZONE_LABEL_COLOR = "#2B2B2B"
 ZONE_LABEL_FONT_SIZE = 9.2
 ZONE_LABEL_STROKE_WIDTH = 1.3
@@ -777,7 +777,8 @@ def power_panel_limits_from_visible_bounds(
     reference_visible_bounds: tuple[float, float] | None = None,
     pad_fraction: float = POWER_PANEL_PAD_FRACTION,
 ) -> tuple[float, float]:
-    data_min, data_max = bounds_with_reference_floor(data_bounds, reference_visible_bounds)
+    _ = reference_limits, reference_visible_bounds
+    data_min, data_max = float(data_bounds[0]), float(data_bounds[1])
     if not np.isfinite(data_min) or not np.isfinite(data_max):
         return -1.0, 1.0
 
@@ -798,12 +799,6 @@ def power_panel_limits_from_visible_bounds(
         y_min -= deficit
         y_max += deficit
 
-    if reference_limits is not None:
-        ref_min = float(reference_limits[0])
-        ref_max = float(reference_limits[1])
-        if np.isfinite(ref_min) and np.isfinite(ref_max) and ref_max > ref_min:
-            y_min = min(y_min, ref_min)
-            y_max = max(y_max, ref_max)
     return float(y_min), float(y_max)
 
 
@@ -2577,8 +2572,6 @@ def main() -> None:
     else:
         left_power_ylim = power_panel_limits_from_visible_bounds(
             visible_power_bounds,
-            reference_limits=reference_power_ylim,
-            reference_visible_bounds=reference_power_visible_bounds,
             pad_fraction=reference_power_pad_fraction,
         )
         left_power_ylim_raw = (
@@ -2590,7 +2583,7 @@ def main() -> None:
     }
     opacity_effective_bounds = bounds_with_reference_floor(
         scaled_diagnostic_bounds["opacity"],
-        reference_opacity_visible_bounds,
+        None,
     )
     opacity_display = opacity_display_mapping(
         opacity_effective_bounds,
@@ -3573,12 +3566,41 @@ def main() -> None:
             float(left_panel_x_limits[1]),
         ],
         "left_panel_scaling_method": (
-            "reference-guided panel-local visible-window extrema; each model's power extrema are measured "
-            "only between the minimum and maximum shown x coordinate, zero is included, model_000's visible "
-            "minimum and maximum in that same kind of shown radius window set the reference floor, and the "
-            "panel expands only when its own visible extrema exceed that example range"
+            "panel-local visible-window extrema; the y-axis is set from the minimum and maximum plotted "
+            "specific-power values inside this panel's shown x range, with zero included. model_000 "
+            "contributes the padding and opacity-band placement convention only, not a hard numerical floor."
         ),
         "scaling_reference": scaling_reference,
+        "panel_scaling": {
+            "reference_model": "model_000",
+            "reference_use": (
+                "style only: inherit model_000's fractional padding and opacity-band placement after "
+                "measuring model_000 inside its shown radius range"
+            ),
+            "left_power": {
+                "x_field": left_panel_x_field,
+                "x_limits": [float(left_panel_x_limits[0]), float(left_panel_x_limits[1])],
+                "visible_minimum": float(visible_power_bounds[0]),
+                "visible_maximum": float(visible_power_bounds[1]),
+                "limits": [float(left_power_ylim[0]), float(left_power_ylim[1])],
+                "rule": (
+                    "minimum/maximum of the displayed power curves in the shown radius window; "
+                    "zero is included before applying the model_000 padding fraction"
+                ),
+            },
+            "opacity_on_left_power": {
+                "x_field": left_panel_x_field,
+                "x_limits": [float(left_panel_x_limits[0]), float(left_panel_x_limits[1])],
+                "visible_minimum": float(scaled_diagnostic_bounds["opacity"][0]),
+                "visible_maximum": float(scaled_diagnostic_bounds["opacity"][1]),
+                "display_minimum": float(opacity_display_min),
+                "display_maximum": float(opacity_display_max),
+                "rule": (
+                    "opacity is min-max scaled from this panel's own shown-radius opacity extrema "
+                    "into the model_000 fractional opacity band"
+                ),
+            },
+        },
         "panel_y_ranges": {
             "left_power": {
                 "limits": [float(left_power_ylim[0]), float(left_power_ylim[1])],
@@ -3598,8 +3620,8 @@ def main() -> None:
                 "pad_fraction": float(reference_power_pad_fraction),
                 "method": (
                     "minimum and maximum of the plotted power curves within this panel's shown x range; "
-                    "the axis includes zero, uses the model_000 visible extrema as a reference floor, "
-                    "and expands beyond that floor when this panel's own local visible extrema require it"
+                    "the axis includes zero and uses the model_000 visible extrema only to inherit the "
+                    "reference padding convention, not as a shared y-limit"
                 ),
             },
             "photosphere_radial_velocity": {
@@ -3634,8 +3656,9 @@ def main() -> None:
         "opacity_scaling": {
             "method": (
                 "left-panel visible-window opacity is scaled inside this panel's own y-axis range. "
-                "The effective opacity span is the union of this panel's visible opacity extrema and "
-                "model_000's visible opacity extrema, so weak-opacity panels are not visually over-amplified."
+                "The effective opacity span is this panel's own visible opacity minimum and maximum in "
+                "the shown radius window. The model_000 example supplies the fractional opacity-band "
+                "placement convention, not a hard opacity floor."
             ),
             "panel": "left_power",
             "panel_bottom_fraction": float(reference_opacity_band_fractions[0]),
@@ -3665,7 +3688,7 @@ def main() -> None:
             ],
             "reference_convention": (
                 "model_000 example rule: measure opacity min and max only in the shown radius range, "
-                "then use that visible span as the reference floor for the reserved opacity band in each panel"
+                "then use that example only to set the reserved opacity-band placement for each panel"
             ),
             "display_min_value": float(opacity_display_min),
             "display_units_per_opacity_unit": float(opacity_scale_display),

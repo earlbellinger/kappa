@@ -9,13 +9,13 @@
   "stages": {
     "plot": {
       "status": "complete",
-      "updated_at": "2026-06-18T01:54:09.837471+00:00",
+      "updated_at": "2026-06-18T03:46:19.612669+00:00",
       "expected_output": "<local-rre-root>/output/combined_14507_full_pressure_minus_eq/mesa_rsp_combined_14507_full_pressure_minus_eq_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work.gif",
-      "started_at": "2026-06-18T01:52:38.013328+00:00"
+      "started_at": "2026-06-18T03:44:47.203633+00:00"
     },
     "verify": {
       "status": "complete",
-      "updated_at": "2026-06-18T01:54:10.021796+00:00",
+      "updated_at": "2026-06-18T03:46:19.798480+00:00",
       "expected_output": "<local-rre-root>/output/combined_14507_full_pressure_minus_eq/verification_summary.json",
       "result": {
         "model_id": "model_000",
@@ -27,8 +27,38 @@
         "summary_path": "<local-rre-root>/output/combined_14507_full_pressure_minus_eq/mesa_rsp_combined_14507_full_pressure_minus_eq_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work_summary.json",
         "pressure_work_mode": "gas_plus_pav",
         "heating_mode": "gas_minus_c",
-        "scaling_method_version": "model000-visible-window-v12",
-        "expected_scaling_method_version": "model000-visible-window-v12",
+        "scaling_method_version": "model000-visible-window-v13",
+        "expected_scaling_method_version": "model000-visible-window-v13",
+        "panel_scaling": {
+          "reference_model": "model_000",
+          "reference_use": "style only: inherit model_000's fractional padding and opacity-band placement after measuring model_000 inside its shown radius range",
+          "left_power": {
+            "x_field": "radius_rsun_plot",
+            "x_limits": [
+              5.387294668462144,
+              6.995969579647836
+            ],
+            "visible_minimum": -0.9758222747255412,
+            "visible_maximum": 0.866582902537432,
+            "limits": [
+              -1.0538880567035844,
+              0.9359095347404265
+            ],
+            "rule": "minimum/maximum of the displayed power curves in the shown radius window; zero is included before applying the model_000 padding fraction"
+          },
+          "opacity_on_left_power": {
+            "x_field": "radius_rsun_plot",
+            "x_limits": [
+              5.387294668462144,
+              6.995969579647836
+            ],
+            "visible_minimum": 0.0020449198640830274,
+            "visible_maximum": 149.03239726657318,
+            "display_minimum": 0.45835811279386385,
+            "display_maximum": 0.7767257274249058,
+            "rule": "opacity is min-max scaled from this panel's own shown-radius opacity extrema into the model_000 fractional opacity band"
+          }
+        },
         "panel_y_ranges": {
           "left_power": {
             "limits": [
@@ -96,7 +126,7 @@
           0.9359095347404265
         ],
         "opacity_scaling": {
-          "method": "left-panel visible-window opacity is scaled inside this panel's own y-axis range. The effective opacity span is this panel's own visible opacity minimum and maximum in the shown radius window. The model_000 example supplies the opacity-band placement convention, not a hard opacity floor.",
+          "method": "left-panel visible-window opacity is scaled inside this panel's own y-axis range. The effective opacity span is this panel's own visible opacity minimum and maximum in the shown radius window. The model_000 example supplies the fractional opacity-band placement convention, not a hard opacity floor.",
           "panel": "left_power",
           "panel_bottom_fraction": 0.76,
           "panel_top_fraction": 0.92,
@@ -188,10 +218,10 @@
         "phase_seam_ok": true,
         "passed": true,
         "failures": [],
-        "verified_at": "2026-06-18T01:54:10.020797+00:00"
+        "verified_at": "2026-06-18T03:46:19.797467+00:00"
       },
-      "started_at": "2026-06-18T01:54:09.985518+00:00"
+      "started_at": "2026-06-18T03:46:19.761853+00:00"
     }
   },
-  "updated_at": "2026-06-18T01:54:10.021796+00:00"
+  "updated_at": "2026-06-18T03:46:19.798982+00:00"
 }

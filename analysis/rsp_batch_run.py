@@ -53,7 +53,7 @@ EXPECTED_MODEL_FIELD = {
     "restart": "restart_model",
     "deep2cycles": "deep_model",
 }
-EXPECTED_ANIMATION_SCALING_VERSION = "model000-visible-window-v11"
+EXPECTED_ANIMATION_SCALING_VERSION = "model000-visible-window-v13"
 ACCEPTED_ANIMATION_SCALING_VERSIONS = {
     EXPECTED_ANIMATION_SCALING_VERSION,
 }
@@ -903,6 +903,9 @@ def animation_summary_scaling_status(summary: dict[str, object]) -> tuple[bool, 
         visible_power_bounds = summary["left_power_visible_data_bounds"]
         left_power_ylim = summary["left_power_ylim"]
         opacity_scaling = summary["opacity_scaling"]
+        panel_scaling = summary["panel_scaling"]
+        panel_scaling_left = panel_scaling["left_power"]
+        panel_scaling_opacity = panel_scaling["opacity_on_left_power"]
         panel_y_ranges = summary["panel_y_ranges"]
         left_power_panel = panel_y_ranges["left_power"]
         scale_left = float(scaling_x_limits[0])
@@ -969,6 +972,26 @@ def animation_summary_scaling_status(summary: dict[str, object]) -> tuple[bool, 
         or abs(float(left_power_visible[1]) - visible_max) > 1.0e-8
     ):
         return False, "left-power panel y-range metadata does not match the plotted limits"
+    if (
+        str(panel_scaling.get("reference_model")) != "model_000"
+        or str(panel_scaling.get("reference_use", "")).find("style only") < 0
+        or abs(float(panel_scaling_left["visible_minimum"]) - visible_min) > 1.0e-8
+        or abs(float(panel_scaling_left["visible_maximum"]) - visible_max) > 1.0e-8
+        or abs(float(panel_scaling_left["limits"][0]) - panel_bottom) > 1.0e-8
+        or abs(float(panel_scaling_left["limits"][1]) - panel_top) > 1.0e-8
+        or abs(float(panel_scaling_left["x_limits"][0]) - scale_left) > 1.0e-8
+        or abs(float(panel_scaling_left["x_limits"][1]) - scale_right) > 1.0e-8
+    ):
+        return False, "panel_scaling.left_power metadata does not match the plotted visible-window limits"
+    if (
+        abs(float(panel_scaling_opacity["visible_minimum"]) - float(opacity_visible[0])) > 1.0e-8
+        or abs(float(panel_scaling_opacity["visible_maximum"]) - float(opacity_visible[1])) > 1.0e-8
+        or abs(float(panel_scaling_opacity["display_minimum"]) - opacity_min_display) > 1.0e-8
+        or abs(float(panel_scaling_opacity["display_maximum"]) - opacity_max_display) > 1.0e-8
+        or abs(float(panel_scaling_opacity["x_limits"][0]) - scale_left) > 1.0e-8
+        or abs(float(panel_scaling_opacity["x_limits"][1]) - scale_right) > 1.0e-8
+    ):
+        return False, "panel_scaling.opacity_on_left_power metadata does not match the plotted opacity scaling"
     if opacity_units <= 0.0 or opacity_max_display <= 0.0:
         return False, "opacity display scale is not positive"
     expected_opacity_min_display, expected_opacity_max_display = expected_opacity_display_bounds(
@@ -1197,6 +1220,7 @@ def verify_model(record: dict[str, object], output_dir: Path) -> dict[str, objec
     left_power_ylim = summary.get("left_power_ylim")
     opacity_scaling = summary.get("opacity_scaling")
     scaling_version = summary.get("scaling_method_version")
+    panel_scaling = summary.get("panel_scaling")
     panel_y_ranges = summary.get("panel_y_ranges")
     photosphere_visualization = summary.get("photosphere_visualization", {})
     photosphere_radius_min = photosphere_visualization.get("sphere_radius_min_rsun")
@@ -1260,6 +1284,21 @@ def verify_model(record: dict[str, object], output_dir: Path) -> dict[str, objec
                 failures.append("left-power panel y-range metadata does not match the plotted limits")
         except (TypeError, ValueError, KeyError, IndexError):
             failures.append("panel-local y-range metadata is missing")
+        try:
+            panel_scaling_left = panel_scaling["left_power"]  # type: ignore[index]
+            if (
+                str(panel_scaling.get("reference_model")) != "model_000"  # type: ignore[union-attr]
+                or "style only" not in str(panel_scaling.get("reference_use", ""))  # type: ignore[union-attr]
+                or abs(float(panel_scaling_left["visible_minimum"]) - visible_min) > 1.0e-8
+                or abs(float(panel_scaling_left["visible_maximum"]) - visible_max) > 1.0e-8
+                or abs(float(panel_scaling_left["limits"][0]) - panel_bottom) > 1.0e-8
+                or abs(float(panel_scaling_left["limits"][1]) - panel_top) > 1.0e-8
+                or abs(float(panel_scaling_left["x_limits"][0]) - float(scaling_x_limits[0])) > 1.0e-8
+                or abs(float(panel_scaling_left["x_limits"][1]) - float(scaling_x_limits[1])) > 1.0e-8
+            ):
+                failures.append("panel_scaling.left_power metadata does not match the plotted visible-window limits")
+        except (TypeError, ValueError, KeyError, IndexError):
+            failures.append("panel_scaling.left_power metadata is missing")
     except (TypeError, ValueError, IndexError):
         failures.append("visible power extrema metadata is missing")
     try:
@@ -1352,6 +1391,21 @@ def verify_model(record: dict[str, object], output_dir: Path) -> dict[str, objec
             failures.append("opacity scaling x-limits do not match the displayed left-panel radius range")
         if float(opacity_visible[1]) <= float(opacity_visible[0]):
             failures.append("opacity visible-window extrema are degenerate")
+        try:
+            panel_scaling_opacity = panel_scaling["opacity_on_left_power"]  # type: ignore[index]
+            if (
+                abs(float(panel_scaling_opacity["visible_minimum"]) - float(opacity_visible[0])) > 1.0e-8
+                or abs(float(panel_scaling_opacity["visible_maximum"]) - float(opacity_visible[1])) > 1.0e-8
+                or abs(float(panel_scaling_opacity["display_minimum"]) - opacity_min_display) > 1.0e-8
+                or abs(float(panel_scaling_opacity["display_maximum"]) - opacity_max_display) > 1.0e-8
+                or abs(float(panel_scaling_opacity["x_limits"][0]) - float(scaling_x_limits[0])) > 1.0e-8
+                or abs(float(panel_scaling_opacity["x_limits"][1]) - float(scaling_x_limits[1])) > 1.0e-8
+            ):
+                failures.append(
+                    "panel_scaling.opacity_on_left_power metadata does not match the plotted opacity scaling"
+                )
+        except (TypeError, ValueError, KeyError, IndexError):
+            failures.append("panel_scaling.opacity_on_left_power metadata is missing")
     except (TypeError, ValueError, KeyError):
         failures.append("visible-window opacity scaling metadata is missing")
     try:
@@ -1386,6 +1440,7 @@ def verify_model(record: dict[str, object], output_dir: Path) -> dict[str, objec
         "heating_mode": heating_mode,
         "scaling_method_version": scaling_version,
         "expected_scaling_method_version": EXPECTED_ANIMATION_SCALING_VERSION,
+        "panel_scaling": panel_scaling,
         "panel_y_ranges": panel_y_ranges,
         "cycle_source": cycle_source,
         "main_radius_xlim_used": main_radius_xlim,
