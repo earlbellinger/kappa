@@ -75,6 +75,8 @@ def stable_animation_summary(summary: dict[str, object]) -> dict[str, object]:
         "pressure_work_mode": summary.get("pressure_work_mode") or pdv_generation.get("pressure_work_mode"),
         "heating_mode": summary.get("heating_mode"),
         "main_terms_only": summary.get("main_terms_only"),
+        "phase_panel_repeat_version": summary.get("phase_panel_repeat_version"),
+        "phase_panel_repeat_mode": summary.get("phase_panel_repeat_mode"),
         "x_limits": summary.get("x_limits"),
         "left_power_ylim": summary.get("left_power_ylim"),
         "left_power_visible_data_bounds": summary.get("left_power_visible_data_bounds"),
