@@ -49,6 +49,7 @@
   "cycle_profile_count": 1061,
   "frame_count": 180,
   "closing_frame_added_for_seamless_loop": false,
+  "phase_panel_repeat_version": "connected-periodic-v1",
   "phase_panel_repeat_mode": "repeated cycle copies are connected periodically in the phase panels; no NaN gap is inserted at the repeated radius-maximum boundary",
   "phase_panel_repeat_count": 3,
   "fps": 35,
@@ -1218,7 +1219,7 @@
     ],
     "teff_text_anchor_data_luminosity": [
       0.186,
-      58.76330034048502
+      60.138254259001755
     ],
     "radius_gauge_x_phase": 0.152,
     "radius_gauge_half_height_lsun": 0.3696299906863697,
@@ -1231,11 +1232,18 @@
         "radius_phase": 0.18,
         "radius_y_fraction": 0.89,
         "teff_phase": 0.18,
-        "teff_y_fraction": 0.41,
+        "teff_y_fraction": 0.5029952894219683,
         "rv_sphere_phase": 1.2083333333333333,
         "rv_sphere_y_fraction": 0.77,
         "lum_gauge_half_height_fraction": 0.025
       }
+    },
+    "teff_gauge_sphere_clearance": {
+      "max_sphere_zoom": 0.4344220567522706,
+      "sphere_half_height_lsun": 2.417894113098328,
+      "gap_lsun": 0.12522986966045213,
+      "gap_px": 3.0,
+      "center_y_lsun": 60.138254259001755
     },
     "sphere_image_size_px": 192,
     "sphere_base_zoom": 0.42,
