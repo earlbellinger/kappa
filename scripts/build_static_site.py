@@ -203,7 +203,35 @@ def convergence_by_model(rre_root: Path) -> dict[str, dict[str, object]]:
             current_end = convergence_window_end(by_model.get(str(model_id), {}))
             if trend_end is not None and (current_end is None or trend_end > current_end):
                 by_model[str(model_id)] = normalized
+    gate = load_json(rre_root / "rsp_batch_runs" / "output" / "convergence_gate_audit.json")
+    gate_rows = gate.get("models", []) if isinstance(gate, dict) else []
+    for row in gate_rows:
+        if not isinstance(row, dict) or not row.get("model_id"):
+            continue
+        model_id = str(row["model_id"])
+        target = by_model.setdefault(model_id, {})
+        target.update(
+            {
+                "gate_blocking_metrics": row.get("blocking_metrics"),
+                "gate_forecast_status": row.get("forecast_status"),
+                "gate_post_convergence_action": row.get("post_convergence_action"),
+                "gate_latest_surface_velocity_status": row.get("latest_surface_velocity_status"),
+                "gate_gamma_ratio_to_tolerance": row.get("gamma_ratio_to_tolerance"),
+                "gate_period_ratio_to_tolerance": row.get("period_ratio_to_tolerance"),
+                "gate_delta_r_ratio_to_tolerance": row.get("delta_r_ratio_to_tolerance"),
+                "gate_delta_r_periods_to_tolerance_linear": row.get("delta_r_periods_to_tolerance_linear"),
+            }
+        )
     return by_model
+
+
+def metric_label(metric: str) -> str:
+    labels = {
+        "gamma": "Gamma",
+        "period": "P",
+        "delta_r": "DeltaR",
+    }
+    return labels.get(metric.strip().lower(), metric.strip())
 
 
 def convergence_text(convergence: dict[str, object] | None) -> str:
@@ -218,6 +246,17 @@ def convergence_text(convergence: dict[str, object] | None) -> str:
     delta_r = convergence.get("delta_r_fractional_peak_to_peak_last_window")
     max_vsurf = convergence.get("max_vsurf_div_cs_max_last_window")
     bits = [f"strict convergence pending", f"{source}", f"{cycles} cycles"]
+    blocking = convergence.get("gate_blocking_metrics")
+    if blocking:
+        metrics = "/".join(metric_label(item) for item in str(blocking).split(",") if item.strip())
+        gate_text = f"waiting on {metrics}"
+        forecast = convergence.get("gate_forecast_status")
+        if forecast:
+            gate_text += f"; forecast {forecast}"
+        delta_r_ratio = convergence.get("gate_delta_r_ratio_to_tolerance")
+        if delta_r_ratio is not None and "delta_r" in str(blocking).lower():
+            gate_text += f"; DeltaR {float(delta_r_ratio):.3g}x tol"
+        bits.append(gate_text)
     if convergence.get("has_full_window") is not True:
         used = convergence.get("last_cycle_count_used") or cycles or 0
         bits.append(f"{used}/100-cycle window")
