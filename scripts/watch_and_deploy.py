@@ -249,7 +249,24 @@ def status_signature(rre_root: Path) -> dict[str, object]:
             }
         )
     live_models = []
+    batch_results = []
     if isinstance(live, dict):
+        batch_status = live.get("batch_status")
+        if isinstance(batch_status, dict):
+            results = batch_status.get("results")
+            if isinstance(results, dict):
+                for model_id, result in sorted(results.items()):
+                    if not isinstance(result, dict):
+                        continue
+                    batch_results.append(
+                        {
+                            "model_id": model_id,
+                            "status": result.get("status"),
+                            "driver_pid_process_running": result.get("driver_pid_process_running"),
+                            "driver_pid_source": result.get("driver_pid_source"),
+                            "raw_driver_pid_process_running": result.get("raw_driver_pid_process_running"),
+                        }
+                    )
         for model in live.get("models", []):
             if not isinstance(model, dict):
                 continue
@@ -344,6 +361,7 @@ def status_signature(rre_root: Path) -> dict[str, object]:
         "audit_status": audit.get("status") if isinstance(audit, dict) else None,
         "quality_status": quality.get("status") if isinstance(quality, dict) else None,
         "quality_complete": quality.get("complete") if isinstance(quality, dict) else None,
+        "batch_results": batch_results,
         "convergence_models": convergence_models,
         "convergence_trend_models": convergence_trend_models,
         "phase_seam": {
