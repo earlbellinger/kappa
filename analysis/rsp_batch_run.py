@@ -512,7 +512,7 @@ def run_mesa_stage(
         print(f"{record['model_id']} {stage}: ignoring stale output ({output_reason})")
     if resume_from_latest_photo and stage in RESUMABLE_PHOTO_DIRS:
         try:
-            resume_photo = latest_saved_photo(run_dir / RESUMABLE_PHOTO_DIRS[stage])
+            resume_photo = latest_saved_photo_for_stage(run_dir, stage)
         except FileNotFoundError as exc:
             print(f"{record['model_id']} {stage}: no saved photo for resume ({exc}); retrying from stage start")
         else:
@@ -568,6 +568,35 @@ def latest_saved_photo(photo_dir: Path) -> Path:
     return max(numeric_photos, key=lambda item: item[0])[1]
 
 
+def latest_saved_photo_for_stage(run_dir: Path, stage: str) -> Path:
+    if stage not in RESUMABLE_PHOTO_DIRS:
+        raise ValueError(f"Stage {stage!r} cannot be resumed from a saved photo")
+    photo_dirs = [run_dir / RESUMABLE_PHOTO_DIRS[stage]]
+    resume_prefix = RESUME_PHOTO_DIR_PREFIXES[stage] + "_"
+    if run_dir.exists():
+        photo_dirs.extend(
+            child
+            for child in run_dir.iterdir()
+            if child.is_dir() and child.name.startswith(resume_prefix)
+        )
+
+    candidates: list[tuple[int, float, Path]] = []
+    missing_dirs: list[Path] = []
+    for photo_dir in photo_dirs:
+        if not photo_dir.exists():
+            missing_dirs.append(photo_dir)
+            continue
+        for path in photo_dir.iterdir():
+            if path.is_file() and path.name.isdigit():
+                candidates.append((int(path.name), path.stat().st_mtime, path))
+    if not candidates:
+        searched = ", ".join(str(path) for path in photo_dirs if path.exists())
+        if not searched and missing_dirs:
+            searched = ", ".join(str(path) for path in missing_dirs)
+        raise FileNotFoundError(f"No numeric saved photos for {stage} in {searched}")
+    return max(candidates, key=lambda item: (item[0], item[1]))[2]
+
+
 def set_or_insert_assignment(text: str, key: str, value: str, after_key: str | None = None) -> str:
     lines = text.splitlines()
     pattern = re_assignment_for_key(key)
@@ -601,16 +630,19 @@ def write_resume_files(
     if stage not in RESUMABLE_PHOTO_DIRS:
         raise ValueError(f"Stage {stage!r} cannot be resumed from a saved photo")
     photo_id = photo_path.name
-    inlist_name = f"{RESUME_BASE_INLISTS[stage]}_resume_{photo_id}"
-    script_name = f"{RUN_SCRIPTS[stage]}_resume_{photo_id}"
-    photo_dir = RESUMABLE_PHOTO_DIRS[stage]
+    photo_dir_name = photo_path.parent.name
+    photo_tag_source = photo_id if photo_dir_name == RESUMABLE_PHOTO_DIRS[stage] else f"{photo_dir_name}_{photo_id}"
+    photo_tag = re.sub(r"[^A-Za-z0-9]+", "_", photo_tag_source).strip("_")
+    inlist_name = f"{RESUME_BASE_INLISTS[stage]}_resume_{photo_tag}"
+    script_name = f"{RUN_SCRIPTS[stage]}_resume_{photo_tag}"
+    photo_rel = photo_path.relative_to(run_dir).as_posix()
     text = (run_dir / RESUME_BASE_INLISTS[stage]).read_text()
     text = set_or_insert_assignment(text, "load_saved_model", ".false.")
     text = set_or_insert_assignment(text, "load_saved_photo", ".true.", after_key="load_saved_model")
     text = set_or_insert_assignment(
         text,
         "saved_photo_name",
-        f"'{photo_dir}/{photo_id}'",
+        f"'{photo_rel}'",
         after_key="load_saved_photo",
     )
     if resume_max_num_periods is not None:
