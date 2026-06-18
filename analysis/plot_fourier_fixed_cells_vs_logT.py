@@ -28,6 +28,8 @@ from plot_fourier_vs_logT import (
 )
 from plot_fourier_vs_massdepth_profiles import (
     analyze_signal_stack,
+    break_wrapped_series,
+    build_fourier_design_matrix,
     determine_fit_harmonics,
     load_period_and_phase_reference,
     load_profile_cycle,
@@ -35,6 +37,8 @@ from plot_fourier_vs_massdepth_profiles import (
 )
 
 TWOPI = 2.0 * math.pi
+AMPLITUDE_DASH_THRESHOLD = 0.05
+PEAK_PHASE_SAMPLES = 4096
 
 
 def parse_args() -> argparse.Namespace:
@@ -56,6 +60,107 @@ def interpolate_unwrapped_phase(q: np.ndarray, phase: np.ndarray, q_reference: f
     unwrapped = np.unwrap(np.asarray(phase, dtype=float))
     reference = float(np.interp(float(q_reference), np.asarray(q, dtype=float), unwrapped))
     return relative_phase(unwrapped, reference), reference
+
+
+def centered_cycle_delta(phase_a: float, phase_b: float) -> float:
+    return float(((phase_a - phase_b + 0.5) % 1.0) - 0.5)
+
+
+def fitted_peak_phase(
+    phase: np.ndarray,
+    values: np.ndarray,
+    fit_harmonics: int,
+) -> float:
+    phase_array = np.asarray(phase, dtype=float)
+    value_array = np.asarray(values, dtype=float)
+    finite = np.isfinite(phase_array) & np.isfinite(value_array)
+    if np.count_nonzero(finite) < 4:
+        return float("nan")
+
+    phase_fit = np.mod(phase_array[finite], 1.0)
+    value_fit = value_array[finite]
+    peak_to_peak = float(np.nanmax(value_fit) - np.nanmin(value_fit))
+    scale = max(float(np.nanmax(np.abs(value_fit))), 1.0)
+    if peak_to_peak <= 1.0e-12 * scale:
+        return float("nan")
+
+    max_harmonic = max(1, min(int(fit_harmonics), (phase_fit.size - 1) // 2))
+    design_matrix = build_fourier_design_matrix(phase_fit, max_harmonic)
+    coefficients, *_ = np.linalg.lstsq(design_matrix, value_fit, rcond=None)
+    dense_phase = np.linspace(0.0, 1.0, PEAK_PHASE_SAMPLES, endpoint=False)
+    dense_values = build_fourier_design_matrix(dense_phase, max_harmonic) @ coefficients
+    return float(dense_phase[int(np.nanargmax(dense_values))])
+
+
+def compute_thermodynamic_peak_lags(
+    phase: np.ndarray,
+    pressure_stack: np.ndarray,
+    density_stack: np.ndarray,
+    gamma1_stack: np.ndarray,
+    fit_harmonics: int,
+) -> dict[str, np.ndarray]:
+    n_cells = pressure_stack.shape[0]
+    theta_pressure = np.full(n_cells, np.nan, dtype=float)
+    theta_density = np.full(n_cells, np.nan, dtype=float)
+    theta_gamma1 = np.full(n_cells, np.nan, dtype=float)
+    delta_pressure_density = np.full(n_cells, np.nan, dtype=float)
+    delta_pressure_gamma1 = np.full(n_cells, np.nan, dtype=float)
+
+    for i in range(n_cells):
+        theta_pressure[i] = fitted_peak_phase(phase, pressure_stack[i], fit_harmonics)
+        theta_density[i] = fitted_peak_phase(phase, density_stack[i], fit_harmonics)
+        theta_gamma1[i] = fitted_peak_phase(phase, gamma1_stack[i], fit_harmonics)
+        if np.isfinite(theta_pressure[i]) and np.isfinite(theta_density[i]):
+            delta_pressure_density[i] = TWOPI * centered_cycle_delta(theta_pressure[i], theta_density[i])
+        if np.isfinite(theta_pressure[i]) and np.isfinite(theta_gamma1[i]):
+            delta_pressure_gamma1[i] = TWOPI * centered_cycle_delta(theta_pressure[i], theta_gamma1[i])
+
+    return {
+        "theta_P_max_cycle": theta_pressure,
+        "theta_rho_max_cycle": theta_density,
+        "theta_gamma1_max_cycle": theta_gamma1,
+        "delta_theta_P_rho_rad": delta_pressure_density,
+        "delta_theta_P_gamma1_rad": delta_pressure_gamma1,
+    }
+
+
+def plot_amplitude_masked_line(
+    ax: plt.Axes,
+    x: np.ndarray,
+    y: np.ndarray,
+    amplitude: np.ndarray,
+    color: str,
+    linewidth: float,
+    label: str,
+    threshold: float = AMPLITUDE_DASH_THRESHOLD,
+) -> None:
+    x_values = np.asarray(x, dtype=float)
+    y_values = np.asarray(y, dtype=float)
+    amplitudes = np.asarray(amplitude, dtype=float)
+    finite = np.isfinite(x_values) & np.isfinite(y_values) & np.isfinite(amplitudes)
+    if not np.any(finite):
+        return
+
+    low_amplitude = finite & (amplitudes < threshold)
+    high_amplitude = finite & ~low_amplitude
+    used_label = False
+    for mask, linestyle in ((high_amplitude, "-"), (low_amplitude, "--")):
+        indices = np.flatnonzero(mask)
+        if indices.size == 0:
+            continue
+        split_points = np.where(np.diff(indices) > 1)[0] + 1
+        for group in np.split(indices, split_points):
+            if group.size < 2:
+                continue
+            ax.plot(
+                x_values[group],
+                y_values[group],
+                color=color,
+                linewidth=linewidth,
+                linestyle=linestyle,
+                label=label if not used_label else None,
+            )
+            used_label = True
 
 
 def finite_fractional_padding(values: np.ndarray, fraction: float = 0.08, minimum_half_range: float = 0.02) -> tuple[float, float]:
@@ -94,6 +199,7 @@ def write_csv(
     parameters: dict[str, np.ndarray],
     delta_amplitudes: dict[str, np.ndarray],
     delta_phases: dict[str, np.ndarray],
+    thermodynamic_phase_lags: dict[str, np.ndarray],
 ) -> None:
     fields = [
         "temperature_K",
@@ -117,6 +223,11 @@ def write_csv(
         "phi1_photosphere_rad",
         "phi2_photosphere_rad",
         "phi3_photosphere_rad",
+        "theta_P_max_cycle",
+        "theta_rho_max_cycle",
+        "theta_gamma1_max_cycle",
+        "delta_theta_P_rho_rad",
+        "delta_theta_P_gamma1_rad",
     ]
     with path.open("w", newline="", encoding="utf-8") as handle:
         writer = csv.DictWriter(handle, fieldnames=fields, lineterminator="\n")
@@ -144,6 +255,11 @@ def write_csv(
                 "phi1_photosphere_rad": reference["phi1"],
                 "phi2_photosphere_rad": reference["phi2"],
                 "phi3_photosphere_rad": reference["phi3"],
+                "theta_P_max_cycle": thermodynamic_phase_lags["theta_P_max_cycle"][i],
+                "theta_rho_max_cycle": thermodynamic_phase_lags["theta_rho_max_cycle"][i],
+                "theta_gamma1_max_cycle": thermodynamic_phase_lags["theta_gamma1_max_cycle"][i],
+                "delta_theta_P_rho_rad": thermodynamic_phase_lags["delta_theta_P_rho_rad"][i],
+                "delta_theta_P_gamma1_rad": thermodynamic_phase_lags["delta_theta_P_gamma1_rad"][i],
             }
             writer.writerow({key: f"{float(value):.12g}" for key, value in row.items()})
 
@@ -215,12 +331,25 @@ def main() -> None:
         reference[key] = phase_reference
         delta_phases[key] = delta
 
+    cycle_phase = np.mod(
+        (np.asarray(cycle["absolute_time_days"], dtype=float) - phase_reference_days) / period_days,
+        1.0,
+    )
+    thermodynamic_phase_lags = compute_thermodynamic_peak_lags(
+        phase=cycle_phase,
+        pressure_stack=np.asarray(cycle["pressure_sorted"], dtype=float)[:, visible_mask].T,
+        density_stack=np.asarray(cycle["density_sorted"], dtype=float)[:, visible_mask].T,
+        gamma1_stack=np.asarray(cycle["gamma1_sorted"], dtype=float)[:, visible_mask].T,
+        fit_harmonics=fit_harmonics,
+    )
+
     order = np.argsort(temperature)
     temperature_plot = temperature[order]
     q_plot = q_env[order]
     parameters_plot = {name: values[order] for name, values in parameters.items()}
     delta_amplitudes_plot = {name: values[order] for name, values in delta_amplitudes.items()}
     delta_phases_plot = {name: values[order] for name, values in delta_phases.items()}
+    thermodynamic_phase_lags_plot = {name: values[order] for name, values in thermodynamic_phase_lags.items()}
 
     write_csv(
         csv_path,
@@ -230,6 +359,7 @@ def main() -> None:
         parameters_plot,
         delta_amplitudes_plot,
         delta_phases_plot,
+        thermodynamic_phase_lags_plot,
     )
 
     plt.rcParams.update(
@@ -242,32 +372,43 @@ def main() -> None:
             "legend.fontsize": 9,
         }
     )
-    fig, (ax_amp, ax_phase) = plt.subplots(2, 1, figsize=(9.4, 6.5), sharex=True, constrained_layout=True)
-    axes = [ax_amp, ax_phase]
+    fig, (ax_amp, ax_phase, ax_thermo) = plt.subplots(
+        3,
+        1,
+        figsize=(9.4, 8.8),
+        sharex=True,
+        constrained_layout=True,
+    )
+    axes = [ax_amp, ax_phase, ax_thermo]
     add_zone_overlays(axes, zone_spans, photosphere_temperature, convection_profile)
 
     for harmonic, key in ((1, "A1"), (2, "A2"), (3, "A3")):
-        ax_amp.plot(
+        plot_amplitude_masked_line(
+            ax_amp,
             temperature_plot,
-            delta_amplitudes_plot[key],
+            parameters_plot[key],
+            parameters_plot[key],
             color=COMPLEX_TRANSFER_HARMONIC_COLORS[harmonic],
             linewidth=1.55,
-            label=rf"$\Delta A_{harmonic}$",
+            label=rf"$A_{harmonic}$",
         )
     ax_amp.axhline(0.0, color="k", linewidth=1.0, linestyle="--", zorder=-2)
     amp_ylim = finite_fractional_padding(
-        np.concatenate([delta_amplitudes_plot["A1"], delta_amplitudes_plot["A2"], delta_amplitudes_plot["A3"]]),
+        np.concatenate([parameters_plot["A1"], parameters_plot["A2"], parameters_plot["A3"]]),
         minimum_half_range=0.01,
     )
+    amp_ylim = (min(0.0, amp_ylim[0]), amp_ylim[1])
     ax_amp.set_ylim(*amp_ylim)
-    ax_amp.set_ylabel("Delta Fractional Amplitude")
+    ax_amp.set_ylabel("Fractional Amplitude")
     ax_amp.grid(False)
     ax_amp.legend(loc="upper left", ncol=3, frameon=True, framealpha=0.9)
 
     for harmonic, key in ((1, "phi1"), (2, "phi2"), (3, "phi3")):
-        ax_phase.plot(
+        plot_amplitude_masked_line(
+            ax_phase,
             temperature_plot,
             delta_phases_plot[key],
+            parameters_plot[f"A{harmonic}"],
             color=COMPLEX_TRANSFER_HARMONIC_COLORS[harmonic],
             linewidth=1.5,
             label=rf"$\Delta\phi_{harmonic}$",
@@ -283,9 +424,49 @@ def main() -> None:
     ticks, labels = phase_ticks_for_limits(*phase_ylim)
     ax_phase.set_yticks(ticks, labels)
     ax_phase.set_ylabel("Phase Lag [rad]")
-    ax_phase.set_xlabel(r"$T\ [{\rm K}]$")
     ax_phase.grid(False)
     ax_phase.legend(loc="upper left", ncol=3, frameon=True, framealpha=0.9)
+
+    theta_temperature, theta_p_rho = break_wrapped_series(
+        temperature_plot,
+        thermodynamic_phase_lags_plot["delta_theta_P_rho_rad"],
+    )
+    ax_thermo.plot(
+        theta_temperature,
+        theta_p_rho,
+        color="#C1121F",
+        linewidth=1.5,
+        label=r"$\theta_{P,\max}-\theta_{\rho,\max}$",
+    )
+    theta_temperature, theta_p_gamma1 = break_wrapped_series(
+        temperature_plot,
+        thermodynamic_phase_lags_plot["delta_theta_P_gamma1_rad"],
+    )
+    ax_thermo.plot(
+        theta_temperature,
+        theta_p_gamma1,
+        color="#669BBC",
+        linewidth=1.5,
+        label=r"$\theta_{P,\max}-\theta_{\Gamma_1,\max}$",
+    )
+    ax_thermo.axhline(0.0, color="k", linewidth=1.0, linestyle="--", zorder=-2)
+    thermo_values = np.concatenate(
+        [
+            thermodynamic_phase_lags_plot["delta_theta_P_rho_rad"],
+            thermodynamic_phase_lags_plot["delta_theta_P_gamma1_rad"],
+        ]
+    )
+    thermo_ylim = finite_fractional_padding(
+        np.concatenate([thermo_values, np.asarray([-math.pi / 2.0, 0.0, math.pi / 2.0])]),
+        minimum_half_range=math.pi / 4.0,
+    )
+    ax_thermo.set_ylim(*thermo_ylim)
+    thermo_ticks, thermo_labels = phase_ticks_for_limits(*thermo_ylim)
+    ax_thermo.set_yticks(thermo_ticks, thermo_labels)
+    ax_thermo.set_ylabel("Max Phase Offset [rad]")
+    ax_thermo.set_xlabel(r"$T\ [{\rm K}]$")
+    ax_thermo.grid(False)
+    ax_thermo.legend(loc="upper left", ncol=2, frameon=True, framealpha=0.9)
 
     configure_temperature_axis(axes, temperature_plot)
     fig.savefig(png_path, dpi=200)
@@ -312,9 +493,19 @@ def main() -> None:
         "photosphere_temperature_K": photosphere_temperature,
         "photosphere_reference_method": "amplitudes and unwrapped phases linearly interpolated in fixed q to the mean-light tau=2/3 photosphere",
         "amplitude_convention": "fractional shell luminosity amplitude from L(q,t)/<L(q)> - 1",
-        "amplitude_plot": "Delta A_k = A_k(q) - A_k(photosphere)",
+        "amplitude_plot": "A_k(q), the absolute fractional shell luminosity harmonic amplitude at each fixed q cell",
         "phase_plot": "Delta phi_k = phi_k(q) - phi_k(photosphere), unwrapped continuously in q",
         "photosphere_fourier_reference": {key: float(value) for key, value in reference.items()},
+        "low_amplitude_line_threshold": float(AMPLITUDE_DASH_THRESHOLD),
+        "low_amplitude_line_style": "dashed wherever the corresponding luminosity harmonic amplitude A_k is below 0.05",
+        "thermodynamic_peak_phase_panel": {
+            "variables": ["pressure", "density", "gamma1"],
+            "phase_source": "Fourier-smoothed profile time series at each fixed q cell",
+            "phase_samples": int(PEAK_PHASE_SAMPLES),
+            "delta_theta_P_rho_rad": "2*pi*((theta_P,max - theta_rho,max + 0.5) mod 1 - 0.5)",
+            "delta_theta_P_gamma1_rad": "2*pi*((theta_P,max - theta_gamma1,max + 0.5) mod 1 - 0.5)",
+            "positive_sign_convention": "pressure maximum occurs later in pulsation phase than the comparison variable maximum",
+        },
         "zone_detection_details": zone_details,
         "zone_spans_temperature_K": {
             name: [[float(x0), float(x1)] for x0, x1 in spans]

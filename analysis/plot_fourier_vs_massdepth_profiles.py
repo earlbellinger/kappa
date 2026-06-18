@@ -428,6 +428,8 @@ def load_profile_cycle(run_dir: Path) -> dict[str, np.ndarray | float | Path]:
     absolute_time_days = np.empty(n_profiles, dtype=float)
     luminosity = np.empty((n_profiles, n_zones), dtype=float)
     log_temperature = np.empty((n_profiles, n_zones), dtype=float)
+    pressure = np.empty((n_profiles, n_zones), dtype=float)
+    density = np.empty((n_profiles, n_zones), dtype=float)
     convective_fraction = np.empty((n_profiles, n_zones), dtype=float)
     gamma1 = np.empty((n_profiles, n_zones), dtype=float)
     cp = np.empty((n_profiles, n_zones), dtype=float)
@@ -455,6 +457,8 @@ def load_profile_cycle(run_dir: Path) -> dict[str, np.ndarray | float | Path]:
         absolute_time_days[i] = float(header["star_age"]) * 365.25
         luminosity[i] = np.asarray(columns["luminosity"], dtype=float)
         log_temperature[i] = np.asarray(columns["logT"], dtype=float)
+        pressure[i] = np.asarray(columns["pressure"], dtype=float)
+        density[i] = np.power(10.0, np.asarray(columns["logRho"], dtype=float))
         gamma1[i] = np.asarray(columns["gamma1"], dtype=float)
         cp[i] = np.asarray(columns["cp"], dtype=float)
         if "rsp_Lc_div_L" in columns:
@@ -489,6 +493,8 @@ def load_profile_cycle(run_dir: Path) -> dict[str, np.ndarray | float | Path]:
         "absolute_time_days": absolute_time_days,
         "luminosity_sorted": luminosity[:, q_order],
         "log_temperature_sorted": log_temperature[:, q_order],
+        "pressure_sorted": pressure[:, q_order],
+        "density_sorted": density[:, q_order],
         "convective_fraction_sorted": convective_fraction[:, q_order],
         "gamma1_sorted": gamma1[:, q_order],
         "cp_sorted": cp[:, q_order],

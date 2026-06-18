@@ -25,7 +25,7 @@
   "photosphere_temperature_K": 6637.834486363761,
   "photosphere_reference_method": "amplitudes and unwrapped phases linearly interpolated in fixed q to the mean-light tau=2/3 photosphere",
   "amplitude_convention": "fractional shell luminosity amplitude from L(q,t)/<L(q)> - 1",
-  "amplitude_plot": "Delta A_k = A_k(q) - A_k(photosphere)",
+  "amplitude_plot": "A_k(q), the absolute fractional shell luminosity harmonic amplitude at each fixed q cell",
   "phase_plot": "Delta phi_k = phi_k(q) - phi_k(photosphere), unwrapped continuously in q",
   "photosphere_fourier_reference": {
     "A1": 0.2716045504105295,
@@ -34,6 +34,20 @@
     "phi1": 1.3200746993154084,
     "phi2": 2.1104729253582133,
     "phi3": 8.882906909083635
+  },
+  "low_amplitude_line_threshold": 0.05,
+  "low_amplitude_line_style": "dashed wherever the corresponding luminosity harmonic amplitude A_k is below 0.05",
+  "thermodynamic_peak_phase_panel": {
+    "variables": [
+      "pressure",
+      "density",
+      "gamma1"
+    ],
+    "phase_source": "Fourier-smoothed profile time series at each fixed q cell",
+    "phase_samples": 4096,
+    "delta_theta_P_rho_rad": "2*pi*((theta_P,max - theta_rho,max + 0.5) mod 1 - 0.5)",
+    "delta_theta_P_gamma1_rad": "2*pi*((theta_P,max - theta_gamma1,max + 0.5) mod 1 - 0.5)",
+    "positive_sign_convention": "pressure maximum occurs later in pulsation phase than the comparison variable maximum"
   },
   "zone_detection_details": {
     "He II Ionization": {
