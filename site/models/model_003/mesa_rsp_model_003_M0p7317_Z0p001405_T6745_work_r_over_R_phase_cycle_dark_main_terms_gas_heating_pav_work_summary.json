@@ -1204,23 +1204,38 @@
   "photosphere_visualization": {
     "style": "dark-mode limb-darkened spheres with a luminosity/temperature-colored sphere on the luminosity panel and a radial-velocity-colored sphere on the radial-velocity panel",
     "anchor_data_luminosity": [
-      0.54,
-      54.652736647715585
+      0.36,
+      53.589117708064535
     ],
     "anchor_data_rv": [
       1.2277777777777779,
       13.169284997403377
     ],
     "radius_text_anchor_data_luminosity": [
-      0.47600000000000003,
-      57.85273664771559
+      0.296,
+      58.124751216677936
     ],
     "teff_text_anchor_data_luminosity": [
-      0.49600000000000005,
-      51.45273664771558
+      0.306,
+      48.8562827425549
     ],
-    "radius_gauge_x_phase": 0.442,
-    "radius_gauge_half_height_lsun": 0.2964,
+    "radius_gauge_x_phase": 0.26199999999999996,
+    "radius_gauge_half_height_lsun": 0.4930036422405866,
+    "phase_panel_layout": {
+      "key": "model_003",
+      "source": "manual",
+      "fractions": {
+        "lum_sphere_phase": 0.36,
+        "lum_sphere_y_fraction": 0.63,
+        "radius_phase": 0.29,
+        "radius_y_fraction": 0.86,
+        "teff_phase": 0.3,
+        "teff_y_fraction": 0.39,
+        "rv_sphere_phase": 1.2277777777777779,
+        "rv_sphere_y_fraction": 0.77,
+        "lum_gauge_half_height_fraction": 0.025
+      }
+    },
     "sphere_image_size_px": 192,
     "sphere_base_zoom": 0.42,
     "limb_darkening_law": "phase-dependent quadratic limb darkening with coefficients parameterized by photosphere Teff, log g, and inferred [Fe/H]",

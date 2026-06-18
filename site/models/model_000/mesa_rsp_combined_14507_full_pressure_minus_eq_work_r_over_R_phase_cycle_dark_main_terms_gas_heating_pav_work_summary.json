@@ -68,14 +68,14 @@
     "loaded": true,
     "scaling_method_version": "model000-visible-window-v15",
     "left_power_ylim_reference": [
-      -0.5967129845710433,
-      0.5552118259138243
+      -1.0538880567035844,
+      0.9359095347404265
     ],
     "left_power_visible_data_bounds": [
       -0.9758222747255412,
       0.866582902537432
     ],
-    "power_panel_pad_fraction_reference": null,
+    "power_panel_pad_fraction_reference": 0.07999999999999996,
     "opacity_visible_data_bounds": [
       0.0020449198640830274,
       149.03239726657318
@@ -84,7 +84,7 @@
       0.76,
       0.92
     ],
-    "opacity_display_max_reference": 0.463057841075035,
+    "opacity_display_max_reference": 0.7767257274249058,
     "reason": null
   },
   "panel_scaling": {
@@ -148,14 +148,14 @@
         6.995969579647836
       ],
       "reference_example_limits": [
-        -0.5967129845710433,
-        0.5552118259138243
+        -1.0538880567035844,
+        0.9359095347404265
       ],
       "reference_example_visible_data_bounds": [
         -0.9758222747255412,
         0.866582902537432
       ],
-      "pad_fraction": 0.08,
+      "pad_fraction": 0.07999999999999996,
       "axis_percentile_low": 2.0,
       "axis_percentile_high": 98.0,
       "spike_span_reference_factor": 4.0,
@@ -216,7 +216,7 @@
     "panel": "left_power",
     "panel_bottom_fraction": 0.76,
     "panel_top_fraction": 0.92,
-    "reference_opacity_max_display_value": 0.463057841075035,
+    "reference_opacity_max_display_value": 0.7767257274249058,
     "x_field_for_scaling": "radius_rsun_plot",
     "x_limits_for_scaling": [
       5.387294668462144,
@@ -1204,23 +1204,38 @@
   "photosphere_visualization": {
     "style": "dark-mode limb-darkened spheres with a luminosity/temperature-colored sphere on the luminosity panel and a radial-velocity-colored sphere on the radial-velocity panel",
     "anchor_data_luminosity": [
-      0.54,
-      62.4381202100942
+      0.53,
+      62.45960024734872
     ],
     "anchor_data_rv": [
       1.2000000000000002,
       11.92832474781694
     ],
     "radius_text_anchor_data_luminosity": [
-      0.47600000000000003,
-      65.63812021009419
+      0.466,
+      65.56449216911422
     ],
     "teff_text_anchor_data_luminosity": [
-      0.49600000000000005,
-      59.238120210094195
+      0.486,
+      58.76330034048502
     ],
-    "radius_gauge_x_phase": 0.442,
-    "radius_gauge_half_height_lsun": 0.2964,
+    "radius_gauge_x_phase": 0.432,
+    "radius_gauge_half_height_lsun": 0.3696299906863697,
+    "phase_panel_layout": {
+      "key": "model_000",
+      "source": "manual",
+      "fractions": {
+        "lum_sphere_phase": 0.53,
+        "lum_sphere_y_fraction": 0.66,
+        "radius_phase": 0.46,
+        "radius_y_fraction": 0.87,
+        "teff_phase": 0.48,
+        "teff_y_fraction": 0.41,
+        "rv_sphere_phase": 1.2000000000000002,
+        "rv_sphere_y_fraction": 0.77,
+        "lum_gauge_half_height_fraction": 0.025
+      }
+    },
     "sphere_image_size_px": 192,
     "sphere_base_zoom": 0.42,
     "limb_darkening_law": "phase-dependent quadratic limb darkening with coefficients parameterized by photosphere Teff, log g, and inferred [Fe/H]",

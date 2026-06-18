@@ -158,6 +158,85 @@ LUM_RADIUS_THERMOMETER_PHASE_EXTRA_SHIFT = -0.02
 LUM_RADIUS_THERMOMETER_DY_LSUN = 1.1
 LUM_TEFF_THERMOMETER_DY_LSUN = -1.1
 RV_SPHERE_Y_FRACTION = 0.77
+PHASE_PANEL_LAYOUT_DEFAULT = {
+    "lum_sphere_phase": 0.53,
+    "lum_sphere_y_fraction": 0.66,
+    "radius_phase": 0.46,
+    "radius_y_fraction": 0.87,
+    "teff_phase": 0.48,
+    "teff_y_fraction": 0.41,
+    "rv_sphere_phase": None,
+    "rv_sphere_y_fraction": 0.77,
+    "lum_gauge_half_height_fraction": 0.025,
+}
+PHASE_PANEL_LAYOUT_OVERRIDES = {
+    # Hand-tuned in panel data space so the sphere and thermometers use each
+    # model's actual light-curve/RV whitespace instead of fixed Lsun offsets.
+    "model_000": {
+        "lum_sphere_phase": 0.53,
+        "lum_sphere_y_fraction": 0.66,
+        "radius_phase": 0.46,
+        "radius_y_fraction": 0.87,
+        "teff_phase": 0.48,
+        "teff_y_fraction": 0.41,
+        "rv_sphere_y_fraction": 0.77,
+    },
+    "model_001": {
+        "lum_sphere_phase": 0.38,
+        "lum_sphere_y_fraction": 0.67,
+        "radius_phase": 0.30,
+        "radius_y_fraction": 0.88,
+        "teff_phase": 0.31,
+        "teff_y_fraction": 0.43,
+        "rv_sphere_y_fraction": 0.77,
+    },
+    "model_002": {
+        "lum_sphere_phase": 1.25,
+        "lum_sphere_y_fraction": 0.50,
+        "radius_phase": 0.98,
+        "radius_y_fraction": 0.63,
+        "teff_phase": 0.98,
+        "teff_y_fraction": 0.31,
+        "rv_sphere_y_fraction": 0.76,
+        "lum_gauge_half_height_fraction": 0.035,
+    },
+    "model_003": {
+        "lum_sphere_phase": 0.36,
+        "lum_sphere_y_fraction": 0.63,
+        "radius_phase": 0.29,
+        "radius_y_fraction": 0.86,
+        "teff_phase": 0.30,
+        "teff_y_fraction": 0.39,
+        "rv_sphere_y_fraction": 0.77,
+    },
+    "model_004": {
+        "lum_sphere_phase": 0.28,
+        "lum_sphere_y_fraction": 0.58,
+        "radius_phase": 0.20,
+        "radius_y_fraction": 0.84,
+        "teff_phase": 0.21,
+        "teff_y_fraction": 0.28,
+        "rv_sphere_y_fraction": 0.76,
+    },
+    "model_005": {
+        "lum_sphere_phase": 0.36,
+        "lum_sphere_y_fraction": 0.62,
+        "radius_phase": 0.29,
+        "radius_y_fraction": 0.85,
+        "teff_phase": 0.30,
+        "teff_y_fraction": 0.36,
+        "rv_sphere_y_fraction": 0.77,
+    },
+    "model_006": {
+        "lum_sphere_phase": 0.36,
+        "lum_sphere_y_fraction": 0.62,
+        "radius_phase": 0.29,
+        "radius_y_fraction": 0.86,
+        "teff_phase": 0.30,
+        "teff_y_fraction": 0.37,
+        "rv_sphere_y_fraction": 0.77,
+    },
+}
 LIGHT_ZONE_REFERENCE_COLORS = dict(COMPLEX_TRANSFER_REFERENCE_COLORS)
 DARK_THEME = {
     "figure_face": "#000000",
@@ -182,6 +261,73 @@ DARK_THEME = {
         "H/He I Ionization": "#780000",
     },
 }
+
+
+def phase_panel_layout_key(prefix: str) -> str:
+    prefix_text = str(prefix)
+    if "combined_14507" in prefix_text or "model_000" in prefix_text:
+        return "model_000"
+    for model_index in range(1, 1000):
+        key = f"model_{model_index:03d}"
+        if key in prefix_text or f"model_{model_index:03d}" in prefix_text:
+            return key
+    return "default"
+
+
+def y_at_axis_fraction(ylim: tuple[float, float], fraction: float) -> float:
+    return float(ylim[0] + float(fraction) * (ylim[1] - ylim[0]))
+
+
+def resolve_phase_panel_layout(
+    prefix: str,
+    luminosity_ylim: tuple[float, float],
+    rv_ylim: tuple[float, float],
+    sampled_phase: np.ndarray,
+    max_rv_index: int,
+) -> dict[str, object]:
+    key = phase_panel_layout_key(prefix)
+    layout = dict(PHASE_PANEL_LAYOUT_DEFAULT)
+    if key in PHASE_PANEL_LAYOUT_OVERRIDES:
+        layout.update(PHASE_PANEL_LAYOUT_OVERRIDES[key])
+
+    rv_sphere_phase = layout.get("rv_sphere_phase")
+    if rv_sphere_phase is None:
+        rv_sphere_phase = float(sampled_phase[max_rv_index] + 0.5)
+
+    luminosity_span = float(luminosity_ylim[1] - luminosity_ylim[0])
+    gauge_half_height = float(layout.get("lum_gauge_half_height_fraction", 0.025)) * luminosity_span
+    return {
+        "key": key,
+        "source": "manual" if key in PHASE_PANEL_LAYOUT_OVERRIDES else "default",
+        "luminosity_sphere_center": (
+            float(layout["lum_sphere_phase"]),
+            y_at_axis_fraction(luminosity_ylim, float(layout["lum_sphere_y_fraction"])),
+        ),
+        "luminosity_radius_visual_center": (
+            float(layout["radius_phase"]),
+            y_at_axis_fraction(luminosity_ylim, float(layout["radius_y_fraction"])),
+        ),
+        "luminosity_teff_visual_center": (
+            float(layout["teff_phase"]),
+            y_at_axis_fraction(luminosity_ylim, float(layout["teff_y_fraction"])),
+        ),
+        "rv_sphere_center": (
+            float(rv_sphere_phase),
+            y_at_axis_fraction(rv_ylim, float(layout["rv_sphere_y_fraction"])),
+        ),
+        "luminosity_gauge_half_height": gauge_half_height,
+        "fractions": {
+            "lum_sphere_phase": float(layout["lum_sphere_phase"]),
+            "lum_sphere_y_fraction": float(layout["lum_sphere_y_fraction"]),
+            "radius_phase": float(layout["radius_phase"]),
+            "radius_y_fraction": float(layout["radius_y_fraction"]),
+            "teff_phase": float(layout["teff_phase"]),
+            "teff_y_fraction": float(layout["teff_y_fraction"]),
+            "rv_sphere_phase": float(rv_sphere_phase),
+            "rv_sphere_y_fraction": float(layout["rv_sphere_y_fraction"]),
+            "lum_gauge_half_height_fraction": float(layout.get("lum_gauge_half_height_fraction", 0.025)),
+        },
+    }
 
 
 def parse_args() -> argparse.Namespace:
@@ -2664,18 +2810,6 @@ def main() -> None:
     rv_ylim = fractional_padding(sampled_photosphere_rv, fraction=0.08)
     luminosity_span = float(luminosity_ylim[1] - luminosity_ylim[0])
     rv_span = float(rv_ylim[1] - rv_ylim[0])
-    luminosity_sphere_center = (
-        float(LUM_SPHERE_PHASE),
-        float(luminosity_ylim[0] + LUM_SPHERE_Y_FRACTION * luminosity_span - LUM_SPHERE_DROP_LSUN),
-    )
-    luminosity_radius_visual_center = (
-        float(luminosity_sphere_center[0] + LUM_THERMOMETER_PHASE_SHIFT + LUM_RADIUS_THERMOMETER_PHASE_EXTRA_SHIFT),
-        float(luminosity_sphere_center[1] + LUM_VISUAL_STACK_OFFSET_LSUN + LUM_RADIUS_THERMOMETER_DY_LSUN),
-    )
-    luminosity_teff_visual_center = (
-        float(luminosity_sphere_center[0] + LUM_THERMOMETER_PHASE_SHIFT),
-        float(luminosity_sphere_center[1] - LUM_VISUAL_STACK_OFFSET_LSUN + LUM_TEFF_THERMOMETER_DY_LSUN),
-    )
 
     phase_curve_repeats = 3
     cycle_luminosity_phase_three, cycle_luminosity_curve_three = repeated_phase_curve(
@@ -2703,10 +2837,18 @@ def main() -> None:
     min_teff_index = int(np.nanargmin(photosphere_temperature_series))
     max_teff_index = int(np.nanargmax(photosphere_temperature_series))
     max_rv_index = int(np.nanargmax(sampled_photosphere_rv))
-    rv_sphere_center = (
-        float(sampled_phase[max_rv_index] + 0.5),
-        float(rv_ylim[0] + RV_SPHERE_Y_FRACTION * rv_span),
+    phase_panel_layout = resolve_phase_panel_layout(
+        prefix,
+        luminosity_ylim,
+        rv_ylim,
+        sampled_phase,
+        max_rv_index,
     )
+    luminosity_sphere_center = phase_panel_layout["luminosity_sphere_center"]
+    luminosity_radius_visual_center = phase_panel_layout["luminosity_radius_visual_center"]
+    luminosity_teff_visual_center = phase_panel_layout["luminosity_teff_visual_center"]
+    rv_sphere_center = phase_panel_layout["rv_sphere_center"]
+    luminosity_gauge_half_height = float(phase_panel_layout["luminosity_gauge_half_height"])
 
     trend_fit_harmonics = min(12, max(1, (len(sampled_phase) - 1) // 2))
     radius_coefficients, trend_fit_harmonics = fit_periodic_scalar_series(
@@ -2897,8 +3039,8 @@ def main() -> None:
             if visual_mode == "luminosity":
                 radius_gauge_x = float(luminosity_radius_visual_center[0] + LUM_GAUGE_X_OFFSET_PHASE)
                 radius_text_x = float(luminosity_radius_visual_center[0] + LUM_TEXT_X_OFFSET_PHASE)
-                gauge_y0 = float(luminosity_radius_visual_center[1] - LUM_GAUGE_HALF_HEIGHT_LSUN)
-                gauge_y1 = float(luminosity_radius_visual_center[1] + LUM_GAUGE_HALF_HEIGHT_LSUN)
+                gauge_y0 = float(luminosity_radius_visual_center[1] - luminosity_gauge_half_height)
+                gauge_y1 = float(luminosity_radius_visual_center[1] + luminosity_gauge_half_height)
                 radius_axis_line, = ax.plot(
                     [radius_gauge_x, radius_gauge_x],
                     [gauge_y0, gauge_y1],
@@ -2931,8 +3073,8 @@ def main() -> None:
                 )
                 teff_gauge_x = float(luminosity_teff_visual_center[0] + LUM_GAUGE_X_OFFSET_PHASE)
                 teff_text_x = float(luminosity_teff_visual_center[0] + LUM_TEXT_X_OFFSET_PHASE)
-                teff_gauge_y0 = float(luminosity_teff_visual_center[1] - LUM_GAUGE_HALF_HEIGHT_LSUN)
-                teff_gauge_y1 = float(luminosity_teff_visual_center[1] + LUM_GAUGE_HALF_HEIGHT_LSUN)
+                teff_gauge_y0 = float(luminosity_teff_visual_center[1] - luminosity_gauge_half_height)
+                teff_gauge_y1 = float(luminosity_teff_visual_center[1] + luminosity_gauge_half_height)
                 teff_axis_line, = ax.plot(
                     [teff_gauge_x, teff_gauge_x],
                     [teff_gauge_y0, teff_gauge_y1],
@@ -3492,8 +3634,8 @@ def main() -> None:
             radius_axis_dot = panel_handles["radius_axis_dot"]
             radius_text = panel_handles["radius_text"]
             if radius_axis_dot is not None and radius_text is not None:
-                gauge_y0 = float(luminosity_radius_visual_center[1] - LUM_GAUGE_HALF_HEIGHT_LSUN)
-                gauge_y1 = float(luminosity_radius_visual_center[1] + LUM_GAUGE_HALF_HEIGHT_LSUN)
+                gauge_y0 = float(luminosity_radius_visual_center[1] - luminosity_gauge_half_height)
+                gauge_y1 = float(luminosity_radius_visual_center[1] + luminosity_gauge_half_height)
                 radius_dot_y = gauge_y0 + float(frame["photosphere_radius_axis_unit"]) * (gauge_y1 - gauge_y0)
                 radius_axis_dot.set_data(
                     [float(luminosity_radius_visual_center[0] + LUM_GAUGE_X_OFFSET_PHASE)],
@@ -3506,8 +3648,8 @@ def main() -> None:
             teff_axis_dot = panel_handles["teff_axis_dot"]
             teff_text = panel_handles["teff_text"]
             if teff_axis_dot is not None and teff_text is not None:
-                teff_gauge_y0 = float(luminosity_teff_visual_center[1] - LUM_GAUGE_HALF_HEIGHT_LSUN)
-                teff_gauge_y1 = float(luminosity_teff_visual_center[1] + LUM_GAUGE_HALF_HEIGHT_LSUN)
+                teff_gauge_y0 = float(luminosity_teff_visual_center[1] - luminosity_gauge_half_height)
+                teff_gauge_y1 = float(luminosity_teff_visual_center[1] + luminosity_gauge_half_height)
                 teff_dot_y = teff_gauge_y0 + float(frame["photosphere_temperature_axis_unit"]) * (
                     teff_gauge_y1 - teff_gauge_y0
                 )
@@ -3815,7 +3957,12 @@ def main() -> None:
                     float(luminosity_teff_visual_center[1]),
                 ],
                 "radius_gauge_x_phase": float(luminosity_radius_visual_center[0] + LUM_GAUGE_X_OFFSET_PHASE),
-                "radius_gauge_half_height_lsun": float(LUM_GAUGE_HALF_HEIGHT_LSUN),
+                "radius_gauge_half_height_lsun": float(luminosity_gauge_half_height),
+                "phase_panel_layout": {
+                    "key": str(phase_panel_layout["key"]),
+                    "source": str(phase_panel_layout["source"]),
+                    "fractions": phase_panel_layout["fractions"],
+                },
                 "sphere_image_size_px": int(SPHERE_IMAGE_SIZE),
                 "sphere_base_zoom": float(SPHERE_BASE_ZOOM),
                 "limb_darkening_law": "phase-dependent quadratic limb darkening with coefficients parameterized by photosphere Teff, log g, and inferred [Fe/H]",
