@@ -146,14 +146,19 @@ def linear_slope_per_cycle(values: list[float] | np.ndarray) -> float | None:
 
 
 def history_candidates(run_dir: Path) -> list[tuple[str, Path]]:
-    resume_histories = sorted(
+    saturation_resume_histories = sorted(
+        run_dir.glob("LOGS_saturation_resume_*/history.data"),
+        key=lambda path: path.stat().st_mtime,
+        reverse=True,
+    )
+    continue_resume_histories = sorted(
         run_dir.glob("LOGS_continue_saturation_resume_*/history.data"),
         key=lambda path: path.stat().st_mtime,
         reverse=True,
     )
-    candidates: list[tuple[str, Path]] = [
-        (f"continue_saturation_resume:{path.parent.name}", path) for path in resume_histories
-    ]
+    candidates: list[tuple[str, Path]] = []
+    candidates.extend((f"saturation_resume:{path.parent.name}", path) for path in saturation_resume_histories)
+    candidates.extend((f"continue_saturation_resume:{path.parent.name}", path) for path in continue_resume_histories)
     candidates.extend(
         [
             ("continue_saturation", run_dir / "LOGS_continue_saturation" / "history.data"),
@@ -173,15 +178,20 @@ def history_candidates(run_dir: Path) -> list[tuple[str, Path]]:
 
 
 def cumulative_history_candidates(run_dir: Path) -> list[tuple[str, Path]]:
-    resume_histories = sorted(
+    saturation_resume_histories = sorted(
+        run_dir.glob("LOGS_saturation_resume_*/history.data"),
+        key=lambda path: path.stat().st_mtime,
+    )
+    continue_resume_histories = sorted(
         run_dir.glob("LOGS_continue_saturation_resume_*/history.data"),
         key=lambda path: path.stat().st_mtime,
     )
     candidates: list[tuple[str, Path]] = [
         ("saturation", run_dir / "LOGS_saturation" / "history.data"),
-        ("continue_saturation", run_dir / "LOGS_continue_saturation" / "history.data"),
     ]
-    candidates.extend((f"continue_saturation_resume:{path.parent.name}", path) for path in resume_histories)
+    candidates.extend((f"saturation_resume:{path.parent.name}", path) for path in saturation_resume_histories)
+    candidates.append(("continue_saturation", run_dir / "LOGS_continue_saturation" / "history.data"))
+    candidates.extend((f"continue_saturation_resume:{path.parent.name}", path) for path in continue_resume_histories)
     return [(label, path) for label, path in candidates if path.exists()]
 
 
@@ -247,9 +257,16 @@ def append_cumulative_rows(
         last_cumulative_period = float(combined[-1]["period_number"])
         first_segment_period = float(rows[0]["period_number"])
         last_segment_period = float(rows[-1]["period_number"])
-        if first_segment_period <= last_cumulative_period < last_segment_period:
-            # Resume histories can overlap the previous history while retaining
-            # absolute period numbers. Keep only the new cycles in that case.
+        if "resume" in source_label and first_segment_period <= last_cumulative_period:
+            # MESA RSP photos preserve the absolute rsp_num_periods counter.
+            # A resumed segment can initially be fully overlapped with the
+            # previous log/history; skip old cycles until it advances beyond
+            # the last accepted cumulative period.
+            offset = 0.0
+            keep_periods_after = last_cumulative_period
+        elif first_segment_period <= last_cumulative_period < last_segment_period:
+            # Later non-resume stages can also overlap the previous history
+            # while retaining absolute period numbers. Keep only new cycles.
             offset = 0.0
             keep_periods_after = last_cumulative_period
         elif first_segment_period <= last_cumulative_period:

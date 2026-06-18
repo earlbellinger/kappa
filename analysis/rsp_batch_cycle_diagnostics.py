@@ -46,12 +46,18 @@ def fortran_float(value: object) -> float | None:
 
 
 def history_candidates(run_dir: Path) -> list[tuple[str, Path]]:
-    resume_histories = sorted(
+    saturation_resume_histories = sorted(
+        run_dir.glob("LOGS_saturation_resume_*/history.data"),
+        key=lambda path: path.stat().st_mtime,
+        reverse=True,
+    )
+    continue_resume_histories = sorted(
         run_dir.glob("LOGS_continue_saturation_resume_*/history.data"),
         key=lambda path: path.stat().st_mtime,
         reverse=True,
     )
-    candidates = [(f"continue_saturation_resume:{path.parent.name}", path) for path in resume_histories]
+    candidates = [(f"saturation_resume:{path.parent.name}", path) for path in saturation_resume_histories]
+    candidates.extend((f"continue_saturation_resume:{path.parent.name}", path) for path in continue_resume_histories)
     candidates.extend(
         [
             ("continue_saturation", run_dir / "LOGS_continue_saturation" / "history.data"),
