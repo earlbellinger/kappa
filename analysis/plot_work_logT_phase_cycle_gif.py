@@ -184,64 +184,64 @@ PHASE_PANEL_LAYOUT_OVERRIDES = {
     },
     "model_001": {
         "lum_sphere_phase": 0.23,
-        "lum_sphere_y_fraction": 0.68,
+        "lum_sphere_y_fraction": 0.73,
         "radius_phase": 0.15,
-        "radius_y_fraction": 0.88,
+        "radius_y_fraction": 0.91,
         "teff_phase": 0.15,
-        "teff_y_fraction": 0.36,
-        "rv_sphere_phase": 1.26,
-        "rv_sphere_y_fraction": 0.77,
+        "teff_y_fraction": 0.43,
+        "rv_sphere_phase": 1.32,
+        "rv_sphere_y_fraction": 0.74,
     },
     "model_002": {
-        "lum_sphere_phase": 0.22,
-        "lum_sphere_y_fraction": 0.70,
-        "radius_phase": 0.14,
-        "radius_y_fraction": 0.88,
-        "teff_phase": 0.14,
-        "teff_y_fraction": 0.36,
+        "lum_sphere_phase": 0.20,
+        "lum_sphere_y_fraction": 0.66,
+        "radius_phase": 0.12,
+        "radius_y_fraction": 0.91,
+        "teff_phase": 0.12,
+        "teff_y_fraction": 0.33,
         "rv_sphere_phase": 1.24,
-        "rv_sphere_y_fraction": 0.76,
-        "lum_gauge_half_height_fraction": 0.03,
+        "rv_sphere_y_fraction": 0.72,
+        "lum_gauge_half_height_fraction": 0.035,
     },
     "model_003": {
-        "lum_sphere_phase": 0.24,
-        "lum_sphere_y_fraction": 0.66,
+        "lum_sphere_phase": 0.23,
+        "lum_sphere_y_fraction": 0.70,
         "radius_phase": 0.16,
-        "radius_y_fraction": 0.88,
+        "radius_y_fraction": 0.91,
         "teff_phase": 0.16,
-        "teff_y_fraction": 0.36,
-        "rv_sphere_phase": 1.25,
-        "rv_sphere_y_fraction": 0.77,
+        "teff_y_fraction": 0.39,
+        "rv_sphere_phase": 1.29,
+        "rv_sphere_y_fraction": 0.75,
     },
     "model_004": {
-        "lum_sphere_phase": 0.24,
-        "lum_sphere_y_fraction": 0.66,
+        "lum_sphere_phase": 0.22,
+        "lum_sphere_y_fraction": 0.72,
         "radius_phase": 0.16,
-        "radius_y_fraction": 0.88,
+        "radius_y_fraction": 0.91,
         "teff_phase": 0.16,
-        "teff_y_fraction": 0.36,
-        "rv_sphere_phase": 1.23,
-        "rv_sphere_y_fraction": 0.76,
+        "teff_y_fraction": 0.42,
+        "rv_sphere_phase": 1.28,
+        "rv_sphere_y_fraction": 0.73,
     },
     "model_005": {
-        "lum_sphere_phase": 0.24,
-        "lum_sphere_y_fraction": 0.67,
+        "lum_sphere_phase": 0.22,
+        "lum_sphere_y_fraction": 0.71,
         "radius_phase": 0.16,
-        "radius_y_fraction": 0.88,
+        "radius_y_fraction": 0.91,
         "teff_phase": 0.16,
-        "teff_y_fraction": 0.36,
-        "rv_sphere_phase": 1.27,
-        "rv_sphere_y_fraction": 0.77,
+        "teff_y_fraction": 0.41,
+        "rv_sphere_phase": 1.31,
+        "rv_sphere_y_fraction": 0.74,
     },
     "model_006": {
-        "lum_sphere_phase": 0.24,
-        "lum_sphere_y_fraction": 0.67,
+        "lum_sphere_phase": 0.22,
+        "lum_sphere_y_fraction": 0.70,
         "radius_phase": 0.16,
-        "radius_y_fraction": 0.88,
+        "radius_y_fraction": 0.91,
         "teff_phase": 0.16,
-        "teff_y_fraction": 0.36,
-        "rv_sphere_phase": 1.22,
-        "rv_sphere_y_fraction": 0.77,
+        "teff_y_fraction": 0.40,
+        "rv_sphere_phase": 1.27,
+        "rv_sphere_y_fraction": 0.74,
     },
 }
 LIGHT_ZONE_REFERENCE_COLORS = dict(COMPLEX_TRANSFER_REFERENCE_COLORS)
@@ -350,6 +350,11 @@ def parse_args() -> argparse.Namespace:
         type=int,
         default=DEFAULT_MAX_FRAMES,
         help="Maximum number of sampled cycle phases to include in the GIF",
+    )
+    parser.add_argument(
+        "--skip-gif",
+        action="store_true",
+        help="Write the final-frame PNG and JSON summary without rendering the animated GIF.",
     )
     parser.add_argument(
         "--hot-limit",
@@ -3744,14 +3749,15 @@ def main() -> None:
 
         return tuple(artists)
 
-    animation = FuncAnimation(
-        fig,
-        update,
-        frames=len(frame_data),
-        interval=1000.0 / max(int(args.fps), 1),
-        blit=False,
-    )
-    animation.save(gif_path, writer=PillowWriter(fps=max(int(args.fps), 1)))
+    if not bool(args.skip_gif):
+        animation = FuncAnimation(
+            fig,
+            update,
+            frames=len(frame_data),
+            interval=1000.0 / max(int(args.fps), 1),
+            blit=False,
+        )
+        animation.save(gif_path, writer=PillowWriter(fps=max(int(args.fps), 1)))
 
     update(len(frame_data) - 1)
     fig.savefig(png_path, dpi=FIGURE_DPI, facecolor=fig.get_facecolor())
@@ -3761,8 +3767,9 @@ def main() -> None:
         "prefix": prefix,
         "run_dir": str(run_dir),
         "output_dir": str(output_dir),
-        "gif_path": str(gif_path),
+        "gif_path": (str(gif_path) if not bool(args.skip_gif) else None),
         "png_path": str(png_path),
+        "skip_gif": bool(args.skip_gif),
         "cycle_source": cycle_source,
         "frame_generation": "fixed-q linear interpolation between bracketing nonlinear profiles on a uniform phase grid",
         "coordinate": coordinate,

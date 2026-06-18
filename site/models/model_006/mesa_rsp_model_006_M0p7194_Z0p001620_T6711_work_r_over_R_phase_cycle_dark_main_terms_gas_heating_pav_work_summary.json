@@ -4,6 +4,7 @@
   "output_dir": "<local-rre-root>/rsp_batch_runs/output/model_006_M0p7194_Z0p001620_T6711",
   "gif_path": "<local-rre-root>/rsp_batch_runs/output/model_006_M0p7194_Z0p001620_T6711/mesa_rsp_model_006_M0p7194_Z0p001620_T6711_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work.gif",
   "png_path": "<local-rre-root>/rsp_batch_runs/output/model_006_M0p7194_Z0p001620_T6711/mesa_rsp_model_006_M0p7194_Z0p001620_T6711_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work.png",
+  "skip_gif": false,
   "cycle_source": "final-cycle summary age window",
   "frame_generation": "fixed-q linear interpolation between bracketing nonlinear profiles on a uniform phase grid",
   "coordinate": "r_over_R",
@@ -1204,20 +1205,20 @@
   "photosphere_visualization": {
     "style": "dark-mode limb-darkened spheres with a luminosity/temperature-colored sphere on the luminosity panel and a radial-velocity-colored sphere on the radial-velocity panel",
     "anchor_data_luminosity": [
-      0.24,
-      53.19685728932824
+      0.22,
+      53.59681136204817
     ],
     "anchor_data_rv": [
-      1.22,
-      9.470918360854515
+      1.27,
+      8.374378199902186
     ],
     "radius_text_anchor_data_luminosity": [
       0.166,
-      55.99653579836776
+      56.39648987108769
     ],
     "teff_text_anchor_data_luminosity": [
       0.166,
-      49.063998537888956
+      49.59727063484887
     ],
     "radius_gauge_x_phase": 0.132,
     "radius_gauge_half_height_lsun": 0.33329506059994235,
@@ -1225,14 +1226,14 @@
       "key": "model_006",
       "source": "manual",
       "fractions": {
-        "lum_sphere_phase": 0.24,
-        "lum_sphere_y_fraction": 0.67,
+        "lum_sphere_phase": 0.22,
+        "lum_sphere_y_fraction": 0.7,
         "radius_phase": 0.16,
-        "radius_y_fraction": 0.88,
+        "radius_y_fraction": 0.91,
         "teff_phase": 0.16,
-        "teff_y_fraction": 0.36,
-        "rv_sphere_phase": 1.22,
-        "rv_sphere_y_fraction": 0.77,
+        "teff_y_fraction": 0.4,
+        "rv_sphere_phase": 1.27,
+        "rv_sphere_y_fraction": 0.74,
         "lum_gauge_half_height_fraction": 0.025
       }
     },
