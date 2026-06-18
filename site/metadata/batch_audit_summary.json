@@ -10,7 +10,7 @@
     "model_008: stages not complete: continue_saturation, restart, deep2cycles, final_cycle, plot, verify; missing files: saturated_model, restart_model, deep_model, final_cycle_summary, final_cycle_lightcurve, gif, png, animation_summary, verification_summary; verification_summary did not pass; pressure_work_mode=None; heating_mode=None; cycle_source=None; radius_window_contains_photosphere=None; phase_seam_ok=None; missing profile columns: cp, gamma1, ionization_he4, rsp_Lc, rsp_Lr, rsp_Lt, rsp_Pvsc, rsp_src_snk, tau",
     "model_009: stages not complete: create, continue_saturation, restart, deep2cycles, final_cycle, plot, verify; missing files: create_model, saturated_model, restart_model, deep_model, final_cycle_summary, final_cycle_lightcurve, gif, png, animation_summary, verification_summary; verification_summary did not pass; pressure_work_mode=None; heating_mode=None; cycle_source=None; radius_window_contains_photosphere=None; phase_seam_ok=None; missing profile columns: cp, gamma1, ionization_he4, rsp_Lc, rsp_Lr, rsp_Lt, rsp_Pvsc, rsp_src_snk, tau"
   ],
-  "generated_at": "2026-06-18T00:29:58.906481+00:00",
+  "generated_at": "2026-06-18T00:32:09.487587+00:00",
   "incomplete_models": [
     "model_001",
     "model_002",
@@ -44,7 +44,7 @@
           "path": "<local-rre-root>/output/combined_14507_full_pressure_minus_eq/mesa_rsp_combined_14507_full_pressure_minus_eq_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work.png"
         },
         "verification_summary": {
-          "bytes": 5891,
+          "bytes": 6424,
           "exists": true,
           "path": "<local-rre-root>/output/combined_14507_full_pressure_minus_eq/verification_summary.json"
         }
@@ -300,7 +300,7 @@
           "path": "<local-rre-root>/rsp_batch_runs/runs/model_001_M0p5602_Z0p003592_T6824/final_model_001_M0p5602_Z0p003592_T6824_saturated.mod"
         },
         "verification_summary": {
-          "bytes": 5952,
+          "bytes": 6484,
           "exists": true,
           "path": "<local-rre-root>/rsp_batch_runs/output/model_001_M0p5602_Z0p003592_T6824/verification_summary.json"
         }
@@ -525,7 +525,7 @@
           "path": "<local-rre-root>/rsp_batch_runs/runs/model_002_M0p5753_Z0p00707_T6044/final_model_002_M0p5753_Z0p00707_T6044_saturated.mod"
         },
         "verification_summary": {
-          "bytes": 5978,
+          "bytes": 6512,
           "exists": true,
           "path": "<local-rre-root>/rsp_batch_runs/output/model_002_M0p5753_Z0p00707_T6044/verification_summary.json"
         }
@@ -753,7 +753,7 @@
           "path": "<local-rre-root>/rsp_batch_runs/runs/model_003_M0p7317_Z0p001405_T6745/final_model_003_M0p7317_Z0p001405_T6745_saturated.mod"
         },
         "verification_summary": {
-          "bytes": 6419,
+          "bytes": 6954,
           "exists": true,
           "path": "<local-rre-root>/rsp_batch_runs/output/model_003_M0p7317_Z0p001405_T6745/verification_summary.json"
         }
@@ -985,7 +985,7 @@
           "path": "<local-rre-root>/rsp_batch_runs/runs/model_004_M0p7595_Z0p0001834_T6876/final_model_004_M0p7595_Z0p0001834_T6876_saturated.mod"
         },
         "verification_summary": {
-          "bytes": 5972,
+          "bytes": 6510,
           "exists": true,
           "path": "<local-rre-root>/rsp_batch_runs/output/model_004_M0p7595_Z0p0001834_T6876/verification_summary.json"
         }
@@ -1214,7 +1214,7 @@
           "path": "<local-rre-root>/rsp_batch_runs/runs/model_005_M0p6238_Z0p00007156_T6925/final_model_005_M0p6238_Z0p00007156_T6925_saturated.mod"
         },
         "verification_summary": {
-          "bytes": 6274,
+          "bytes": 6809,
           "exists": true,
           "path": "<local-rre-root>/rsp_batch_runs/output/model_005_M0p6238_Z0p00007156_T6925/verification_summary.json"
         }
@@ -1449,7 +1449,7 @@
           "path": "<local-rre-root>/rsp_batch_runs/runs/model_006_M0p7194_Z0p001620_T6711/final_model_006_M0p7194_Z0p001620_T6711_saturated.mod"
         },
         "verification_summary": {
-          "bytes": 6279,
+          "bytes": 6811,
           "exists": true,
           "path": "<local-rre-root>/rsp_batch_runs/output/model_006_M0p7194_Z0p001620_T6711/verification_summary.json"
         }
@@ -1781,11 +1781,11 @@
         "window_start_period_number": 882.0
       },
       "cycle_modulation": {
-        "cycle_count": 981,
+        "cycle_count": 982,
         "diagnostic_png": "<local-rre-root>/rsp_batch_runs/output/cycle_diagnostics/model_008_M0p6151_Z0p0004406_T6792_cycle_modulation_diagnostic.png",
         "history_candidate_cycle_counts": [
           {
-            "cycle_count": 981,
+            "cycle_count": 982,
             "history_path": "<local-rre-root>/rsp_batch_runs/runs/model_008_M0p6151_Z0p0004406_T6792/LOGS_continue_saturation/history.data",
             "history_source": "continue_saturation"
           },
@@ -1798,14 +1798,14 @@
         "history_path": "<local-rre-root>/rsp_batch_runs/runs/model_008_M0p6151_Z0p0004406_T6792/LOGS_continue_saturation/history.data",
         "history_source": "continue_saturation",
         "last_cycle_count_used": 80,
-        "last_max_l_lsun": 62.72754076323547,
-        "last_min_abs_mag_v": 0.2695440054415833,
-        "last_period_days": 0.6316223164558323,
-        "max_l_modulation_fraction": 0.0051389923417135336,
-        "min_v_modulation_mag": 0.0063666797368197026,
+        "last_max_l_lsun": 62.73199588067062,
+        "last_min_abs_mag_v": 0.26945600475493087,
+        "last_period_days": 0.5495114404935748,
+        "max_l_modulation_fraction": 0.005150538213103797,
+        "min_v_modulation_mag": 0.006381022734191666,
         "model_id": "model_008",
-        "period_modulation_fraction": 3.0433751459672886e-06,
-        "radius_amplitude_modulation_fraction": 0.1624937290794485,
+        "period_modulation_fraction": 0.1300023178107076,
+        "radius_amplitude_modulation_fraction": 0.16148084007807997,
         "run_name": "model_008_M0p6151_Z0p0004406_T6792"
       },
       "cycle_source": null,
@@ -1891,6 +1891,7 @@
       "pressure_work_mode": null,
       "profile_count": null,
       "quality_warnings": [
+        "strong period modulation 0.13 > 0.05",
         "DeltaR fractional peak-to-peak 0.20363722774282209 > 0.001"
       ],
       "radius_window_contains_photosphere": null,
@@ -1974,11 +1975,11 @@
         "window_start_period_number": 1.0
       },
       "cycle_modulation": {
-        "cycle_count": 101,
+        "cycle_count": 102,
         "diagnostic_png": "<local-rre-root>/rsp_batch_runs/output/cycle_diagnostics/model_009_M0p6668_Z0p0001120_T6852_cycle_modulation_diagnostic.png",
         "history_candidate_cycle_counts": [
           {
-            "cycle_count": 101,
+            "cycle_count": 102,
             "history_path": "<local-rre-root>/rsp_batch_runs/runs/model_009_M0p6668_Z0p0001120_T6852/LOGS_saturation/history.data",
             "history_source": "saturation"
           }
@@ -1986,14 +1987,14 @@
         "history_path": "<local-rre-root>/rsp_batch_runs/runs/model_009_M0p6668_Z0p0001120_T6852/LOGS_saturation/history.data",
         "history_source": "saturation",
         "last_cycle_count_used": 80,
-        "last_max_l_lsun": 51.275701020070606,
-        "last_min_abs_mag_v": 0.5080981290539012,
-        "last_period_days": 0.48051185283262043,
-        "max_l_modulation_fraction": 0.00044269642122684634,
-        "min_v_modulation_mag": 0.0005487684292845296,
+        "last_max_l_lsun": 51.27847431911849,
+        "last_min_abs_mag_v": 0.5080297721536212,
+        "last_period_days": 0.39303666366105716,
+        "max_l_modulation_fraction": 0.000448814402884691,
+        "min_v_modulation_mag": 0.0005563077176496956,
         "model_id": "model_009",
-        "period_modulation_fraction": 0.0839195811059607,
-        "radius_amplitude_modulation_fraction": 0.285241942731869,
+        "period_modulation_fraction": 0.2528486292503005,
+        "radius_amplitude_modulation_fraction": 0.26226632997517124,
         "run_name": "model_009_M0p6668_Z0p0001120_T6852"
       },
       "cycle_source": null,
@@ -2079,7 +2080,7 @@
       "pressure_work_mode": null,
       "profile_count": null,
       "quality_warnings": [
-        "strong period modulation 0.08392 > 0.05",
+        "strong period modulation 0.2528 > 0.05",
         "only 91/100 cycles available for convergence window",
         "Gamma peak-to-peak 0.01411377581389031 > 0.001",
         "P fractional peak-to-peak 0.7911635470399168 > 0.001",
@@ -2122,8 +2123,8 @@
     "model_005: strong max-L cycle modulation 0.197 > 0.05; strong min-V cycle modulation 0.258 mag > 0.05 mag; strong period modulation 0.2449 > 0.05; exact Gamma/P/DeltaR convergence unavailable from source='period_log_fallback'; Gamma peak-to-peak None > 0.001; P fractional peak-to-peak 0.2380971853063449 > 0.001; DeltaR fractional peak-to-peak 1.0838292045313083 > 0.001",
     "model_006: strong max-L cycle modulation 0.08684 > 0.05; strong min-V cycle modulation 0.1106 mag > 0.05 mag; strong period modulation 0.09743 > 0.05; exact Gamma/P/DeltaR convergence unavailable from source='period_log_fallback'; Gamma peak-to-peak None > 0.001; P fractional peak-to-peak 0.09132408511069967 > 0.001; DeltaR fractional peak-to-peak 0.378029031155749 > 0.001",
     "model_007: DeltaR fractional peak-to-peak 0.0634471400434206 > 0.001",
-    "model_008: DeltaR fractional peak-to-peak 0.20363722774282209 > 0.001",
-    "model_009: strong period modulation 0.08392 > 0.05; only 91/100 cycles available for convergence window; Gamma peak-to-peak 0.01411377581389031 > 0.001; P fractional peak-to-peak 0.7911635470399168 > 0.001; DeltaR fractional peak-to-peak 1.1620442532575144 > 0.001"
+    "model_008: strong period modulation 0.13 > 0.05; DeltaR fractional peak-to-peak 0.20363722774282209 > 0.001",
+    "model_009: strong period modulation 0.2528 > 0.05; only 91/100 cycles available for convergence window; Gamma peak-to-peak 0.01411377581389031 > 0.001; P fractional peak-to-peak 0.7911635470399168 > 0.001; DeltaR fractional peak-to-peak 1.1620442532575144 > 0.001"
   ],
   "status": "running",
   "workspace": "<local-rre-root>/rsp_batch_runs"
