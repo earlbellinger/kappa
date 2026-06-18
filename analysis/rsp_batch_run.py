@@ -616,6 +616,12 @@ def set_or_insert_assignment(text: str, key: str, value: str, after_key: str | N
     return "\n".join(lines) + "\n"
 
 
+def remove_assignment(text: str, key: str) -> str:
+    pattern = re_assignment_for_key(key)
+    lines = [line for line in text.splitlines() if not pattern.match(line)]
+    return "\n".join(lines) + "\n"
+
+
 def re_assignment_for_key(key: str) -> re.Pattern[str]:
     escaped = re.escape(key)
     return re.compile(rf"^(?P<indent>\s*){escaped}\s*=.*$")
@@ -645,6 +651,18 @@ def write_resume_files(
         f"'{photo_rel}'",
         after_key="load_saved_photo",
     )
+    if stage == "create":
+        text = set_or_insert_assignment(text, "create_RSP_model", ".false.")
+        for reset_key in (
+            "set_initial_age",
+            "set_initial_model_number",
+            "set_initial_cumulative_energy_error",
+            "initial_age",
+            "initial_model_number",
+            "new_cumulative_energy_error",
+        ):
+            text = remove_assignment(text, reset_key)
+        text = set_or_insert_assignment(text, "RSP_relax_initial_model", ".false.")
     if resume_max_num_periods is not None:
         text = set_or_insert_assignment(text, "RSP_max_num_periods", str(resume_max_num_periods))
         text = set_or_insert_assignment(text, "RSP_GREKM_avg_abs_limit", "-1")
