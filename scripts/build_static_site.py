@@ -263,6 +263,27 @@ def convergence_by_model(rre_root: Path) -> dict[str, dict[str, object]]:
             current_end = convergence_window_end(by_model.get(str(model_id), {}))
             if trend_end is not None and (current_end is None or trend_end > current_end):
                 by_model[str(model_id)] = normalized
+    forecast = load_json(rre_root / "rsp_batch_runs" / "output" / "convergence_forecast_last100.json")
+    forecast_rows = forecast.get("models", []) if isinstance(forecast, dict) else []
+    for row in forecast_rows:
+        if not isinstance(row, dict) or not row.get("model_id"):
+            continue
+        model_id = str(row["model_id"])
+        target = by_model.setdefault(model_id, {})
+        if target.get("gate_blocking_metrics") in {None, ""}:
+            target["gate_blocking_metrics"] = row.get("blocking_metrics")
+        if target.get("gate_blocking_requirements") in {None, ""}:
+            target["gate_blocking_requirements"] = row.get("blocking_metrics")
+        if target.get("gate_forecast_status") in {None, ""}:
+            target["gate_forecast_status"] = row.get("forecast_status")
+        if target.get("gate_gamma_ratio_to_tolerance") is None:
+            target["gate_gamma_ratio_to_tolerance"] = row.get("gamma_ratio_to_tolerance")
+        if target.get("gate_period_ratio_to_tolerance") is None:
+            target["gate_period_ratio_to_tolerance"] = row.get("period_ratio_to_tolerance")
+        if target.get("gate_delta_r_ratio_to_tolerance") is None:
+            target["gate_delta_r_ratio_to_tolerance"] = row.get("delta_r_ratio_to_tolerance")
+        if target.get("gate_delta_r_periods_to_tolerance_linear") is None:
+            target["gate_delta_r_periods_to_tolerance_linear"] = row.get("delta_r_periods_to_tolerance_linear")
     gate = load_json(rre_root / "rsp_batch_runs" / "output" / "convergence_gate_audit.json")
     gate_rows = gate.get("models", []) if isinstance(gate, dict) else []
     for row in gate_rows:
@@ -499,6 +520,14 @@ def copy_model_assets(
         "animation_trusted_reason": trusted_animation_reason,
         "phase_curve_break_phases": phase_breaks,
         "cycle_boundary": boundary or {},
+        "convergence_blocking_metrics": convergence.get("gate_blocking_metrics") if convergence else None,
+        "convergence_blocking_requirements": convergence.get("gate_blocking_requirements") if convergence else None,
+        "convergence_quality_flags": convergence.get("gate_quality_flags") if convergence else None,
+        "convergence_forecast_status": convergence.get("gate_forecast_status") if convergence else None,
+        "gamma_ratio_to_tolerance": convergence.get("gate_gamma_ratio_to_tolerance") if convergence else None,
+        "period_ratio_to_tolerance": convergence.get("gate_period_ratio_to_tolerance") if convergence else None,
+        "delta_r_ratio_to_tolerance": convergence.get("gate_delta_r_ratio_to_tolerance") if convergence else None,
+        "delta_r_periods_to_tolerance_linear": convergence.get("gate_delta_r_periods_to_tolerance_linear") if convergence else None,
     }
 
 
@@ -621,6 +650,14 @@ def write_fourier_inventory(output_dir: Path, models: list[dict[str, object]]) -
                 "model_status": model.get("status"),
                 "animation_trusted": model.get("animation_trusted"),
                 "converged_exact": model.get("converged_exact"),
+                "convergence_blocking_metrics": model.get("convergence_blocking_metrics"),
+                "convergence_blocking_requirements": model.get("convergence_blocking_requirements"),
+                "convergence_quality_flags": model.get("convergence_quality_flags"),
+                "convergence_forecast_status": model.get("convergence_forecast_status"),
+                "gamma_ratio_to_tolerance": model.get("gamma_ratio_to_tolerance"),
+                "period_ratio_to_tolerance": model.get("period_ratio_to_tolerance"),
+                "delta_r_ratio_to_tolerance": model.get("delta_r_ratio_to_tolerance"),
+                "delta_r_periods_to_tolerance_linear": model.get("delta_r_periods_to_tolerance_linear"),
                 "latest_period": model.get("latest_period"),
                 "max_periods": model.get("max_periods"),
                 "profile_count": model.get("profile_count"),
@@ -652,6 +689,14 @@ def write_fourier_inventory(output_dir: Path, models: list[dict[str, object]]) -
         "model_status",
         "animation_trusted",
         "converged_exact",
+        "convergence_blocking_metrics",
+        "convergence_blocking_requirements",
+        "convergence_quality_flags",
+        "convergence_forecast_status",
+        "gamma_ratio_to_tolerance",
+        "period_ratio_to_tolerance",
+        "delta_r_ratio_to_tolerance",
+        "delta_r_periods_to_tolerance_linear",
         "latest_period",
         "max_periods",
         "profile_count",
@@ -698,6 +743,16 @@ def parameter_table_html(parameter_groups: object) -> str:
     if not rows:
         return ""
     return '<table class="param-table"><tbody>' + "".join(rows) + "</tbody></table>"
+
+
+def gate_waiting_text(model: dict[str, object]) -> str:
+    blocking = model.get("convergence_blocking_requirements") or model.get("convergence_blocking_metrics")
+    if not blocking:
+        return ""
+    metrics = [metric_label(item) for item in str(blocking).split(",") if item.strip()]
+    if not metrics:
+        return ""
+    return "waiting on " + "/".join(metrics)
 
 
 def card_html(model: dict[str, object]) -> str:
@@ -762,6 +817,9 @@ def card_html(model: dict[str, object]) -> str:
                 "Provisional fixed-cell Fourier depth diagnostic; "
                 "will refresh after strict convergence"
             )
+            gate_text = gate_waiting_text(model)
+            if gate_text:
+                fourier_note += f" ({gate_text})"
         fourier_html = (
             f'<div class="fourier-note {fourier_state_class}">{html.escape(fourier_note)}</div>'
             f'<a class="fourier-diagnostic" href="{html.escape(str(fourier_png))}">'
@@ -776,6 +834,9 @@ def card_html(model: dict[str, object]) -> str:
             fourier_pending = "Fourier depth diagnostic pending: waiting for converged post-saturation deep profiles."
         else:
             fourier_pending = "Fourier depth diagnostic pending: waiting for post-convergence deep profiles."
+        gate_text = gate_waiting_text(model)
+        if gate_text:
+            fourier_pending += f" Current gate is {gate_text}."
         fourier_html = (
             '<div class="fourier-placeholder">'
             f"{html.escape(fourier_pending)}"
