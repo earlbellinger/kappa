@@ -2950,6 +2950,27 @@ def main() -> None:
             "sphere_mode": visual_mode,
         }
 
+        def repeated_label_anchor(
+            phase: float,
+            *,
+            side: str = "right",
+            target: float = 1.0,
+            offset: float = 0.04,
+        ) -> tuple[float, str]:
+            positions = phase_reference_positions(phase)
+            signed_offset = float(offset) if side == "right" else -float(offset)
+            label_positions = positions + signed_offset
+            lower, upper = 0.08, 1.92
+            valid = (label_positions >= lower) & (label_positions <= upper)
+            if np.any(valid):
+                candidate_indices = np.flatnonzero(valid)
+                best = int(candidate_indices[np.argmin(np.abs(label_positions[valid] - float(target)))])
+            else:
+                best = int(np.argmin(np.abs(np.clip(label_positions, lower, upper) - float(target))))
+            return clamp(float(label_positions[best]), lower, upper), ("left" if side == "right" else "right")
+
+        panel_span = max(float(panel_ylim[1]) - float(panel_ylim[0]), 1.0e-12)
+
         if dark_mode and visual_mode in {"luminosity", "rv"}:
             if visual_mode == "luminosity":
                 phase_rgb_cycle = np.asarray(
@@ -3181,8 +3202,8 @@ def main() -> None:
         )
         center_phase_index = int(np.argmin(np.abs(max_velocity_positions - 1.0)))
         ax.text(
-            float(max_velocity_positions[center_phase_index]) + 0.04,
-            max_velocity_value,
+            clamp(float(max_velocity_positions[center_phase_index]) + 0.04, 0.08, 1.92),
+            max_velocity_value - (0.08 * panel_span if visual_mode == "luminosity" else 0.0),
             "max velocity",
             ha="left",
             va="center",
@@ -3222,19 +3243,31 @@ def main() -> None:
             va="center",
             **annotation_style,
         )
+        min_light_label_x, min_light_label_ha = repeated_label_anchor(
+            float(sampled_phase[min_light_index]),
+            side="right",
+            target=0.28 if visual_mode == "luminosity" else 0.35,
+            offset=0.045,
+        )
         ax.text(
-            float(sampled_phase[min_light_index]) + 0.045,
+            min_light_label_x,
             float(y_series[min_light_index]) + float(min_light_label_y_shift),
             "min light",
-            ha="left",
+            ha=min_light_label_ha,
             va="center",
             **annotation_style,
         )
+        max_light_label_x, max_light_label_ha = repeated_label_anchor(
+            float(sampled_phase[max_light_index]),
+            side="right",
+            target=0.72 if visual_mode == "luminosity" else 0.70,
+            offset=0.04,
+        )
         ax.text(
-            float(sampled_phase[max_light_index]) + 0.04,
-            float(y_series[max_light_index]),
+            max_light_label_x,
+            float(y_series[max_light_index]) - (0.11 * panel_span if visual_mode == "rv" else 0.0),
             "max light",
-            ha="left",
+            ha=max_light_label_ha,
             va="center",
             **annotation_style,
         )
@@ -3250,24 +3283,40 @@ def main() -> None:
                 linestyle="None",
                 zorder=4.4,
             )
+        min_teff_label_x, min_teff_label_ha = repeated_label_anchor(
+            float(sampled_phase[min_teff_index]),
+            side="left" if visual_mode == "rv" else "right",
+            target=0.42 if visual_mode == "rv" else 0.25,
+            offset=0.03,
+        )
         ax.text(
+            min_teff_label_x,
             (
-                float(sampled_phase[min_teff_index]) - 0.03
-                if visual_mode == "rv"
-                else float(sampled_phase[min_teff_index]) + 0.03
+                clamp(
+                    float(y_series[min_teff_index]) + 0.08 * panel_span,
+                    float(panel_ylim[0]) + 0.06 * panel_span,
+                    float(panel_ylim[1]) - 0.06 * panel_span,
+                )
+                if visual_mode == "luminosity"
+                else float(y_series[min_teff_index])
             ),
-            float(y_series[min_teff_index]),
             "min Teff",
-            ha="right" if visual_mode == "rv" else "left",
+            ha=min_teff_label_ha,
             va="center",
             **annotation_style,
         )
         if visual_mode == "rv":
+            max_teff_label_x, max_teff_label_ha = repeated_label_anchor(
+                float(sampled_phase[max_teff_index]),
+                side="left",
+                target=0.72,
+                offset=0.03,
+            )
             ax.text(
-                float(sampled_phase[max_teff_index]) - 0.03,
+                max_teff_label_x,
                 float(y_series[max_teff_index]),
                 "max Teff",
-                ha="right",
+                ha=max_teff_label_ha,
                 va="center",
                 **annotation_style,
             )

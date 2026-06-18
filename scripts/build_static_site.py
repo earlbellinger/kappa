@@ -52,6 +52,7 @@ def copy_json_if_exists(source: Path, destination: Path, site_root: Path, rre_ro
     destination.write_text(
         json.dumps(sanitize_json_value(value, rre_root), indent=2) + "\n",
         encoding="utf-8",
+        newline="\n",
     )
     return destination.relative_to(site_root).as_posix()
 
@@ -68,7 +69,11 @@ def copy_text_if_exists(source: Path, destination: Path, site_root: Path, rre_ro
     if not source.exists():
         return None
     destination.parent.mkdir(parents=True, exist_ok=True)
-    destination.write_text(sanitize_text_value(source.read_text(encoding="utf-8"), rre_root), encoding="utf-8")
+    destination.write_text(
+        sanitize_text_value(source.read_text(encoding="utf-8"), rre_root),
+        encoding="utf-8",
+        newline="\n",
+    )
     return destination.relative_to(site_root).as_posix()
 
 
@@ -389,7 +394,7 @@ def write_manifest_csv(output_dir: Path, models: list[dict[str, object]]) -> Non
     path = output_dir / "metadata" / "models.csv"
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", newline="", encoding="utf-8") as handle:
-        writer = csv.writer(handle)
+        writer = csv.writer(handle, lineterminator="\n")
         writer.writerow(["model_id", "run_name", "status", "M", "Teff", "L", "Z", "gif_mb", "converged_exact"])
         for model in models:
             writer.writerow(
@@ -509,7 +514,7 @@ def card_html(model: dict[str, object]) -> str:
           <p class="links">{" ".join(links)}</p>
         </div>
       </article>
-    """
+    """.strip()
 
 
 def write_index(output_dir: Path, models: list[dict[str, object]], metadata_links: dict[str, str | None]) -> None:
@@ -675,8 +680,8 @@ def write_index(output_dir: Path, models: list[dict[str, object]], metadata_link
 </body>
 </html>
 """
-    (output_dir / "index.html").write_text(html_text, encoding="utf-8")
-    (output_dir / ".nojekyll").write_text("", encoding="utf-8")
+    (output_dir / "index.html").write_text(html_text, encoding="utf-8", newline="\n")
+    (output_dir / ".nojekyll").write_text("", encoding="utf-8", newline="\n")
 
 
 def validate_static_site(output_dir: Path, models: list[dict[str, object]]) -> None:
