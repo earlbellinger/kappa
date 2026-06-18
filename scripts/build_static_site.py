@@ -677,18 +677,32 @@ def write_index(output_dir: Path, models: list[dict[str, object]], metadata_link
     (output_dir / ".nojekyll").write_text("", encoding="utf-8")
 
 
-def main() -> None:
-    parser = argparse.ArgumentParser(description="Build the portable Kappa static app from local RSP batch outputs.")
-    parser.add_argument("--rre-root", type=Path, required=True)
-    parser.add_argument("--output", type=Path, required=True)
-    args = parser.parse_args()
+def validate_static_site(output_dir: Path, models: list[dict[str, object]]) -> None:
+    model_root = output_dir / "models"
+    missing_dirs = [
+        str(model.get("model_id"))
+        for model in models
+        if not (model_root / str(model.get("model_id"))).is_dir()
+    ]
+    if missing_dirs:
+        raise RuntimeError(f"Static site build missing model directories: {', '.join(missing_dirs)}")
 
-    rre_root = args.rre_root.resolve()
-    output_dir = args.output.resolve()
-    if output_dir.exists():
-        shutil.rmtree(output_dir)
+    missing_assets: list[str] = []
+    for model in models:
+        assets = model.get("assets")
+        if not isinstance(assets, dict):
+            continue
+        for rel_path in assets.values():
+            if rel_path and not (output_dir / str(rel_path)).exists():
+                missing_assets.append(str(rel_path))
+    if missing_assets:
+        shown = ", ".join(missing_assets[:12])
+        suffix = "" if len(missing_assets) <= 12 else f", ... and {len(missing_assets) - 12} more"
+        raise RuntimeError(f"Static site build missing copied assets: {shown}{suffix}")
+
+
+def build_site(rre_root: Path, output_dir: Path) -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
-
     manifest, live_by_id = discover_models(rre_root)
     convergence_by_id = convergence_by_model(rre_root)
     models = [
@@ -705,6 +719,38 @@ def main() -> None:
     metadata_links = copy_batch_assets(rre_root, output_dir)
     write_manifest_csv(output_dir, models)
     write_index(output_dir, models, metadata_links)
+    validate_static_site(output_dir, models)
+
+
+def replace_output_dir(staged_dir: Path, output_dir: Path) -> None:
+    previous_dir = output_dir.with_name(f".{output_dir.name}.previous")
+    if previous_dir.exists():
+        shutil.rmtree(previous_dir)
+    if output_dir.exists():
+        output_dir.replace(previous_dir)
+    staged_dir.replace(output_dir)
+    if previous_dir.exists():
+        shutil.rmtree(previous_dir)
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description="Build the portable Kappa static app from local RSP batch outputs.")
+    parser.add_argument("--rre-root", type=Path, required=True)
+    parser.add_argument("--output", type=Path, required=True)
+    args = parser.parse_args()
+
+    rre_root = args.rre_root.resolve()
+    output_dir = args.output.resolve()
+    staged_dir = output_dir.with_name(f".{output_dir.name}.tmp")
+    if staged_dir.exists():
+        shutil.rmtree(staged_dir)
+    try:
+        build_site(rre_root, staged_dir)
+        replace_output_dir(staged_dir, output_dir)
+    except Exception:
+        if staged_dir.exists():
+            shutil.rmtree(staged_dir)
+        raise
     print(output_dir)
 
 
