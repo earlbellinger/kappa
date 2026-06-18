@@ -223,6 +223,7 @@ def status_signature(rre_root: Path) -> dict[str, object]:
     quality = load_json(output_dir / "quality_extension_status.json")
     convergence = load_json(output_dir / "convergence_summary_last100.json")
     convergence_trends = load_json(output_dir / "convergence_trends_last100.json")
+    phase_seam = load_json(output_dir / "phase_seam_audit.json")
     growth_diagnostics = []
     for path in sorted(output_dir.glob("*_growth_diagnostic.json")):
         data = load_json(path)
@@ -319,6 +320,22 @@ def status_signature(rre_root: Path) -> dict[str, object]:
                         "max_vsurf_div_cs_max": model.get("max_vsurf_div_cs_max"),
                     }
                 )
+    phase_seam_models = []
+    if isinstance(phase_seam, dict):
+        for row in phase_seam.get("rows", []):
+            if not isinstance(row, dict) or not row.get("model_id"):
+                continue
+            phase_seam_models.append(
+                {
+                    "model_id": row.get("model_id"),
+                    "phase_seam_ok": row.get("phase_seam_ok"),
+                    "worst_seam_metric": row.get("worst_seam_metric"),
+                    "worst_seam_fraction": row.get("worst_seam_fraction"),
+                    "verification_passed": row.get("verification_passed"),
+                    "trusted_animation": row.get("trusted_animation"),
+                    "trusted_animation_reason": row.get("trusted_animation_reason"),
+                }
+            )
     return {
         "batch_status": live.get("batch_status", {}).get("status") if isinstance(live, dict) else None,
         "completed_gif_count": live.get("completed_gif_count") if isinstance(live, dict) else None,
@@ -329,6 +346,16 @@ def status_signature(rre_root: Path) -> dict[str, object]:
         "quality_complete": quality.get("complete") if isinstance(quality, dict) else None,
         "convergence_models": convergence_models,
         "convergence_trend_models": convergence_trend_models,
+        "phase_seam": {
+            "row_count": phase_seam.get("row_count") if isinstance(phase_seam, dict) else None,
+            "failed_phase_seam_count": (
+                phase_seam.get("failed_phase_seam_count") if isinstance(phase_seam, dict) else None
+            ),
+            "untrusted_animation_count": (
+                phase_seam.get("untrusted_animation_count") if isinstance(phase_seam, dict) else None
+            ),
+            "models": phase_seam_models,
+        },
         "growth_diagnostics": growth_diagnostics,
         "animation_artifacts": animation_artifacts_signature(rre_root),
         "cycle_modulation": cycle_modulation_signature(rre_root),
