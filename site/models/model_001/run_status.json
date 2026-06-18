@@ -6,7 +6,7 @@
   "output_dir": "<local-rre-root>/rsp_batch_runs/output/model_001_M0p5602_Z0p003592_T6824",
   "prefix": "mesa_rsp_model_001_M0p5602_Z0p003592_T6824",
   "product_stem": "mesa_rsp_model_001_M0p5602_Z0p003592_T6824_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work",
-  "updated_at": "2026-06-18T05:11:16.260657+00:00",
+  "updated_at": "2026-06-18T05:18:50.364882+00:00",
   "stages": {
     "prepared": {
       "status": "complete",
@@ -77,7 +77,7 @@
     },
     "verify": {
       "status": "complete",
-      "updated_at": "2026-06-18T03:47:48.873720+00:00",
+      "updated_at": "2026-06-18T05:18:50.364882+00:00",
       "expected_output": "<local-rre-root>/rsp_batch_runs/output/model_001_M0p5602_Z0p003592_T6824/verification_summary.json",
       "result": {
         "model_id": "model_001",
@@ -89,8 +89,8 @@
         "summary_path": "<local-rre-root>/rsp_batch_runs/output/model_001_M0p5602_Z0p003592_T6824/mesa_rsp_model_001_M0p5602_Z0p003592_T6824_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work_summary.json",
         "pressure_work_mode": "gas_plus_pav",
         "heating_mode": "gas_minus_c",
-        "scaling_method_version": "model000-visible-window-v13",
-        "expected_scaling_method_version": "model000-visible-window-v13",
+        "scaling_method_version": "model000-visible-window-v14",
+        "expected_scaling_method_version": "model000-visible-window-v14",
         "panel_scaling": {
           "reference_model": "model_000",
           "reference_use": "style only: inherit model_000's fractional padding and opacity-band placement after measuring model_000 inside its shown radius range",
@@ -280,9 +280,9 @@
         "phase_seam_ok": true,
         "passed": true,
         "failures": [],
-        "verified_at": "2026-06-18T03:47:48.871715+00:00"
+        "verified_at": "2026-06-18T05:18:50.362876+00:00"
       },
-      "started_at": "2026-06-18T03:47:48.832548+00:00"
+      "started_at": "2026-06-18T05:18:50.326830+00:00"
     }
   },
   "validation": {
