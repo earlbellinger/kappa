@@ -222,6 +222,8 @@ def convergence_by_model(rre_root: Path) -> dict[str, dict[str, object]]:
                 "gate_forecast_status": row.get("forecast_status"),
                 "gate_post_convergence_action": row.get("post_convergence_action"),
                 "gate_latest_surface_velocity_status": row.get("latest_surface_velocity_status"),
+                "gate_convergence_window_end_period": row.get("convergence_window_end_period"),
+                "gate_metric_lag_periods": row.get("gate_metric_lag_periods"),
                 "gate_gamma_ratio_to_tolerance": row.get("gamma_ratio_to_tolerance"),
                 "gate_period_ratio_to_tolerance": row.get("period_ratio_to_tolerance"),
                 "gate_delta_r_ratio_to_tolerance": row.get("delta_r_ratio_to_tolerance"),
@@ -258,6 +260,17 @@ def convergence_text(convergence: dict[str, object] | None) -> str:
     delta_r = convergence.get("delta_r_fractional_peak_to_peak_last_window")
     max_vsurf = convergence.get("max_vsurf_div_cs_max_last_window")
     bits = [f"strict convergence pending", f"{source}", f"{cycles} cycles"]
+    gate_window_end = convergence.get("gate_convergence_window_end_period")
+    metric_lag = convergence.get("gate_metric_lag_periods")
+    if gate_window_end not in {None, ""}:
+        window_text = f"gate window through period {gate_window_end}"
+        try:
+            lag_value = float(metric_lag)
+        except (TypeError, ValueError):
+            lag_value = 0.0
+        if lag_value > 0:
+            window_text += f"; live run {lag_value:.0f} period ahead"
+        bits.append(window_text)
     blocking = convergence.get("gate_blocking_requirements") or convergence.get("gate_blocking_metrics")
     if blocking:
         metrics = "/".join(metric_label(item) for item in str(blocking).split(",") if item.strip())
