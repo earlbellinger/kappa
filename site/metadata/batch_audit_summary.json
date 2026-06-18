@@ -11,7 +11,7 @@
     "model_008: stages not complete: continue_saturation, restart, deep2cycles, final_cycle, plot, verify; missing files: saturated_model, restart_model, deep_model, final_cycle_summary, final_cycle_lightcurve, gif, png, animation_summary, verification_summary; verification_summary did not pass; pressure_work_mode=None; heating_mode=None; cycle_source=None; radius_window_contains_photosphere=None; phase_seam_ok=None; missing profile columns: cp, gamma1, ionization_he4, rsp_Lc, rsp_Lr, rsp_Lt, rsp_Pvsc, rsp_src_snk, tau",
     "model_009: stages not complete: create, continue_saturation, restart, deep2cycles, final_cycle, plot, verify; missing files: create_model, saturated_model, restart_model, deep_model, final_cycle_summary, final_cycle_lightcurve, gif, png, animation_summary, verification_summary; verification_summary did not pass; pressure_work_mode=None; heating_mode=None; cycle_source=None; radius_window_contains_photosphere=None; phase_seam_ok=None; missing profile columns: cp, gamma1, ionization_he4, rsp_Lc, rsp_Lr, rsp_Lt, rsp_Pvsc, rsp_src_snk, tau"
   ],
-  "generated_at": "2026-06-18T23:28:34.908331+00:00",
+  "generated_at": "2026-06-18T23:39:31.275859+00:00",
   "incomplete_models": [
     "model_001",
     "model_002",
@@ -165,45 +165,45 @@
         "converged_exact": false,
         "converged_gamma": false,
         "converged_period": false,
-        "cycle_count": 42,
+        "cycle_count": 43,
         "delta_r_first_last_window": [
           0.5309522457701448,
-          0.5437548593196189
+          0.544136914233686
         ],
-        "delta_r_fractional_peak_to_peak_last_window": 0.02379752329614306,
-        "delta_r_median_last_window": 0.5379809230630759,
-        "delta_r_slope_per_cycle_last_window": 0.00031209379559338685,
+        "delta_r_fractional_peak_to_peak_last_window": 0.024502091730249528,
+        "delta_r_median_last_window": 0.5381037916556277,
+        "delta_r_slope_per_cycle_last_window": 0.0003112425237733821,
         "gamma_first_last_window": [
           0.0009593557259511647,
-          0.0006778020621297696
+          0.0006533594805133384
         ],
-        "gamma_median_last_window": 0.0007977031938184527,
+        "gamma_median_last_window": 0.000790696652475827,
         "gamma_peak_to_peak_last_window": 0.0003074536248802892,
-        "gamma_slope_per_cycle_last_window": -6.685065083623296e-06,
+        "gamma_slope_per_cycle_last_window": -6.689157324532885e-06,
         "gamma_status": "exact rsp_GREKM history column",
         "grekm_stopped": null,
         "has_full_window": false,
         "has_gamma": true,
-        "last_cycle_count_used": 42,
-        "last_period_number": 1948.0,
+        "last_cycle_count_used": 43,
+        "last_period_number": 1949.0,
         "limit_cycle_converged": false,
         "max_vsurf_div_cs_first_last_window": [
           null,
-          4.41232
+          4.41494
         ],
-        "max_vsurf_div_cs_max_last_window": 4.41232,
-        "max_vsurf_div_cs_median_last_window": 4.3744,
+        "max_vsurf_div_cs_max_last_window": 4.41494,
+        "max_vsurf_div_cs_median_last_window": 4.37453,
         "max_vsurf_div_cs_min_last_window": 4.32773,
-        "max_vsurf_div_cs_slope_per_cycle_last_window": 0.002119179442508715,
+        "max_vsurf_div_cs_slope_per_cycle_last_window": 0.002113460011344303,
         "model_id": "model_001",
         "period_cap_stopped": null,
         "period_first_last_days_window": [
           0.5920105713899075,
-          0.5920652153739636
+          0.5920298427515835
         ],
-        "period_fractional_peak_to_peak_last_window": 0.0004012246935956114,
-        "period_median_days_last_window": 0.5920122768577292,
-        "period_slope_days_per_cycle_last_window": 8.078027625709084e-07,
+        "period_fractional_peak_to_peak_last_window": 0.0004012235377516201,
+        "period_median_days_last_window": 0.5920139823255509,
+        "period_slope_days_per_cycle_last_window": 7.836144313214085e-07,
         "required_last_cycles": 100,
         "run_name": "model_001_M0p5602_Z0p003592_T6824",
         "source": "cumulative:continue_saturation_resume:LOGS_continue_saturation_resume_2500000",
@@ -216,7 +216,7 @@
         "steps_source_path": "<local-rre-root>/rsp_batch_runs/output/model_001_M0p5602_Z0p003592_T6824/logs/continue_saturation.log",
         "stop_reasons": [],
         "tolerance": 0.001,
-        "window_end_period_number": 1948.0,
+        "window_end_period_number": 1949.0,
         "window_start_period_number": 1907.0
       },
       "cycle_modulation": {
@@ -224,7 +224,7 @@
         "diagnostic_png": "<local-rre-root>/rsp_batch_runs/output/cycle_diagnostics/model_001_M0p5602_Z0p003592_T6824_cycle_modulation_diagnostic.png",
         "history_candidate_cycle_counts": [
           {
-            "cycle_count": 40,
+            "cycle_count": 41,
             "history_path": "<local-rre-root>/rsp_batch_runs/runs/model_001_M0p5602_Z0p003592_T6824/LOGS_continue_saturation_resume_2500000/history.data",
             "history_source": "continue_saturation_resume:LOGS_continue_saturation_resume_2500000"
           },
@@ -358,10 +358,10 @@
       "pressure_work_mode": "gas_plus_pav",
       "profile_count": 3728,
       "quality_warnings": [
-        "only 42/100 cycles available for convergence window",
+        "only 43/100 cycles available for convergence window",
         "Gamma peak-to-peak 0.0003074536248802892 > 0.001",
-        "P fractional peak-to-peak 0.0004012246935956114 > 0.001",
-        "DeltaR fractional peak-to-peak 0.02379752329614306 > 0.001"
+        "P fractional peak-to-peak 0.0004012235377516201 > 0.001",
+        "DeltaR fractional peak-to-peak 0.024502091730249528 > 0.001"
       ],
       "radius_window_contains_photosphere": true,
       "reached_max_periods": false,
@@ -1599,7 +1599,7 @@
         "diagnostic_png": "<local-rre-root>/rsp_batch_runs/output/cycle_diagnostics/model_007_M0p6887_Z0p004060_T6669_cycle_modulation_diagnostic.png",
         "history_candidate_cycle_counts": [
           {
-            "cycle_count": 50,
+            "cycle_count": 51,
             "history_path": "<local-rre-root>/rsp_batch_runs/runs/model_007_M0p6887_Z0p004060_T6669/LOGS_continue_saturation_resume_2270000/history.data",
             "history_source": "continue_saturation_resume:LOGS_continue_saturation_resume_2270000"
           },
@@ -1735,45 +1735,45 @@
         "converged_exact": false,
         "converged_gamma": true,
         "converged_period": true,
-        "cycle_count": 1096,
+        "cycle_count": 1097,
         "delta_r_first_last_window": [
-          0.06167063164457787,
-          0.07570167521513937
+          0.0617981655412585,
+          0.0758592410525667
         ],
-        "delta_r_fractional_peak_to_peak_last_window": 0.2053790450735305,
-        "delta_r_median_last_window": 0.06831779535024163,
-        "delta_r_slope_per_cycle_last_window": 0.0001416012072084986,
+        "delta_r_fractional_peak_to_peak_last_window": 0.20539300826455598,
+        "delta_r_median_last_window": 0.0684593678729164,
+        "delta_r_slope_per_cycle_last_window": 0.00014190261621415794,
         "gamma_first_last_window": [
-          0.004169980374323856,
-          0.004221908338763517
+          0.004170348879033576,
+          0.004222327310990559
         ],
-        "gamma_median_last_window": 0.004193784940118045,
-        "gamma_peak_to_peak_last_window": 5.192796443966117e-05,
-        "gamma_slope_per_cycle_last_window": 5.290515577001368e-07,
+        "gamma_median_last_window": 0.004194437726026293,
+        "gamma_peak_to_peak_last_window": 5.197843195698347e-05,
+        "gamma_slope_per_cycle_last_window": 5.304775751911506e-07,
         "gamma_status": "exact rsp_GREKM history column",
         "grekm_stopped": null,
         "has_full_window": true,
         "has_gamma": true,
         "last_cycle_count_used": 100,
-        "last_period_number": 1096.0,
+        "last_period_number": 1097.0,
         "limit_cycle_converged": false,
         "max_vsurf_div_cs_first_last_window": [
           null,
-          0.44009
+          0.4411
         ],
-        "max_vsurf_div_cs_max_last_window": 0.44009,
-        "max_vsurf_div_cs_median_last_window": 0.40311,
+        "max_vsurf_div_cs_max_last_window": 0.4411,
+        "max_vsurf_div_cs_median_last_window": 0.40356000000000003,
         "max_vsurf_div_cs_min_last_window": 0.36986,
-        "max_vsurf_div_cs_slope_per_cycle_last_window": 0.0008988641674780915,
+        "max_vsurf_div_cs_slope_per_cycle_last_window": 0.0009001538912330051,
         "model_id": "model_008",
         "period_cap_stopped": null,
         "period_first_last_days_window": [
-          0.6316220638000717,
-          0.6316179757339327
+          0.6316220072594781,
+          0.6316181156085804
         ],
-        "period_fractional_peak_to_peak_last_window": 9.099170863239338e-06,
+        "period_fractional_peak_to_peak_last_window": 9.009653756340258e-06,
         "period_median_days_last_window": 0.6316177488195158,
-        "period_slope_days_per_cycle_last_window": -5.9165566232264914e-08,
+        "period_slope_days_per_cycle_last_window": -5.7182679908033405e-08,
         "required_last_cycles": 100,
         "run_name": "model_008_M0p6151_Z0p0004406_T6792",
         "source": "cumulative:saturation+continue_saturation+continue_saturation_resume:LOGS_continue_saturation_resume_1620000",
@@ -1786,15 +1786,15 @@
         "steps_source_path": "<local-rre-root>/rsp_batch_runs/output/model_008_M0p6151_Z0p0004406_T6792/logs/continue_saturation.log",
         "stop_reasons": [],
         "tolerance": 0.001,
-        "window_end_period_number": 1096.0,
-        "window_start_period_number": 997.0
+        "window_end_period_number": 1097.0,
+        "window_start_period_number": 998.0
       },
       "cycle_modulation": {
         "cycle_count": 1022,
         "diagnostic_png": "<local-rre-root>/rsp_batch_runs/output/cycle_diagnostics/model_008_M0p6151_Z0p0004406_T6792_cycle_modulation_diagnostic.png",
         "history_candidate_cycle_counts": [
           {
-            "cycle_count": 78,
+            "cycle_count": 79,
             "history_path": "<local-rre-root>/rsp_batch_runs/runs/model_008_M0p6151_Z0p0004406_T6792/LOGS_continue_saturation_resume_1620000/history.data",
             "history_source": "continue_saturation_resume:LOGS_continue_saturation_resume_1620000"
           },
@@ -1906,7 +1906,7 @@
       "profile_count": null,
       "quality_warnings": [
         "strong period modulation 0.35 > 0.05",
-        "DeltaR fractional peak-to-peak 0.2053790450735305 > 0.001"
+        "DeltaR fractional peak-to-peak 0.20539300826455598 > 0.001"
       ],
       "radius_window_contains_photosphere": null,
       "reached_max_periods": null,
@@ -1934,66 +1934,66 @@
         "converged_exact": false,
         "converged_gamma": false,
         "converged_period": false,
-        "cycle_count": 209,
+        "cycle_count": 210,
         "delta_r_first_last_window": [
-          0.002680410819177581,
-          0.0036676130358666015
+          0.0025147133926886056,
+          0.0032706901109342823
         ],
-        "delta_r_fractional_peak_to_peak_last_window": 0.38617582922762095,
-        "delta_r_median_last_window": 0.0029854267303157656,
-        "delta_r_slope_per_cycle_last_window": 8.436574027088993e-06,
+        "delta_r_fractional_peak_to_peak_last_window": 0.38567628997972664,
+        "delta_r_median_last_window": 0.0029892935426198974,
+        "delta_r_slope_per_cycle_last_window": 8.339598310761172e-06,
         "gamma_first_last_window": [
-          0.0044349623677619725,
-          0.005090872255618296
+          0.007635602981097599,
+          0.007847040482837228
         ],
-        "gamma_median_last_window": 0.005099037123338658,
+        "gamma_median_last_window": 0.0051153951052743335,
         "gamma_peak_to_peak_last_window": 0.0049164772507597505,
-        "gamma_slope_per_cycle_last_window": -5.473465343387236e-07,
+        "gamma_slope_per_cycle_last_window": 2.5584457323974157e-07,
         "gamma_status": "exact rsp_GREKM history column",
         "grekm_stopped": null,
         "has_full_window": true,
         "has_gamma": true,
         "last_cycle_count_used": 100,
-        "last_period_number": 209.0,
+        "last_period_number": 210.0,
         "limit_cycle_converged": false,
         "max_vsurf_div_cs_first_last_window": [
           null,
-          0.02589
+          0.02156
         ],
         "max_vsurf_div_cs_max_last_window": 0.02589,
-        "max_vsurf_div_cs_median_last_window": 0.02134,
+        "max_vsurf_div_cs_median_last_window": 0.02145,
         "max_vsurf_div_cs_min_last_window": 0.01763,
-        "max_vsurf_div_cs_slope_per_cycle_last_window": 5.989611562782296e-05,
+        "max_vsurf_div_cs_slope_per_cycle_last_window": 5.776634995265616e-05,
         "model_id": "model_009",
         "period_cap_stopped": null,
         "period_first_last_days_window": [
-          0.49370579290792294,
-          0.48858381151622676
+          0.5166909752546753,
+          0.5114863284447023
         ],
-        "period_fractional_peak_to_peak_last_window": 0.05793497548085274,
-        "period_median_days_last_window": 0.501309117961829,
-        "period_slope_days_per_cycle_last_window": -3.7294209982665545e-06,
+        "period_fractional_peak_to_peak_last_window": 0.05791118945172261,
+        "period_median_days_last_window": 0.5015150220953122,
+        "period_slope_days_per_cycle_last_window": -3.3011107485678548e-06,
         "required_last_cycles": 100,
         "run_name": "model_009_M0p6668_Z0p0001120_T6852",
         "source": "cumulative:saturation+saturation_resume:LOGS_saturation_resume_130000",
         "source_kind": "history_exact_rsp_columns",
         "source_path": "<local-rre-root>/rsp_batch_runs/runs/model_009_M0p6668_Z0p0001120_T6852/LOGS_saturation_resume_130000/history.data",
         "steps_max_last_window": 1052.0,
-        "steps_median_last_window": 999.0,
+        "steps_median_last_window": 1000.0,
         "steps_min_last_window": 950.0,
         "steps_source": "cumulative:create",
         "steps_source_path": "<local-rre-root>/rsp_batch_runs/output/model_009_M0p6668_Z0p0001120_T6852/logs/create.log",
         "stop_reasons": [],
         "tolerance": 0.001,
-        "window_end_period_number": 209.0,
-        "window_start_period_number": 110.0
+        "window_end_period_number": 210.0,
+        "window_start_period_number": 111.0
       },
       "cycle_modulation": {
-        "cycle_count": 80,
+        "cycle_count": 81,
         "diagnostic_png": "<local-rre-root>/rsp_batch_runs/output/cycle_diagnostics/model_009_M0p6668_Z0p0001120_T6852_cycle_modulation_diagnostic.png",
         "history_candidate_cycle_counts": [
           {
-            "cycle_count": 80,
+            "cycle_count": 81,
             "history_path": "<local-rre-root>/rsp_batch_runs/runs/model_009_M0p6668_Z0p0001120_T6852/LOGS_saturation_resume_130000/history.data",
             "history_source": "saturation_resume:LOGS_saturation_resume_130000"
           },
@@ -2006,14 +2006,14 @@
         "history_path": "<local-rre-root>/rsp_batch_runs/runs/model_009_M0p6668_Z0p0001120_T6852/LOGS_saturation_resume_130000/history.data",
         "history_source": "saturation_resume:LOGS_saturation_resume_130000",
         "last_cycle_count_used": 80,
-        "last_max_l_lsun": 51.31142561084041,
-        "last_min_abs_mag_v": 0.5072378262895447,
-        "last_period_days": 0.44216407661377843,
-        "max_l_modulation_fraction": 0.000623456113738666,
+        "last_max_l_lsun": 51.30046805736858,
+        "last_min_abs_mag_v": 0.5075053135239032,
+        "last_period_days": 0.5131046121682203,
+        "max_l_modulation_fraction": 0.0006234484791375986,
         "min_v_modulation_mag": 0.0007707268506721432,
         "model_id": "model_009",
-        "period_modulation_fraction": 0.1560520021750009,
-        "radius_amplitude_modulation_fraction": 0.28446891762920146,
+        "period_modulation_fraction": 0.07044411848938091,
+        "radius_amplitude_modulation_fraction": 0.28417971210162013,
         "run_name": "model_009_M0p6668_Z0p0001120_T6852"
       },
       "cycle_source": null,
@@ -2099,10 +2099,10 @@
       "pressure_work_mode": null,
       "profile_count": null,
       "quality_warnings": [
-        "strong period modulation 0.1561 > 0.05",
+        "strong period modulation 0.07044 > 0.05",
         "Gamma peak-to-peak 0.0049164772507597505 > 0.001",
-        "P fractional peak-to-peak 0.05793497548085274 > 0.001",
-        "DeltaR fractional peak-to-peak 0.38617582922762095 > 0.001"
+        "P fractional peak-to-peak 0.05791118945172261 > 0.001",
+        "DeltaR fractional peak-to-peak 0.38567628997972664 > 0.001"
       ],
       "radius_window_contains_photosphere": null,
       "reached_max_periods": null,
@@ -2134,15 +2134,15 @@
   "quality_extension_complete": false,
   "quality_extension_required": true,
   "quality_warnings": [
-    "model_001: only 42/100 cycles available for convergence window; Gamma peak-to-peak 0.0003074536248802892 > 0.001; P fractional peak-to-peak 0.0004012246935956114 > 0.001; DeltaR fractional peak-to-peak 0.02379752329614306 > 0.001",
+    "model_001: only 43/100 cycles available for convergence window; Gamma peak-to-peak 0.0003074536248802892 > 0.001; P fractional peak-to-peak 0.0004012235377516201 > 0.001; DeltaR fractional peak-to-peak 0.024502091730249528 > 0.001",
     "model_002: exact Gamma/P/DeltaR convergence unavailable from source='period_log_fallback'; Gamma peak-to-peak None > 0.001; DeltaR fractional peak-to-peak 0.11147892994542363 > 0.001",
     "model_003: strong max-L cycle modulation 0.1188 > 0.05; strong min-V cycle modulation 0.1452 mag > 0.05 mag; strong period modulation 0.1242 > 0.05; exact Gamma/P/DeltaR convergence unavailable from source='period_log_fallback'; Gamma peak-to-peak None > 0.001; P fractional peak-to-peak 0.1202100862854387 > 0.001; DeltaR fractional peak-to-peak 0.5537146114383431 > 0.001",
     "model_004: exact Gamma/P/DeltaR convergence unavailable from source='period_log_fallback'; Gamma peak-to-peak None > 0.001; P fractional peak-to-peak 0.025235680823581453 > 0.001; DeltaR fractional peak-to-peak 0.1947332378758638 > 0.001",
     "model_005: strong max-L cycle modulation 0.197 > 0.05; strong min-V cycle modulation 0.258 mag > 0.05 mag; strong period modulation 0.2449 > 0.05; exact Gamma/P/DeltaR convergence unavailable from source='period_log_fallback'; Gamma peak-to-peak None > 0.001; P fractional peak-to-peak 0.2380971853063449 > 0.001; DeltaR fractional peak-to-peak 1.0838292045313083 > 0.001",
     "model_006: strong max-L cycle modulation 0.08684 > 0.05; strong min-V cycle modulation 0.1106 mag > 0.05 mag; strong period modulation 0.09743 > 0.05; exact Gamma/P/DeltaR convergence unavailable from source='period_log_fallback'; Gamma peak-to-peak None > 0.001; P fractional peak-to-peak 0.09132408511069967 > 0.001; DeltaR fractional peak-to-peak 0.378029031155749 > 0.001",
     "model_007: DeltaR fractional peak-to-peak 0.03137888079789745 > 0.001",
-    "model_008: strong period modulation 0.35 > 0.05; DeltaR fractional peak-to-peak 0.2053790450735305 > 0.001",
-    "model_009: strong period modulation 0.1561 > 0.05; Gamma peak-to-peak 0.0049164772507597505 > 0.001; P fractional peak-to-peak 0.05793497548085274 > 0.001; DeltaR fractional peak-to-peak 0.38617582922762095 > 0.001"
+    "model_008: strong period modulation 0.35 > 0.05; DeltaR fractional peak-to-peak 0.20539300826455598 > 0.001",
+    "model_009: strong period modulation 0.07044 > 0.05; Gamma peak-to-peak 0.0049164772507597505 > 0.001; P fractional peak-to-peak 0.05791118945172261 > 0.001; DeltaR fractional peak-to-peak 0.38567628997972664 > 0.001"
   ],
   "status": "running",
   "workspace": "<local-rre-root>/rsp_batch_runs"
