@@ -576,6 +576,75 @@ def write_manifest_csv(output_dir: Path, models: list[dict[str, object]]) -> Non
             )
 
 
+def write_fourier_inventory(output_dir: Path, models: list[dict[str, object]]) -> dict[str, str]:
+    metadata_dir = output_dir / "metadata"
+    metadata_dir.mkdir(parents=True, exist_ok=True)
+    rows: list[dict[str, object]] = []
+    for model in models:
+        assets = model.get("assets")
+        assets = assets if isinstance(assets, dict) else {}
+        summary_rel = assets.get("fourier_fixed_summary")
+        png_rel = assets.get("fourier_fixed_png")
+        csv_rel = assets.get("fourier_fixed_csv")
+        summary = load_json(output_dir / str(summary_rel)) if summary_rel else None
+        summary = summary if isinstance(summary, dict) else {}
+        q_range = summary.get("q_env_range") if isinstance(summary.get("q_env_range"), list) else []
+        t_range = summary.get("temperature_range_K") if isinstance(summary.get("temperature_range_K"), list) else []
+        rows.append(
+            {
+                "model_id": model.get("model_id"),
+                "run_name": model.get("run_name"),
+                "status": "present" if summary_rel and png_rel and csv_rel else "pending",
+                "model_status": model.get("status"),
+                "animation_trusted": model.get("animation_trusted"),
+                "fourier_png": png_rel,
+                "fourier_csv": csv_rel,
+                "fourier_summary": summary_rel,
+                "fit_harmonics": summary.get("fit_harmonics"),
+                "num_profiles": summary.get("num_profiles"),
+                "point_count": summary.get("point_count") or summary.get("num_fixed_cells_plotted"),
+                "q_env_min": q_range[0] if len(q_range) >= 2 else None,
+                "q_env_max": q_range[1] if len(q_range) >= 2 else None,
+                "temperature_min_K": t_range[0] if len(t_range) >= 2 else None,
+                "temperature_max_K": t_range[1] if len(t_range) >= 2 else None,
+                "photosphere_temperature_K": summary.get("photosphere_temperature_K"),
+                "photosphere_q_env": summary.get("photosphere_q_env"),
+            }
+        )
+
+    json_path = metadata_dir / "fourier_inventory.json"
+    csv_path = metadata_dir / "fourier_inventory.csv"
+    json_path.write_text(json.dumps({"models": rows}, indent=2) + "\n", encoding="utf-8")
+    fieldnames = [
+        "model_id",
+        "run_name",
+        "status",
+        "model_status",
+        "animation_trusted",
+        "fit_harmonics",
+        "num_profiles",
+        "point_count",
+        "q_env_min",
+        "q_env_max",
+        "temperature_min_K",
+        "temperature_max_K",
+        "photosphere_temperature_K",
+        "photosphere_q_env",
+        "fourier_png",
+        "fourier_csv",
+        "fourier_summary",
+    ]
+    with csv_path.open("w", newline="", encoding="utf-8") as handle:
+        writer = csv.DictWriter(handle, fieldnames=fieldnames, lineterminator="\n")
+        writer.writeheader()
+        for row in rows:
+            writer.writerow({field: row.get(field) for field in fieldnames})
+    return {
+        "fourier_inventory.json": str(json_path.relative_to(output_dir)).replace("\\", "/"),
+        "fourier_inventory.csv": str(csv_path.relative_to(output_dir)).replace("\\", "/"),
+    }
+
+
 def parameter_table_html(parameter_groups: object) -> str:
     if not isinstance(parameter_groups, dict) or not parameter_groups:
         return ""
@@ -827,6 +896,8 @@ def write_index(output_dir: Path, models: list[dict[str, object]], metadata_link
         ("live status", metadata_links.get("live_status.json")),
         ("audit", metadata_links.get("batch_audit_summary.json")),
         ("manifest", metadata_links.get("manifest.json")),
+        ("Fourier inventory", metadata_links.get("fourier_inventory.json")),
+        ("Fourier inventory CSV", metadata_links.get("fourier_inventory.csv")),
         ("cycle modulation", metadata_links.get("cycle_modulation_summary.json")),
         ("convergence", metadata_links.get("convergence_summary_last100.json")),
         ("convergence plot", convergence_png),
@@ -980,6 +1051,7 @@ def build_site(rre_root: Path, output_dir: Path) -> None:
             model["parameter_groups"] = parameter_groups_for_record(record, varied_groups)
     metadata_links = copy_batch_assets(rre_root, output_dir)
     write_manifest_csv(output_dir, models)
+    metadata_links.update(write_fourier_inventory(output_dir, models))
     write_index(output_dir, models, metadata_links)
     validate_static_site(output_dir, models)
 
