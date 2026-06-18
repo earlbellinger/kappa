@@ -419,6 +419,9 @@ def copy_model_assets(
         "gif": source_output_dir / f"{product_stem}.gif",
         "png": source_output_dir / f"{product_stem}.png",
         "summary": source_output_dir / f"{product_stem}_summary.json",
+        "fourier_fixed_png": source_output_dir / f"{prefix}_fourier_fixed_cells_vs_logT.png",
+        "fourier_fixed_csv": source_output_dir / f"{prefix}_fourier_fixed_cells_vs_logT.csv",
+        "fourier_fixed_summary": source_output_dir / f"{prefix}_fourier_fixed_cells_vs_logT_summary.json",
         "verify": verify_path,
         "lightcurve_csv": source_output_dir / f"{prefix}_final_cycle_lightcurve.csv",
         "final_cycle_summary": source_output_dir / f"{prefix}_final_cycle_summary.json",
@@ -602,6 +605,9 @@ def card_html(model: dict[str, object]) -> str:
     summary = assets.get("summary")
     verify = assets.get("verify")
     lightcurve = assets.get("lightcurve_csv")
+    fourier_png = assets.get("fourier_fixed_png")
+    fourier_csv = assets.get("fourier_fixed_csv")
+    fourier_summary = assets.get("fourier_fixed_summary")
     image = gif or png
     badge_class = (
         "ok"
@@ -618,7 +624,15 @@ def card_html(model: dict[str, object]) -> str:
         values = ", ".join(f"{float(value):.3f}" for value in phase_breaks)
         break_text = f"<span>phase-curve break: {html.escape(values)}</span>"
     links = []
-    for label, href in (("GIF", gif), ("PNG", png), ("summary", summary), ("verify", verify), ("lightcurve", lightcurve)):
+    for label, href in (
+        ("GIF", gif),
+        ("PNG", png),
+        ("summary", summary),
+        ("verify", verify),
+        ("lightcurve", lightcurve),
+        ("Fourier CSV", fourier_csv),
+        ("Fourier summary", fourier_summary),
+    ):
         if href:
             links.append(f'<a href="{html.escape(str(href))}">{label}</a>')
     if not links:
@@ -634,6 +648,14 @@ def card_html(model: dict[str, object]) -> str:
         else:
             placeholder = "queued"
         image_html = f'<div class="media placeholder">{html.escape(placeholder)}</div>'
+    fourier_html = ""
+    if fourier_png:
+        fourier_html = (
+            f'<a class="fourier-diagnostic" href="{html.escape(str(fourier_png))}">'
+            f'<img src="{html.escape(str(fourier_png))}" '
+            f'alt="{html.escape(str(model["model_id"]))} fixed-cell Fourier depth diagnostic">'
+            '</a>'
+        )
     progress_bits = []
     if model.get("retry_pending"):
         retry_stages = model.get("retry_pending_stages") or []
@@ -712,6 +734,7 @@ def card_html(model: dict[str, object]) -> str:
           <span class="badge {badge_class}">{html.escape(str(model["status"]))}</span>
         </div>
         {image_html}
+        {fourier_html}
         <div class="body">
           {parameter_table}
           <p class="details">{html.escape(" | ".join(progress_bits))} {break_text}</p>
@@ -858,6 +881,8 @@ def write_index(output_dir: Path, models: list[dict[str, object]], metadata_link
     .media {{ display:block; border-bottom:0; background:#000; }}
     .diagnostic-media {{ outline:2px solid rgba(255,183,3,.55); outline-offset:-2px; }}
     img {{ display:block; width:100%; height:auto; background:#000; }}
+    .fourier-diagnostic {{ display:block; border:0; border-top:1px solid var(--line); background:#fff; }}
+    .fourier-diagnostic img {{ background:#fff; }}
     .placeholder {{ min-height:260px; display:grid; place-items:center; color:#656977; background:repeating-linear-gradient(135deg,#07080b,#07080b 14px,#0d0f14 14px,#0d0f14 28px); }}
     .body {{ padding: 14px 18px 18px; }}
     .param-table {{ width:100%; border-collapse:collapse; margin:0 0 10px; font-size:13px; color:var(--text); }}

@@ -1,0 +1,178 @@
+{
+  "prefix": "mesa_rsp_combined_14507_full_pressure_minus_eq",
+  "run_dir": "<local-rre-root>/mesa_rsp_combined_14507_full_pressure_minus_eq",
+  "output_dir": "<local-rre-root>/output/combined_14507_full_pressure_minus_eq",
+  "png_path": "<local-rre-root>/output/combined_14507_full_pressure_minus_eq/mesa_rsp_combined_14507_full_pressure_minus_eq_fourier_fixed_cells_vs_logT.png",
+  "csv_path": "<local-rre-root>/output/combined_14507_full_pressure_minus_eq/mesa_rsp_combined_14507_full_pressure_minus_eq_fourier_fixed_cells_vs_logT.csv",
+  "period_days": 0.7214516813364753,
+  "phase_reference_days": 1440.608969018512,
+  "fit_harmonics": 14,
+  "num_profiles": 3184,
+  "num_fixed_cells_plotted": 152,
+  "temperature_coordinate_source": "mean-light nonlinear RSP profile T(q), interpolated onto fixed Lagrangian q cells",
+  "mean_light_profile_path": "<local-rre-root>/mesa_rsp_combined_14507_full_pressure_minus_eq/LOGS/profile3086.data",
+  "mean_light_selection_source": "final_cycle_summary_window",
+  "photosphere_q_env": 0.9999989944985385,
+  "photosphere_temperature_K": 6100.687972342929,
+  "photosphere_reference_method": "amplitudes and unwrapped phases linearly interpolated in fixed q to the mean-light tau=2/3 photosphere",
+  "amplitude_convention": "fractional shell luminosity amplitude from L(q,t)/<L(q)> - 1",
+  "amplitude_plot": "Delta A_k = A_k(q) - A_k(photosphere)",
+  "phase_plot": "Delta phi_k = phi_k(q) - phi_k(photosphere), unwrapped continuously in q",
+  "photosphere_fourier_reference": {
+    "A1": 0.07603991012571883,
+    "A2": 0.07121613251075706,
+    "A3": 0.052622170880213946,
+    "phi1": 1.3231997159319002,
+    "phi2": 2.0850829815980845,
+    "phi3": 8.393170158595074
+  },
+  "zone_detection_details": {
+    "He II Ionization": {
+      "source": "mean-light ionization_he4 jump on the profile mesh",
+      "detected": true,
+      "fallback_discrete_jump": true,
+      "jump_temperatures_K": [
+        43410.57233017299,
+        44798.16658477839
+      ],
+      "jump_profile_indices": [
+        99,
+        100
+      ]
+    },
+    "H Ionization": {
+      "source": "mean-light cp and gamma1 on the profile mesh",
+      "detected_labels": [
+        "H Ionization",
+        "He I Ionization"
+      ],
+      "selection_threshold": 0.9947155926199927,
+      "log10_cp_range": 1.2583269927479677,
+      "gamma1_deficit_range": 0.5190934631460149,
+      "peak_records": [
+        {
+          "label": "H Ionization",
+          "peak_massdepth": 10871.253312819552,
+          "peak_susceptibility": 1.9894311852399853,
+          "left_massdepth": 15684.093568047587,
+          "right_massdepth": 6157.465579160735
+        },
+        {
+          "label": "He I Ionization",
+          "peak_massdepth": 17188.525258520545,
+          "peak_susceptibility": 1.2402897270674327,
+          "left_massdepth": 26579.033278750543,
+          "right_massdepth": 15684.093568047587
+        }
+      ],
+      "message": "Outer partial-ionization spans inferred from mean-light cp peaks and gamma1 dips because the explicit H/He I charge fields are flat in these RSP profiles."
+    },
+    "He I Ionization": {
+      "source": "mean-light cp and gamma1 on the profile mesh",
+      "detected_labels": [
+        "H Ionization",
+        "He I Ionization"
+      ],
+      "selection_threshold": 0.9947155926199927,
+      "log10_cp_range": 1.2583269927479677,
+      "gamma1_deficit_range": 0.5190934631460149,
+      "peak_records": [
+        {
+          "label": "H Ionization",
+          "peak_massdepth": 10871.253312819552,
+          "peak_susceptibility": 1.9894311852399853,
+          "left_massdepth": 15684.093568047587,
+          "right_massdepth": 6157.465579160735
+        },
+        {
+          "label": "He I Ionization",
+          "peak_massdepth": 17188.525258520545,
+          "peak_susceptibility": 1.2402897270674327,
+          "left_massdepth": 26579.033278750543,
+          "right_massdepth": 15684.093568047587
+        }
+      ],
+      "message": "Outer partial-ionization spans inferred from mean-light cp peaks and gamma1 dips because the explicit H/He I charge fields are flat in these RSP profiles."
+    },
+    "profile_field_ranges": {
+      "typical_charge_h1": {
+        "present": true,
+        "min": 0.0,
+        "max": 0.0,
+        "range": 0.0,
+        "fraction_bounds": [
+          0.05,
+          0.95
+        ],
+        "detected": false
+      },
+      "ionization_h1": {
+        "present": true,
+        "min": 1.0,
+        "max": 1.0,
+        "range": 0.0,
+        "fraction_bounds": [
+          0.05,
+          0.95
+        ],
+        "detected": false
+      },
+      "typical_charge_he4": {
+        "present": true,
+        "min": 0.0,
+        "max": 0.0,
+        "range": 0.0,
+        "fraction_bounds": [
+          0.05,
+          0.95
+        ],
+        "detected": false
+      },
+      "ionization_he4": {
+        "present": true,
+        "min": 1.0,
+        "max": 2.0,
+        "range": 1.0,
+        "fraction_bounds": [
+          0.05,
+          0.95
+        ],
+        "detected": false
+      }
+    },
+    "Convection": {
+      "source": "mean-light |Lc|/L on the profile mesh",
+      "threshold_abs_Lc_over_L": 0.04903766713137507
+    }
+  },
+  "zone_spans_temperature_K": {
+    "He II Ionization": [
+      [
+        43410.57233017299,
+        44798.16658477839
+      ]
+    ],
+    "H Ionization": [
+      [
+        6119.9611438745405,
+        16436.309413284067
+      ]
+    ],
+    "He I Ionization": [
+      [
+        14873.070939898817,
+        27008.108314008387
+      ]
+    ]
+  },
+  "convection_spans_temperature_K": [
+    [
+      6810.2007598531545,
+      22542.348855777193
+    ],
+    [
+      37500.976334743515,
+      48571.166751551646
+    ]
+  ]
+}
