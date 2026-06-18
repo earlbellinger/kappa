@@ -583,6 +583,11 @@ def main() -> int:
     convergence_trends_csv_path = output_root / "convergence_trends_last100.csv"
     convergence_trends_png_path = output_root / "convergence_trends_last100.png"
     convergence_trends_exact_png_path = output_root / "convergence_trends_exact_last100.png"
+    convergence_forecast_path = output_root / "convergence_forecast_last100.json"
+    convergence_forecast_csv_path = output_root / "convergence_forecast_last100.csv"
+    convergence_forecast_png_path = output_root / "convergence_forecast_last100.png"
+    convergence_gate_audit_path = output_root / "convergence_gate_audit.json"
+    convergence_gate_audit_csv_path = output_root / "convergence_gate_audit.csv"
     finished_viewer_path = output_root / "finished_visualizer.html"
     live_status = read_json(live_status_path)
     modulation_data = read_json(modulation_path)
@@ -651,6 +656,16 @@ def main() -> int:
       <h2>Rolling Convergence Trends: Exact-History Runs</h2>
       <a href="{html.escape(rel_or_uri(convergence_trends_exact_png_path, output_root))}">
         <img src="{html.escape(rel_or_uri(convergence_trends_exact_png_path, output_root))}" alt="Rolling final-100-cycle convergence trends for exact-history runs">
+      </a>
+    </section>
+"""
+    convergence_forecast_panel = ""
+    if convergence_forecast_png_path.exists():
+        convergence_forecast_panel = f"""
+    <section class="diagnostic-panel">
+      <h2>Convergence Forecast</h2>
+      <a href="{html.escape(rel_or_uri(convergence_forecast_png_path, output_root))}">
+        <img src="{html.escape(rel_or_uri(convergence_forecast_png_path, output_root))}" alt="Rolling convergence forecast">
       </a>
     </section>
 """
@@ -888,11 +903,17 @@ def main() -> int:
       {link(convergence_trends_csv_path if convergence_trends_csv_path.exists() else None, "convergence trends CSV", output_root)}
       {link(convergence_trends_png_path if convergence_trends_png_path.exists() else None, "convergence trends plot", output_root)}
       {link(convergence_trends_exact_png_path if convergence_trends_exact_png_path.exists() else None, "exact-history trend plot", output_root)}
+      {link(convergence_forecast_path if convergence_forecast_path.exists() else None, "convergence forecast JSON", output_root)}
+      {link(convergence_forecast_csv_path if convergence_forecast_csv_path.exists() else None, "convergence forecast CSV", output_root)}
+      {link(convergence_forecast_png_path if convergence_forecast_png_path.exists() else None, "convergence forecast plot", output_root)}
+      {link(convergence_gate_audit_path if convergence_gate_audit_path.exists() else None, "convergence gate audit JSON", output_root)}
+      {link(convergence_gate_audit_csv_path if convergence_gate_audit_csv_path.exists() else None, "convergence gate audit CSV", output_root)}
       {link(manifest_path, "manifest", output_root)}
     </p>
 {convergence_panel}
 {convergence_trends_panel}
 {convergence_trends_exact_panel}
+{convergence_forecast_panel}
     <section class="grid">
 {cards}
     </section>

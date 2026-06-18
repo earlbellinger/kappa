@@ -20,6 +20,8 @@ AUDIT_SCRIPT = ROOT / "rsp_batch_audit.py"
 CYCLE_DIAGNOSTICS_SCRIPT = ROOT / "rsp_batch_cycle_diagnostics.py"
 CONVERGENCE_SCRIPT = ROOT / "rsp_batch_convergence.py"
 CONVERGENCE_TRENDS_SCRIPT = ROOT / "rsp_batch_convergence_trends.py"
+CONVERGENCE_FORECAST_SCRIPT = ROOT / "rsp_batch_convergence_forecast.py"
+CONVERGENCE_GATE_AUDIT_SCRIPT = ROOT / "rsp_batch_convergence_gate_audit.py"
 GROWTH_DIAGNOSTIC_SCRIPT = ROOT / "rsp_batch_growth_diagnostic.py"
 
 
@@ -206,6 +208,32 @@ def rebuild(args: argparse.Namespace, log_path: Path) -> int:
         if convergence_trends_completed.stderr.strip():
             append_log(log_path, convergence_trends_completed.stderr.strip())
 
+        convergence_forecast_command = [
+            str(args.python),
+            str(CONVERGENCE_FORECAST_SCRIPT),
+            "--workspace",
+            str(args.workspace),
+        ]
+        convergence_forecast_completed = subprocess.run(convergence_forecast_command, cwd=ROOT, capture_output=True, text=True)
+        append_log(log_path, f"[{now_iso()}] convergence forecast returncode={convergence_forecast_completed.returncode}")
+        if convergence_forecast_completed.stdout.strip():
+            append_log(log_path, convergence_forecast_completed.stdout.strip())
+        if convergence_forecast_completed.stderr.strip():
+            append_log(log_path, convergence_forecast_completed.stderr.strip())
+
+        gate_audit_command = [
+            str(args.python),
+            str(CONVERGENCE_GATE_AUDIT_SCRIPT),
+            "--workspace",
+            str(args.workspace),
+        ]
+        gate_audit_completed = subprocess.run(gate_audit_command, cwd=ROOT, capture_output=True, text=True)
+        append_log(log_path, f"[{now_iso()}] convergence gate audit returncode={gate_audit_completed.returncode}")
+        if gate_audit_completed.stdout.strip():
+            append_log(log_path, gate_audit_completed.stdout.strip())
+        if gate_audit_completed.stderr.strip():
+            append_log(log_path, gate_audit_completed.stderr.strip())
+
         growth_returncode = 0
         growth_models = active_model_growth_models(args.workspace)
         if growth_models:
@@ -279,6 +307,8 @@ def rebuild(args: argparse.Namespace, log_path: Path) -> int:
             or cycle_completed.returncode
             or convergence_completed.returncode
             or convergence_trends_completed.returncode
+            or convergence_forecast_completed.returncode
+            or gate_audit_completed.returncode
             or growth_completed.returncode
             or final_status_completed.returncode
             or final_audit_completed.returncode

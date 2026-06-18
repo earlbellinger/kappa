@@ -15,6 +15,9 @@ DEFAULT_PYTHON = Path(r"C:\Program Files\Python311\python.exe")
 RUNNER = ROOT / "rsp_batch_run.py"
 LIVE_STATUS = ROOT / "rsp_batch_live_status.py"
 CONVERGENCE = ROOT / "rsp_batch_convergence.py"
+CONVERGENCE_TRENDS = ROOT / "rsp_batch_convergence_trends.py"
+CONVERGENCE_FORECAST = ROOT / "rsp_batch_convergence_forecast.py"
+CONVERGENCE_GATE_AUDIT = ROOT / "rsp_batch_convergence_gate_audit.py"
 AUDIT = ROOT / "rsp_batch_audit.py"
 GALLERY = ROOT / "rsp_batch_make_gallery.py"
 FINISHED_VIEWER = ROOT / "rsp_batch_make_finished_viewer.py"
@@ -110,6 +113,9 @@ def refresh_analysis(args: argparse.Namespace, log_path: Path) -> int:
     commands = [
         [str(args.python), str(LIVE_STATUS), "--workspace", str(workspace)],
         [str(args.python), str(CONVERGENCE), "--workspace", str(workspace), "--models", *args.models, "--merge-existing"],
+        [str(args.python), str(CONVERGENCE_TRENDS), "--workspace", str(workspace), "--models", *args.models, "--merge-existing"],
+        [str(args.python), str(CONVERGENCE_FORECAST), "--workspace", str(workspace)],
+        [str(args.python), str(CONVERGENCE_GATE_AUDIT), "--workspace", str(workspace), "--models", *args.models],
         [str(args.python), str(AUDIT), "--workspace", str(workspace), "--allow-incomplete"],
         [str(args.python), str(GALLERY), "--workspace", str(workspace)],
         [str(args.python), str(FINISHED_VIEWER), "--workspace", str(workspace)],
