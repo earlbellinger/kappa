@@ -8,8 +8,8 @@
   "summary_path": "<local-rre-root>/rsp_batch_runs/output/model_001_M0p5602_Z0p003592_T6824/mesa_rsp_model_001_M0p5602_Z0p003592_T6824_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work_summary.json",
   "pressure_work_mode": "gas_plus_pav",
   "heating_mode": "gas_minus_c",
-  "scaling_method_version": "model000-visible-window-v11",
-  "expected_scaling_method_version": "model000-visible-window-v11",
+  "scaling_method_version": "model000-visible-window-v12",
+  "expected_scaling_method_version": "model000-visible-window-v12",
   "panel_y_ranges": {
     "left_power": {
       "limits": [
@@ -34,7 +34,7 @@
         0.866582902537432
       ],
       "pad_fraction": 0.07999999999999996,
-      "method": "minimum and maximum of the plotted power curves within this panel's shown x range; the axis includes zero, uses the model_000 visible extrema as a reference floor, and expands beyond that floor when this panel's own local visible extrema require it"
+      "method": "minimum and maximum of the plotted power curves within this panel's shown x range; the axis includes zero and uses the model_000 visible extrema only to inherit the reference padding convention, not as a shared y-limit"
     },
     "photosphere_radial_velocity": {
       "limits": [
@@ -77,7 +77,7 @@
     3.945093985995742
   ],
   "opacity_scaling": {
-    "method": "left-panel visible-window opacity is scaled inside this panel's own y-axis range. The effective opacity span is the union of this panel's visible opacity extrema and model_000's visible opacity extrema, so weak-opacity panels are not visually over-amplified.",
+    "method": "left-panel visible-window opacity is scaled inside this panel's own y-axis range. The effective opacity span is this panel's own visible opacity minimum and maximum in the shown radius window. The model_000 example supplies the opacity-band placement convention, not a hard opacity floor.",
     "panel": "left_power",
     "panel_bottom_fraction": 0.76,
     "panel_top_fraction": 0.92,
@@ -96,18 +96,18 @@
       149.03239726657318
     ],
     "effective_data_bounds": [
-      0.0020449198640830274,
-      149.03239726657318
+      0.0035001471581693473,
+      102.37564295569331
     ],
-    "reference_convention": "model_000 example rule: measure opacity min and max only in the shown radius range, then use that visible span as the reference floor for the reserved opacity band in each panel",
+    "reference_convention": "model_000 example rule: measure opacity min and max only in the shown radius range, then use that example only to set the reserved opacity-band placement for each panel",
     "display_min_value": -1.784859103204493,
-    "display_units_per_opacity_unit": 0.02563215255135805,
-    "opacity_min_baseline": 0.0020449198640830274,
+    "display_units_per_opacity_unit": 0.03731453324443848,
+    "opacity_min_baseline": 0.0035001471581693473,
     "opacity_max_display_value": 2.0351096229289958,
     "opacity_display_span": 3.8199687261334887,
     "scaled_visible_display_bounds": [
-      -1.784821802596494,
-      0.8391965788812907
+      -1.784859103204493,
+      2.0351096229289953
     ],
     "scaled_effective_display_bounds": [
       -1.784859103204493,
@@ -169,5 +169,5 @@
   "phase_seam_ok": true,
   "passed": true,
   "failures": [],
-  "verified_at": "2026-06-18T00:32:03.928802+00:00"
+  "verified_at": "2026-06-18T01:55:45.582195+00:00"
 }
