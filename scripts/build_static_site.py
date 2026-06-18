@@ -726,42 +726,40 @@ def write_index(output_dir: Path, models: list[dict[str, object]], metadata_link
     trusted = sum(1 for model in models if model.get("animation_trusted"))
     verified = sum(1 for model in models if model.get("verification_passed") is True or model["status"] == "verified")
     cards = "\n".join(card_html(model) for model in models)
-    convergence_figure = ""
     convergence_png = metadata_links.get("convergence_summary_last100.png")
-    if convergence_png:
+    convergence_trends_png = metadata_links.get("convergence_trends_last100.png")
+    convergence_trends_exact_png = metadata_links.get("convergence_trends_exact_last100.png")
+    convergence_forecast_png = metadata_links.get("convergence_forecast_last100.png")
+    convergence_items = []
+    for title, href, alt in (
+        ("Limit-Cycle Convergence", convergence_png, "Strict limit-cycle convergence summary"),
+        ("Rolling Trends", convergence_trends_png, "Rolling final-100-cycle convergence trends"),
+        ("Exact-History Trends", convergence_trends_exact_png, "Rolling final-100-cycle convergence trends for exact-history runs"),
+        ("Convergence Forecast", convergence_forecast_png, "Rolling convergence forecast"),
+    ):
+        if not href:
+            continue
+        convergence_items.append(
+            f"""
+        <figure>
+          <a href="{html.escape(str(href))}"><img src="{html.escape(str(href))}" alt="{html.escape(alt)}"></a>
+          <figcaption>{html.escape(title)}</figcaption>
+        </figure>
+"""
+        )
+    convergence_figure = ""
+    if convergence_items:
         convergence_figure = f"""
-    <section class="diagnostic">
-      <h2>Limit-Cycle Convergence</h2>
-      <a href="{html.escape(str(convergence_png))}"><img src="{html.escape(str(convergence_png))}" alt="Strict limit-cycle convergence summary"></a>
+    <section class="diagnostic compact-diagnostic">
+      <h2>Convergence Diagnostics</h2>
+      <div class="diagnostic-grid convergence-grid">
+{''.join(convergence_items)}
+      </div>
     </section>
 """
     convergence_trends_figure = ""
-    convergence_trends_png = metadata_links.get("convergence_trends_last100.png")
-    if convergence_trends_png:
-        convergence_trends_figure = f"""
-    <section class="diagnostic">
-      <h2>Rolling Convergence Trends</h2>
-      <a href="{html.escape(str(convergence_trends_png))}"><img src="{html.escape(str(convergence_trends_png))}" alt="Rolling final-100-cycle convergence trends"></a>
-    </section>
-"""
     convergence_trends_exact_figure = ""
-    convergence_trends_exact_png = metadata_links.get("convergence_trends_exact_last100.png")
-    if convergence_trends_exact_png:
-        convergence_trends_exact_figure = f"""
-    <section class="diagnostic">
-      <h2>Rolling Convergence Trends: Exact-History Runs</h2>
-      <a href="{html.escape(str(convergence_trends_exact_png))}"><img src="{html.escape(str(convergence_trends_exact_png))}" alt="Rolling final-100-cycle convergence trends for exact-history runs"></a>
-    </section>
-"""
     convergence_forecast_figure = ""
-    convergence_forecast_png = metadata_links.get("convergence_forecast_last100.png")
-    if convergence_forecast_png:
-        convergence_forecast_figure = f"""
-    <section class="diagnostic">
-      <h2>Convergence Forecast</h2>
-      <a href="{html.escape(str(convergence_forecast_png))}"><img src="{html.escape(str(convergence_forecast_png))}" alt="Rolling convergence forecast"></a>
-    </section>
-"""
     growth_diagnostic_figures = ""
     growth_items = []
     for name, href in sorted(metadata_links.items()):
@@ -837,10 +835,12 @@ def write_index(output_dir: Path, models: list[dict[str, object]], metadata_link
     a {{ color:#d9edf8; text-decoration:none; border-bottom:1px solid rgba(217,237,248,.38); }}
     a:hover {{ border-bottom-color:#d9edf8; }}
     .diagnostic {{ margin:0 0 24px; padding:16px; background:var(--panel); border:1px solid var(--line); border-radius:8px; }}
+    .compact-diagnostic {{ max-width:1180px; }}
     .diagnostic h2 {{ margin:0 0 12px; font-size:24px; }}
     .diagnostic a {{ display:block; border:0; }}
-    .diagnostic img {{ width:100%; height:auto; border-radius:6px; background:#fff; }}
-    .diagnostic-grid {{ display:grid; grid-template-columns:repeat(auto-fit,minmax(420px,1fr)); gap:16px; }}
+    .diagnostic img {{ display:block; width:100%; height:auto; max-height:320px; object-fit:contain; border-radius:6px; background:#fff; }}
+    .diagnostic-grid {{ display:grid; grid-template-columns:repeat(auto-fit,minmax(min(320px,100%),1fr)); gap:14px; align-items:start; }}
+    .convergence-grid {{ grid-template-columns:repeat(auto-fit,minmax(min(360px,100%),1fr)); }}
     figure {{ margin:0; }}
     figcaption {{ margin-top:8px; color:var(--muted); }}
     .caption-link {{ display:inline; margin-left:8px; border-bottom:1px solid rgba(217,237,248,.38); }}
