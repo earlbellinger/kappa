@@ -2,6 +2,24 @@
   "actions": [
     {
       "action": "waiting_for_convergence",
+      "delta_r_fractional_peak_to_peak_last_window": 0.03534463558855487,
+      "last_period_number": 1668.0,
+      "model_id": "model_007"
+    },
+    {
+      "action": "waiting_for_convergence",
+      "delta_r_fractional_peak_to_peak_last_window": 0.2051853520879036,
+      "last_period_number": 1080.0,
+      "model_id": "model_008"
+    },
+    {
+      "action": "waiting_for_convergence",
+      "delta_r_fractional_peak_to_peak_last_window": 0.36557543478118937,
+      "last_period_number": 190.0,
+      "model_id": "model_009"
+    },
+    {
+      "action": "waiting_for_convergence",
       "delta_r_fractional_peak_to_peak_last_window": 0.01830025446801821,
       "last_period_number": 1937.0,
       "model_id": "model_001"
@@ -35,41 +53,23 @@
       "delta_r_fractional_peak_to_peak_last_window": 0.378029031155749,
       "last_period_number": 2000.0,
       "model_id": "model_006"
-    },
-    {
-      "action": "waiting_for_convergence",
-      "delta_r_fractional_peak_to_peak_last_window": 0.03534463558855487,
-      "last_period_number": 1668.0,
-      "model_id": "model_007"
-    },
-    {
-      "action": "waiting_for_convergence",
-      "delta_r_fractional_peak_to_peak_last_window": 0.2051853520879036,
-      "last_period_number": 1080.0,
-      "model_id": "model_008"
-    },
-    {
-      "action": "waiting_for_convergence",
-      "delta_r_fractional_peak_to_peak_last_window": 0.36557543478118937,
-      "last_period_number": 190.0,
-      "model_id": "model_009"
     }
   ],
   "interval_seconds": 900,
   "log": "<local-rre-root>/rsp_batch_runs/output/post_convergence_products.log",
   "models": [
+    "model_007",
+    "model_008",
+    "model_009",
     "model_001",
     "model_002",
     "model_003",
     "model_004",
     "model_005",
-    "model_006",
-    "model_007",
-    "model_008",
-    "model_009"
+    "model_006"
   ],
-  "pid": 508308,
+  "pid": 486336,
   "result": "ok",
-  "updated_at": "2026-06-18T19:54:26.607456+00:00",
+  "updated_at": "2026-06-18T19:59:18.048437+00:00",
   "workspace": "<local-rre-root>/rsp_batch_runs"
 }
