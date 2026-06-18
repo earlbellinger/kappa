@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-18T07:08:08.713095+00:00",
+  "generated_at": "2026-06-18T07:54:20.668035+00:00",
   "models": [
     {
       "model_id": "model_000",
@@ -230,6 +230,11 @@
       "diagnostic_png": "<local-rre-root>/rsp_batch_runs/output/cycle_diagnostics/model_007_M0p6887_Z0p004060_T6669_cycle_modulation_diagnostic.png",
       "history_candidate_cycle_counts": [
         {
+          "history_source": "continue_saturation_resume:LOGS_continue_saturation_resume_2270000",
+          "history_path": "<local-rre-root>/rsp_batch_runs/runs/model_007_M0p6887_Z0p004060_T6669/LOGS_continue_saturation_resume_2270000/history.data",
+          "cycle_count": 0
+        },
+        {
           "history_source": "continue_saturation_resume:LOGS_continue_saturation_resume_2180000",
           "history_path": "<local-rre-root>/rsp_batch_runs/runs/model_007_M0p6887_Z0p004060_T6669/LOGS_continue_saturation_resume_2180000/history.data",
           "cycle_count": 69
@@ -263,9 +268,14 @@
       "diagnostic_png": "<local-rre-root>/rsp_batch_runs/output/cycle_diagnostics/model_008_M0p6151_Z0p0004406_T6792_cycle_modulation_diagnostic.png",
       "history_candidate_cycle_counts": [
         {
+          "history_source": "continue_saturation_resume:LOGS_continue_saturation_resume_1620000",
+          "history_path": "<local-rre-root>/rsp_batch_runs/runs/model_008_M0p6151_Z0p0004406_T6792/LOGS_continue_saturation_resume_1620000/history.data",
+          "cycle_count": 1
+        },
+        {
           "history_source": "continue_saturation",
           "history_path": "<local-rre-root>/rsp_batch_runs/runs/model_008_M0p6151_Z0p0004406_T6792/LOGS_continue_saturation/history.data",
-          "cycle_count": 1021
+          "cycle_count": 1022
         },
         {
           "history_source": "saturation",
@@ -273,15 +283,15 @@
           "cycle_count": 608
         }
       ],
-      "cycle_count": 1021,
+      "cycle_count": 1022,
       "last_cycle_count_used": 80,
-      "max_l_modulation_fraction": 0.00561988493459258,
-      "min_v_modulation_mag": 0.006963748572376138,
-      "period_modulation_fraction": 0.03000296815145556,
-      "radius_amplitude_modulation_fraction": 0.16207307990766512,
-      "last_max_l_lsun": 62.91402906234938,
-      "last_min_abs_mag_v": 0.2658650720852068,
-      "last_period_days": 0.6126718123518913
+      "max_l_modulation_fraction": 0.0055549229044488104,
+      "min_v_modulation_mag": 0.00688302566959087,
+      "period_modulation_fraction": 0.3500022470879417,
+      "radius_amplitude_modulation_fraction": 0.16208632253065058,
+      "last_max_l_lsun": 62.69998114836454,
+      "last_min_abs_mag_v": 0.2695476275841048,
+      "last_period_days": 0.4105532005887653
     },
     {
       "model_id": "model_009",
@@ -298,13 +308,13 @@
       ],
       "cycle_count": 147,
       "last_cycle_count_used": 80,
-      "max_l_modulation_fraction": 0.0010432670135764337,
-      "min_v_modulation_mag": 0.0012396448873217558,
-      "period_modulation_fraction": 0.45170726452615795,
+      "max_l_modulation_fraction": 0.0004938811450511824,
+      "min_v_modulation_mag": 0.0006112196471933506,
+      "period_modulation_fraction": 0.06874295270099068,
       "radius_amplitude_modulation_fraction": 0.28560926719386587,
-      "last_max_l_lsun": 51.23510537169202,
-      "last_min_abs_mag_v": 0.5090261528524874,
-      "last_period_days": 0.29380694468373747
+      "last_max_l_lsun": 51.280740451629924,
+      "last_min_abs_mag_v": 0.5079777086367111,
+      "last_period_days": 0.5141007737315277
     }
   ]
 }

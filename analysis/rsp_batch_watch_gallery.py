@@ -62,35 +62,44 @@ def read_active_batch_status(output_dir: Path) -> tuple[dict, Path | None]:
     return selected[2], selected[1]
 
 
-def active_model_convergence_args(workspace: Path) -> list[str]:
+def active_model_ids(workspace: Path) -> list[str]:
     output_dir = workspace / "output"
     status, _status_path = read_active_batch_status(output_dir)
-    current_model = status.get("current_model") if isinstance(status, dict) else None
-    if status.get("status") != "running" or not current_model:
-        return []
-    if not (output_dir / "convergence_summary_last100.json").exists():
-        return []
-    if not (output_dir / "convergence_trends_last100.json").exists():
-        return []
-    return ["--models", str(current_model), "--merge-existing"]
-
-
-def active_model_growth_models(workspace: Path) -> list[str]:
-    output_dir = workspace / "output"
-    status, _status_path = read_active_batch_status(output_dir)
-    active_model_ids: set[str] = set()
-    current_model = status.get("current_model") if isinstance(status, dict) else None
-    if status.get("status") == "running" and current_model:
-        active_model_ids.add(str(current_model))
+    ids: set[str] = set()
+    if isinstance(status, dict) and status.get("status") == "running":
+        current_model = status.get("current_model")
+        if current_model:
+            ids.add(str(current_model))
+        results = status.get("results")
+        if isinstance(results, dict):
+            for model_id, result in results.items():
+                if isinstance(result, dict) and result.get("status") == "running":
+                    ids.add(str(model_id))
 
     live = read_status(output_dir / "live_status.json")
     live_rows = live.get("models", []) if isinstance(live, dict) else []
     for row in live_rows:
-        if not isinstance(row, dict) or not row.get("model_id"):
-            continue
-        if row.get("active_stage"):
-            active_model_ids.add(str(row["model_id"]))
-    if not active_model_ids:
+        if isinstance(row, dict) and row.get("model_id") and row.get("active_stage"):
+            ids.add(str(row["model_id"]))
+    return sorted(ids)
+
+
+def active_model_convergence_args(workspace: Path) -> list[str]:
+    models = active_model_ids(workspace)
+    if not models:
+        return []
+    output_dir = workspace / "output"
+    if not (output_dir / "convergence_summary_last100.json").exists():
+        return []
+    if not (output_dir / "convergence_trends_last100.json").exists():
+        return []
+    return ["--models", *models, "--merge-existing"]
+
+
+def active_model_growth_models(workspace: Path) -> list[str]:
+    output_dir = workspace / "output"
+    active_ids = set(active_model_ids(workspace))
+    if not active_ids:
         return []
 
     convergence = read_status(output_dir / "convergence_summary_last100.json")
@@ -100,7 +109,7 @@ def active_model_growth_models(workspace: Path) -> list[str]:
         if not isinstance(row, dict):
             continue
         model_id = str(row.get("model_id"))
-        if model_id not in active_model_ids:
+        if model_id not in active_ids:
             continue
         if row.get("source_kind") != "history_exact_rsp_columns":
             continue
