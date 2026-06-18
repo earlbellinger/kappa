@@ -590,13 +590,27 @@ def write_fourier_inventory(output_dir: Path, models: list[dict[str, object]]) -
         summary = summary if isinstance(summary, dict) else {}
         q_range = summary.get("q_env_range") if isinstance(summary.get("q_env_range"), list) else []
         t_range = summary.get("temperature_range_K") if isinstance(summary.get("temperature_range_K"), list) else []
+        product_present = bool(summary_rel and png_rel and csv_rel)
+        if product_present:
+            pending_reason = ""
+        elif model.get("profile_count"):
+            pending_reason = "fixed-cell Fourier product has not been built from available deep profiles"
+        elif "running" in str(model.get("status")):
+            pending_reason = "waiting for converged post-saturation deep profiles"
+        else:
+            pending_reason = "waiting for post-convergence deep profiles"
         rows.append(
             {
                 "model_id": model.get("model_id"),
                 "run_name": model.get("run_name"),
-                "status": "present" if summary_rel and png_rel and csv_rel else "pending",
+                "status": "present" if product_present else "pending",
+                "pending_reason": pending_reason,
                 "model_status": model.get("status"),
                 "animation_trusted": model.get("animation_trusted"),
+                "converged_exact": model.get("converged_exact"),
+                "latest_period": model.get("latest_period"),
+                "max_periods": model.get("max_periods"),
+                "profile_count": model.get("profile_count"),
                 "fourier_png": png_rel,
                 "fourier_csv": csv_rel,
                 "fourier_summary": summary_rel,
@@ -619,8 +633,13 @@ def write_fourier_inventory(output_dir: Path, models: list[dict[str, object]]) -
         "model_id",
         "run_name",
         "status",
+        "pending_reason",
         "model_status",
         "animation_trusted",
+        "converged_exact",
+        "latest_period",
+        "max_periods",
+        "profile_count",
         "fit_harmonics",
         "num_profiles",
         "point_count",
