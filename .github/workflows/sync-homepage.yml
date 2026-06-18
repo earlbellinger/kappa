@@ -31,21 +31,7 @@ jobs:
             echo "::warning::HOMEPAGE_DISPATCH_TOKEN is not set; skipping homepage sync"
             exit 0
           fi
-          payload="$(python - <<'PY'
-import json
-import os
-
-print(json.dumps({
-    "event_type": "tracked-app-updated",
-    "client_payload": {
-        "app": os.environ["APP_SLUG"],
-        "repo": os.environ["SOURCE_REPO"],
-        "branch": os.environ["SOURCE_BRANCH"],
-        "sha": os.environ["SOURCE_SHA"],
-    },
-}))
-PY
-)"
+          payload="$(printf '{"event_type":"tracked-app-updated","client_payload":{"app":"%s","repo":"%s","branch":"%s","sha":"%s"}}' "$APP_SLUG" "$SOURCE_REPO" "$SOURCE_BRANCH" "$SOURCE_SHA")"
           curl -fsSL -X POST \
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer ${HOMEPAGE_DISPATCH_TOKEN}" \
