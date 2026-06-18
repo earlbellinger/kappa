@@ -591,8 +591,19 @@ def write_fourier_inventory(output_dir: Path, models: list[dict[str, object]]) -
         q_range = summary.get("q_env_range") if isinstance(summary.get("q_env_range"), list) else []
         t_range = summary.get("temperature_range_K") if isinstance(summary.get("temperature_range_K"), list) else []
         product_present = bool(summary_rel and png_rel and csv_rel)
+        product_state = "pending"
+        provenance = ""
         if product_present:
             pending_reason = ""
+            if model.get("registered_existing") or model.get("converged_exact") is True:
+                product_state = "reference" if model.get("registered_existing") else "converged"
+                provenance = "fixed-cell Fourier depth diagnostic from the final/reference deep profiles"
+            else:
+                product_state = "provisional"
+                provenance = (
+                    "fixed-cell Fourier depth diagnostic from currently available deep profiles; "
+                    "will be refreshed after the strict convergence gate passes"
+                )
         elif model.get("profile_count"):
             pending_reason = "fixed-cell Fourier product has not been built from available deep profiles"
         elif "running" in str(model.get("status")):
@@ -604,6 +615,8 @@ def write_fourier_inventory(output_dir: Path, models: list[dict[str, object]]) -
                 "model_id": model.get("model_id"),
                 "run_name": model.get("run_name"),
                 "status": "present" if product_present else "pending",
+                "product_state": product_state,
+                "provenance": provenance,
                 "pending_reason": pending_reason,
                 "model_status": model.get("status"),
                 "animation_trusted": model.get("animation_trusted"),
@@ -633,6 +646,8 @@ def write_fourier_inventory(output_dir: Path, models: list[dict[str, object]]) -
         "model_id",
         "run_name",
         "status",
+        "product_state",
+        "provenance",
         "pending_reason",
         "model_status",
         "animation_trusted",
@@ -696,6 +711,7 @@ def card_html(model: dict[str, object]) -> str:
     fourier_png = assets.get("fourier_fixed_png")
     fourier_csv = assets.get("fourier_fixed_csv")
     fourier_summary = assets.get("fourier_fixed_summary")
+    fourier_has_product = bool(fourier_png and fourier_csv and fourier_summary)
     image = gif or png
     badge_class = (
         "ok"
@@ -736,18 +752,33 @@ def card_html(model: dict[str, object]) -> str:
         else:
             placeholder = "queued"
         image_html = f'<div class="media placeholder">{html.escape(placeholder)}</div>'
-    fourier_html = ""
-    if fourier_png:
+    if fourier_has_product:
+        if model.get("registered_existing") or model.get("converged_exact") is True:
+            fourier_state_class = "ok"
+            fourier_note = "Fixed-cell Fourier depth diagnostic"
+        else:
+            fourier_state_class = "warn"
+            fourier_note = (
+                "Provisional fixed-cell Fourier depth diagnostic; "
+                "will refresh after strict convergence"
+            )
         fourier_html = (
+            f'<div class="fourier-note {fourier_state_class}">{html.escape(fourier_note)}</div>'
             f'<a class="fourier-diagnostic" href="{html.escape(str(fourier_png))}">'
             f'<img src="{html.escape(str(fourier_png))}" '
             f'alt="{html.escape(str(model["model_id"]))} fixed-cell Fourier depth diagnostic">'
             '</a>'
         )
     else:
+        if model.get("profile_count"):
+            fourier_pending = "Fourier depth diagnostic pending: product has not been built from available deep profiles."
+        elif "running" in str(model.get("status")):
+            fourier_pending = "Fourier depth diagnostic pending: waiting for converged post-saturation deep profiles."
+        else:
+            fourier_pending = "Fourier depth diagnostic pending: waiting for post-convergence deep profiles."
         fourier_html = (
             '<div class="fourier-placeholder">'
-            "Fixed-cell Fourier depth diagnostic pending"
+            f"{html.escape(fourier_pending)}"
             "</div>"
         )
     progress_bits = []
@@ -979,6 +1010,9 @@ def write_index(output_dir: Path, models: list[dict[str, object]], metadata_link
     img {{ display:block; width:100%; height:auto; background:#000; }}
     .fourier-diagnostic {{ display:block; border:0; border-top:1px solid var(--line); background:#fff; }}
     .fourier-diagnostic img {{ background:#fff; }}
+    .fourier-note {{ border-top:1px solid var(--line); padding:8px 18px; font-size:13px; background:#12151b; color:var(--muted); }}
+    .fourier-note.ok {{ color:#83d18d; }}
+    .fourier-note.warn {{ color:var(--gold); }}
     .fourier-placeholder {{ border-top:1px solid var(--line); padding:14px 18px; color:var(--muted); background:#101820; font-size:14px; }}
     .placeholder {{ min-height:260px; display:grid; place-items:center; color:#656977; background:repeating-linear-gradient(135deg,#07080b,#07080b 14px,#0d0f14 14px,#0d0f14 28px); }}
     .body {{ padding: 14px 18px 18px; }}
