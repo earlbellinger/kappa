@@ -656,6 +656,12 @@ def card_html(model: dict[str, object]) -> str:
             f'alt="{html.escape(str(model["model_id"]))} fixed-cell Fourier depth diagnostic">'
             '</a>'
         )
+    else:
+        fourier_html = (
+            '<div class="fourier-placeholder">'
+            "Fixed-cell Fourier depth diagnostic pending"
+            "</div>"
+        )
     progress_bits = []
     if model.get("retry_pending"):
         retry_stages = model.get("retry_pending_stages") or []
@@ -883,6 +889,7 @@ def write_index(output_dir: Path, models: list[dict[str, object]], metadata_link
     img {{ display:block; width:100%; height:auto; background:#000; }}
     .fourier-diagnostic {{ display:block; border:0; border-top:1px solid var(--line); background:#fff; }}
     .fourier-diagnostic img {{ background:#fff; }}
+    .fourier-placeholder {{ border-top:1px solid var(--line); padding:14px 18px; color:var(--muted); background:#101820; font-size:14px; }}
     .placeholder {{ min-height:260px; display:grid; place-items:center; color:#656977; background:repeating-linear-gradient(135deg,#07080b,#07080b 14px,#0d0f14 14px,#0d0f14 28px); }}
     .body {{ padding: 14px 18px 18px; }}
     .param-table {{ width:100%; border-collapse:collapse; margin:0 0 10px; font-size:13px; color:var(--text); }}
