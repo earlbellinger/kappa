@@ -18,7 +18,7 @@ REFRESH_MARKER_NAME = "gallery_refresh_in_progress.json"
 REFRESH_MARKER_STALE_SECONDS = 1800
 ANIMATION_SUFFIX = "_work_r_over_R_phase_cycle_dark_main_terms_gas_heating_pav_work"
 PERIOD_PROGRESS_BUCKET = 50
-CREATE_MODEL_BUCKET = 1000
+CREATE_MODEL_BUCKET = 50_000
 SURFACE_VELOCITY_BUCKET = 0.02
 MODULATION_FRACTION_BUCKET = 0.01
 DELTA_R_CRITERION_BUCKET = 1.0
@@ -307,7 +307,7 @@ def status_signature(rre_root: Path) -> dict[str, object]:
                     "model_id": model.get("model_id"),
                     "active_stage": active_stage,
                     "period_progress_bucket_50": bucket_int(model.get("latest_period"), PERIOD_PROGRESS_BUCKET),
-                    "history_model_bucket_1000": (
+                    "history_model_bucket_50000": (
                         bucket_int(model.get("latest_history_model"), CREATE_MODEL_BUCKET)
                         if active_stage == "create"
                         else None
