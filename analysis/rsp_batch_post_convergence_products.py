@@ -26,7 +26,7 @@ GALLERY = ROOT / "rsp_batch_make_gallery.py"
 FINISHED_VIEWER = ROOT / "rsp_batch_make_finished_viewer.py"
 FOURIER_FIXED = ROOT / "plot_fourier_fixed_cells_vs_logT.py"
 PRODUCT_STAGES = ("restart", "deep2cycles", "final_cycle", "plot", "verify")
-FOURIER_FIXED_SCHEMA_VERSION = "amplitude-plus-thermodynamic-peak-lags-v1"
+FOURIER_FIXED_SCHEMA_VERSION = "absolute-amplitude-plus-thermodynamic-peak-lags-v2"
 
 from rsp_batch_run import animation_product_is_current
 

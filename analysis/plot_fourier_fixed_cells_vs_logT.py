@@ -39,7 +39,7 @@ from plot_fourier_vs_massdepth_profiles import (
 TWOPI = 2.0 * math.pi
 AMPLITUDE_DASH_THRESHOLD = 0.05
 PEAK_PHASE_SAMPLES = 4096
-FOURIER_FIXED_SCHEMA_VERSION = "amplitude-plus-thermodynamic-peak-lags-v1"
+FOURIER_FIXED_SCHEMA_VERSION = "absolute-amplitude-plus-thermodynamic-peak-lags-v2"
 
 
 def parse_args() -> argparse.Namespace:
@@ -400,7 +400,7 @@ def main() -> None:
     )
     amp_ylim = (min(0.0, amp_ylim[0]), amp_ylim[1])
     ax_amp.set_ylim(*amp_ylim)
-    ax_amp.set_ylabel("Fractional Amplitude")
+    ax_amp.set_ylabel("Harmonic Amplitude")
     ax_amp.grid(False)
     ax_amp.legend(loc="upper left", ncol=3, frameon=True, framealpha=0.9)
 
