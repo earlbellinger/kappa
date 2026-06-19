@@ -863,7 +863,12 @@ def completion_status_html(output_dir: Path, metadata_links: dict[str, str | Non
         waiting_items.append(f"<li><strong>{model_id}</strong>{period_text}: {missing}</li>")
     waiting_html = ""
     if waiting_items:
-        waiting_html = '<ul class="completion-list">' + "".join(waiting_items) + "</ul>"
+        waiting_html = (
+            '<p class="completion-note">Remaining requirements for unfinished models:</p>'
+            '<ul class="completion-list">'
+            + "".join(waiting_items)
+            + "</ul>"
+        )
     status_label = "complete" if summary.get("analysis_complete") is True else "in progress"
     links = []
     if completion_href:
