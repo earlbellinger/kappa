@@ -10,7 +10,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 DEFAULT_WORKSPACE = ROOT / "rsp_batch_runs"
-DEFAULT_MODELS = ("model_007", "model_008", "model_009")
+DEFAULT_MODELS: tuple[str, ...] = ()
 TOLERANCE = 1.0e-3
 EXPECTED_CONTINUE_MAX_PERIODS = 5000
 EXPECTED_TARGET_STEPS = 1000
@@ -32,7 +32,7 @@ def now_iso() -> str:
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Audit the strict convergence gate for active RSP batch models.")
     parser.add_argument("--workspace", type=Path, default=DEFAULT_WORKSPACE)
-    parser.add_argument("--models", nargs="+", default=list(DEFAULT_MODELS))
+    parser.add_argument("--models", nargs="+", default=None, help="Models to audit. Defaults to all non-reference manifest models.")
     parser.add_argument("--tolerance", type=float, default=TOLERANCE)
     return parser.parse_args()
 
@@ -153,13 +153,36 @@ def summarize_model(
     period = convergence.get("period_fractional_peak_to_peak_last_window")
     delta_r = convergence.get("delta_r_fractional_peak_to_peak_last_window")
     converged_exact = convergence.get("converged_exact") is True
-    blocking = []
-    if bool_pass(gamma, tolerance) is False:
-        blocking.append("gamma")
-    if bool_pass(period, tolerance) is False:
-        blocking.append("period")
-    if bool_pass(delta_r, tolerance) is False:
-        blocking.append("delta_r")
+    latest_period = live.get("latest_period")
+    convergence_window_end = convergence.get("window_end_period_number") or convergence.get("last_period_number")
+    latest_period_number = parse_number(latest_period)
+    convergence_window_end_number = parse_number(convergence_window_end)
+    metric_lag = None
+    if latest_period_number is not None and convergence_window_end_number is not None:
+        metric_lag = latest_period_number - convergence_window_end_number
+    metric_status = {
+        "gamma": bool_pass(gamma, tolerance),
+        "period": bool_pass(period, tolerance),
+        "delta_r": bool_pass(delta_r, tolerance),
+    }
+    blocking = [name for name, passed in metric_status.items() if passed is False]
+
+    required_cycles = parse_number(convergence.get("required_last_cycles")) or 100.0
+    cycles_used = parse_number(convergence.get("last_cycle_count_used"))
+    has_full_window = convergence.get("has_full_window")
+    blocking_requirements: list[str] = []
+    if has_full_window is False or (cycles_used is not None and cycles_used < required_cycles):
+        blocking_requirements.append("100_cycle_window")
+    for name, passed in metric_status.items():
+        if passed is False:
+            blocking_requirements.append(name)
+        elif passed is None and not converged_exact:
+            blocking_requirements.append(f"{name}_missing")
+
+    surface_status = str(live.get("latest_surface_velocity_status") or "").strip().lower()
+    quality_flags: list[str] = []
+    if surface_status in {"supersonic", "watch"}:
+        quality_flags.append(f"surface_velocity_{surface_status}")
 
     continue_max = parse_number(continue_config.get("RSP_max_num_periods"))
     continue_steps = parse_number(continue_config.get("RSP_target_steps_per_cycle"))
@@ -187,8 +210,10 @@ def summarize_model(
         "model_id": model_id,
         "run_name": record.get("run_name"),
         "active_stage": active_stage,
-        "latest_period": live.get("latest_period"),
+        "latest_period": latest_period,
         "latest_history_model": live.get("latest_history_model"),
+        "convergence_window_end_period": convergence_window_end,
+        "gate_metric_lag_periods": metric_lag,
         "latest_surface_velocity_status": live.get("latest_surface_velocity_status"),
         "latest_max_vsurf_div_cs": live.get("latest_max_vsurf_div_cs"),
         "strict_tolerance": tolerance,
@@ -200,6 +225,8 @@ def summarize_model(
         "period_ratio_to_tolerance": ratio(period, tolerance),
         "delta_r_ratio_to_tolerance": ratio(delta_r, tolerance),
         "blocking_metrics": ",".join(blocking),
+        "blocking_requirements": ",".join(blocking_requirements),
+        "quality_flags": ",".join(quality_flags),
         "forecast_status": forecast.get("forecast_status"),
         "forecast_blocking_metrics": forecast.get("blocking_metrics"),
         "delta_r_periods_to_tolerance_linear": forecast.get("delta_r_periods_to_tolerance_linear"),
@@ -221,12 +248,16 @@ def write_csv(path: Path, rows: list[dict[str, object]]) -> None:
         "active_stage",
         "latest_period",
         "latest_history_model",
+        "convergence_window_end_period",
+        "gate_metric_lag_periods",
         "latest_surface_velocity_status",
         "converged_exact",
         "gamma_ratio_to_tolerance",
         "period_ratio_to_tolerance",
         "delta_r_ratio_to_tolerance",
         "blocking_metrics",
+        "blocking_requirements",
+        "quality_flags",
         "forecast_status",
         "delta_r_periods_to_tolerance_linear",
         "post_convergence_action",
@@ -254,8 +285,12 @@ def main() -> int:
     forecast_by_id = rows_by_model(read_json(output_dir / "convergence_forecast_last100.json"))
     post_by_id = post_actions_by_model(read_json(output_dir / "post_convergence_products_status.json"))
 
+    model_ids = args.models
+    if model_ids is None:
+        model_ids = sorted(model_id for model_id in manifest if model_id != "model_000")
+
     rows = []
-    for model_id in args.models:
+    for model_id in model_ids:
         record = manifest.get(model_id, {})
         rows.append(
             summarize_model(
