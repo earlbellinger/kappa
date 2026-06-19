@@ -1,6 +1,6 @@
 {
   "summary": {
-    "generated_at": "2026-06-19T23:26:39+00:00",
+    "generated_at": "2026-06-19T23:41:15+00:00",
     "analysis_complete": false,
     "models_total": 10,
     "models_final_ready": 1,
@@ -50,8 +50,8 @@
       "convergence_blocking_requirements": "delta_r",
       "convergence_quality_flags": "surface_velocity_supersonic",
       "convergence_forecast_status": "approaching",
-      "delta_r_ratio_to_tolerance": 41.65055812893956,
-      "gamma_ratio_to_tolerance": 0.5668978052194223,
+      "delta_r_ratio_to_tolerance": 42.0681544494203,
+      "gamma_ratio_to_tolerance": 0.5812796669707149,
       "period_ratio_to_tolerance": 0.4012017466172515
     },
     {
@@ -67,14 +67,14 @@
       "verification_passed": true,
       "missing": "strict convergence, trusted animation",
       "active_stage": "continue_saturation",
-      "latest_period": "2062",
+      "latest_period": "2063",
       "max_periods": "5000",
       "convergence_blocking_requirements": "100_cycle_window,delta_r",
       "convergence_quality_flags": "",
       "convergence_forecast_status": null,
-      "delta_r_ratio_to_tolerance": 71.58946167449952,
+      "delta_r_ratio_to_tolerance": 72.70457303630198,
       "gamma_ratio_to_tolerance": 0.016186757085209693,
-      "period_ratio_to_tolerance": 0.0010542103795813187
+      "period_ratio_to_tolerance": 0.001054210394826092
     },
     {
       "model_id": "model_003",
@@ -199,13 +199,13 @@
       "verification_passed": false,
       "missing": "strict convergence, canonical animation, fixed-cell Fourier depth diagnostic, final-cycle products, trusted animation, verification",
       "active_stage": "continue_saturation",
-      "latest_period": "1185",
+      "latest_period": "1186",
       "max_periods": "5000",
       "convergence_blocking_requirements": "delta_r",
       "convergence_quality_flags": "surface_velocity_watch",
       "convergence_forecast_status": "worsening",
-      "delta_r_ratio_to_tolerance": 206.87094256199148,
-      "gamma_ratio_to_tolerance": 0.05601502563817081,
+      "delta_r_ratio_to_tolerance": 206.88346357722446,
+      "gamma_ratio_to_tolerance": 0.05609563057373552,
       "period_ratio_to_tolerance": 0.005773542042564976
     },
     {
@@ -221,12 +221,12 @@
       "verification_passed": false,
       "missing": "strict convergence, canonical animation, fixed-cell Fourier depth diagnostic, final-cycle products, trusted animation, verification",
       "active_stage": "create",
-      "latest_period": "312",
+      "latest_period": "313",
       "max_periods": "600",
       "convergence_blocking_requirements": "gamma,period,delta_r",
       "convergence_quality_flags": "",
       "convergence_forecast_status": "worsening",
-      "delta_r_ratio_to_tolerance": 407.7751004028406,
+      "delta_r_ratio_to_tolerance": 401.4561388753567,
       "gamma_ratio_to_tolerance": 5.5250542682019015,
       "period_ratio_to_tolerance": 62.471595338000654
     }
