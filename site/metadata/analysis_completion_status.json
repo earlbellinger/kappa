@@ -1,6 +1,6 @@
 {
   "summary": {
-    "generated_at": "2026-06-19T05:47:25+00:00",
+    "generated_at": "2026-06-19T05:53:48+00:00",
     "analysis_complete": false,
     "models_total": 10,
     "models_final_ready": 1,
@@ -50,9 +50,9 @@
       "convergence_blocking_requirements": "100_cycle_window,delta_r",
       "convergence_quality_flags": "surface_velocity_supersonic",
       "convergence_forecast_status": null,
-      "delta_r_ratio_to_tolerance": 32.6534652523575,
+      "delta_r_ratio_to_tolerance": 33.257962123710726,
       "gamma_ratio_to_tolerance": 0.463087263313045,
-      "period_ratio_to_tolerance": 0.4012158675028896
+      "period_ratio_to_tolerance": 0.4012165002348046
     },
     {
       "model_id": "model_002",
@@ -69,11 +69,11 @@
       "active_stage": "continue_saturation",
       "latest_period": "2000",
       "max_periods": "5000",
-      "convergence_blocking_requirements": "gamma_missing,delta_r",
+      "convergence_blocking_requirements": "100_cycle_window",
       "convergence_quality_flags": "",
-      "convergence_forecast_status": "stalled",
-      "delta_r_ratio_to_tolerance": 111.47892994542363,
-      "gamma_ratio_to_tolerance": null,
+      "convergence_forecast_status": null,
+      "delta_r_ratio_to_tolerance": 0.0,
+      "gamma_ratio_to_tolerance": 0.0,
       "period_ratio_to_tolerance": 0.0
     },
     {
@@ -91,8 +91,8 @@
       "active_stage": "",
       "latest_period": "2000",
       "max_periods": "5000",
-      "convergence_blocking_requirements": "gamma_missing,period,delta_r",
-      "convergence_quality_flags": "surface_velocity_supersonic",
+      "convergence_blocking_requirements": "gamma,period,delta_r",
+      "convergence_quality_flags": null,
       "convergence_forecast_status": "worsening",
       "delta_r_ratio_to_tolerance": 553.7146114383431,
       "gamma_ratio_to_tolerance": null,
@@ -113,8 +113,8 @@
       "active_stage": "",
       "latest_period": "2000",
       "max_periods": "5000",
-      "convergence_blocking_requirements": "gamma_missing,period,delta_r",
-      "convergence_quality_flags": "surface_velocity_watch",
+      "convergence_blocking_requirements": "gamma,period,delta_r",
+      "convergence_quality_flags": null,
       "convergence_forecast_status": "worsening",
       "delta_r_ratio_to_tolerance": 194.7332378758638,
       "gamma_ratio_to_tolerance": null,
@@ -135,8 +135,8 @@
       "active_stage": "",
       "latest_period": "2000",
       "max_periods": "5000",
-      "convergence_blocking_requirements": "gamma_missing,period,delta_r",
-      "convergence_quality_flags": "surface_velocity_supersonic",
+      "convergence_blocking_requirements": "gamma,period,delta_r",
+      "convergence_quality_flags": null,
       "convergence_forecast_status": "worsening",
       "delta_r_ratio_to_tolerance": 1083.8292045313083,
       "gamma_ratio_to_tolerance": null,
@@ -157,8 +157,8 @@
       "active_stage": "",
       "latest_period": "2000",
       "max_periods": "5000",
-      "convergence_blocking_requirements": "gamma_missing,period,delta_r",
-      "convergence_quality_flags": "surface_velocity_supersonic",
+      "convergence_blocking_requirements": "gamma,period,delta_r",
+      "convergence_quality_flags": null,
       "convergence_forecast_status": "worsening",
       "delta_r_ratio_to_tolerance": 378.02903115574895,
       "gamma_ratio_to_tolerance": null,
@@ -204,9 +204,9 @@
       "convergence_blocking_requirements": "delta_r",
       "convergence_quality_flags": "",
       "convergence_forecast_status": "worsening",
-      "delta_r_ratio_to_tolerance": 205.84958781619216,
-      "gamma_ratio_to_tolerance": 0.05370830141246657,
-      "period_ratio_to_tolerance": 0.0066789033600587145
+      "delta_r_ratio_to_tolerance": 205.8680288559531,
+      "gamma_ratio_to_tolerance": 0.054133478020192485,
+      "period_ratio_to_tolerance": 0.006793887599695467
     },
     {
       "model_id": "model_009",
@@ -221,14 +221,14 @@
       "verification_passed": false,
       "missing": "strict convergence, canonical animation, fixed-cell Fourier depth diagnostic, final-cycle products, trusted animation, verification",
       "active_stage": "create",
-      "latest_period": "243",
+      "latest_period": "244",
       "max_periods": "600",
       "convergence_blocking_requirements": "gamma,period,delta_r",
       "convergence_quality_flags": "",
       "convergence_forecast_status": "worsening",
-      "delta_r_ratio_to_tolerance": 391.32706018606103,
+      "delta_r_ratio_to_tolerance": 396.3046147819785,
       "gamma_ratio_to_tolerance": 5.084203462958899,
-      "period_ratio_to_tolerance": 59.1635486567158
+      "period_ratio_to_tolerance": 59.674152075960514
     }
   ]
 }
