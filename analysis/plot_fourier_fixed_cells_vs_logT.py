@@ -45,7 +45,7 @@ FOURIER_FIXED_SCHEMA_VERSION = "amplitude-plus-thermodynamic-peak-lags-v1"
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
-            "Plot fixed-Lagrangian-cell Fourier amplitude and phase differences "
+            "Plot fixed-Lagrangian-cell Fourier amplitudes and phase differences "
             "relative to the photosphere against the mean-light shell temperature."
         )
     )
