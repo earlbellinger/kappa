@@ -1,6 +1,6 @@
 {
   "summary": {
-    "generated_at": "2026-06-19T13:35:11+00:00",
+    "generated_at": "2026-06-19T13:45:25+00:00",
     "analysis_complete": false,
     "models_total": 10,
     "models_final_ready": 1,
@@ -67,14 +67,14 @@
       "verification_passed": true,
       "missing": "strict convergence, trusted animation",
       "active_stage": "continue_saturation",
-      "latest_period": "2028",
+      "latest_period": "2029",
       "max_periods": "5000",
       "convergence_blocking_requirements": "100_cycle_window,delta_r",
       "convergence_quality_flags": "",
       "convergence_forecast_status": null,
-      "delta_r_ratio_to_tolerance": 33.61130957484551,
+      "delta_r_ratio_to_tolerance": 34.73013075286962,
       "gamma_ratio_to_tolerance": 0.0084423190277556,
-      "period_ratio_to_tolerance": 0.0005355199050368275
+      "period_ratio_to_tolerance": 0.0005355199068807617
     },
     {
       "model_id": "model_003",
@@ -199,14 +199,14 @@
       "verification_passed": false,
       "missing": "strict convergence, canonical animation, fixed-cell Fourier depth diagnostic, final-cycle products, trusted animation, verification",
       "active_stage": "continue_saturation",
-      "latest_period": "1153",
+      "latest_period": "1154",
       "max_periods": "5000",
       "convergence_blocking_requirements": "delta_r",
       "convergence_quality_flags": "surface_velocity_watch",
       "convergence_forecast_status": "worsening",
-      "delta_r_ratio_to_tolerance": 206.372762979465,
-      "gamma_ratio_to_tolerance": 0.0545826451318638,
-      "period_ratio_to_tolerance": 0.006966372310834941
+      "delta_r_ratio_to_tolerance": 206.3899924727901,
+      "gamma_ratio_to_tolerance": 0.05445930360538191,
+      "period_ratio_to_tolerance": 0.006966371180778121
     },
     {
       "model_id": "model_009",
@@ -221,14 +221,14 @@
       "verification_passed": false,
       "missing": "strict convergence, canonical animation, fixed-cell Fourier depth diagnostic, final-cycle products, trusted animation, verification",
       "active_stage": "create",
-      "latest_period": "275",
+      "latest_period": "276",
       "max_periods": "600",
       "convergence_blocking_requirements": "gamma,period,delta_r",
       "convergence_quality_flags": "",
       "convergence_forecast_status": "worsening",
-      "delta_r_ratio_to_tolerance": 397.42349395559256,
+      "delta_r_ratio_to_tolerance": 406.1369384500046,
       "gamma_ratio_to_tolerance": 5.295484819423992,
-      "period_ratio_to_tolerance": 60.679443471809094
+      "period_ratio_to_tolerance": 60.75964583702148
     }
   ]
 }
