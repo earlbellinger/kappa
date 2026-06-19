@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-18T23:33:59.371629+00:00",
+  "generated_at": "2026-06-19T00:00:46.261644+00:00",
   "models": [
     {
       "model_id": "model_000",
@@ -34,7 +34,7 @@
         {
           "history_source": "continue_saturation_resume:LOGS_continue_saturation_resume_2500000",
           "history_path": "<local-rre-root>/rsp_batch_runs/runs/model_001_M0p5602_Z0p003592_T6824/LOGS_continue_saturation_resume_2500000/history.data",
-          "cycle_count": 41
+          "cycle_count": 43
         },
         {
           "history_source": "continue_saturation",
@@ -237,7 +237,7 @@
         {
           "history_source": "continue_saturation_resume:LOGS_continue_saturation_resume_2270000",
           "history_path": "<local-rre-root>/rsp_batch_runs/runs/model_007_M0p6887_Z0p004060_T6669/LOGS_continue_saturation_resume_2270000/history.data",
-          "cycle_count": 51
+          "cycle_count": 52
         },
         {
           "history_source": "continue_saturation_resume:LOGS_continue_saturation_resume_2180000",
@@ -268,14 +268,14 @@
     {
       "model_id": "model_008",
       "run_name": "model_008_M0p6151_Z0p0004406_T6792",
-      "history_source": "continue_saturation",
-      "history_path": "<local-rre-root>/rsp_batch_runs/runs/model_008_M0p6151_Z0p0004406_T6792/LOGS_continue_saturation/history.data",
+      "history_source": "continue_saturation_resume:LOGS_continue_saturation_resume_1620000",
+      "history_path": "<local-rre-root>/rsp_batch_runs/runs/model_008_M0p6151_Z0p0004406_T6792/LOGS_continue_saturation_resume_1620000/history.data",
       "diagnostic_png": "<local-rre-root>/rsp_batch_runs/output/cycle_diagnostics/model_008_M0p6151_Z0p0004406_T6792_cycle_modulation_diagnostic.png",
       "history_candidate_cycle_counts": [
         {
           "history_source": "continue_saturation_resume:LOGS_continue_saturation_resume_1620000",
           "history_path": "<local-rre-root>/rsp_batch_runs/runs/model_008_M0p6151_Z0p0004406_T6792/LOGS_continue_saturation_resume_1620000/history.data",
-          "cycle_count": 79
+          "cycle_count": 81
         },
         {
           "history_source": "continue_saturation",
@@ -288,15 +288,15 @@
           "cycle_count": 608
         }
       ],
-      "cycle_count": 1022,
+      "cycle_count": 81,
       "last_cycle_count_used": 80,
-      "max_l_modulation_fraction": 0.0055549229044488104,
-      "min_v_modulation_mag": 0.00688302566959087,
-      "period_modulation_fraction": 0.3500022470879417,
-      "radius_amplitude_modulation_fraction": 0.16208632253065058,
-      "last_max_l_lsun": 62.69998114836454,
-      "last_min_abs_mag_v": 0.2695476275841048,
-      "last_period_days": 0.4105532005887653
+      "max_l_modulation_fraction": 0.006729997906869962,
+      "min_v_modulation_mag": 0.008345345027356621,
+      "period_modulation_fraction": 6.6561449147947335e-06,
+      "radius_amplitude_modulation_fraction": 0.16381419408089945,
+      "last_max_l_lsun": 63.333888248862834,
+      "last_min_abs_mag_v": 0.2576159035738089,
+      "last_period_days": 0.6316182591929191
     },
     {
       "model_id": "model_009",
@@ -308,7 +308,7 @@
         {
           "history_source": "saturation_resume:LOGS_saturation_resume_130000",
           "history_path": "<local-rre-root>/rsp_batch_runs/runs/model_009_M0p6668_Z0p0001120_T6852/LOGS_saturation_resume_130000/history.data",
-          "cycle_count": 81
+          "cycle_count": 83
         },
         {
           "history_source": "saturation",
@@ -316,15 +316,15 @@
           "cycle_count": 147
         }
       ],
-      "cycle_count": 81,
+      "cycle_count": 83,
       "last_cycle_count_used": 80,
-      "max_l_modulation_fraction": 0.0006234484791375986,
-      "min_v_modulation_mag": 0.0007707268506721432,
-      "period_modulation_fraction": 0.07044411848938091,
-      "radius_amplitude_modulation_fraction": 0.28417971210162013,
-      "last_max_l_lsun": 51.30046805736858,
-      "last_min_abs_mag_v": 0.5075053135239032,
-      "last_period_days": 0.5131046121682203
+      "max_l_modulation_fraction": 0.0006129718272264401,
+      "min_v_modulation_mag": 0.0007600737251260981,
+      "period_modulation_fraction": 0.07052901597072325,
+      "radius_amplitude_modulation_fraction": 0.2947304939924068,
+      "last_max_l_lsun": 51.311492586686505,
+      "last_min_abs_mag_v": 0.5072358128747654,
+      "last_period_days": 0.49059927165455974
     }
   ]
 }
