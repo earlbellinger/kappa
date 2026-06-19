@@ -1,6 +1,6 @@
 {
   "summary": {
-    "generated_at": "2026-06-19T13:09:55+00:00",
+    "generated_at": "2026-06-19T13:17:16+00:00",
     "analysis_complete": false,
     "models_total": 10,
     "models_final_ready": 1,
@@ -67,14 +67,14 @@
       "verification_passed": true,
       "missing": "strict convergence, trusted animation",
       "active_stage": "continue_saturation",
-      "latest_period": "2026",
+      "latest_period": "2027",
       "max_periods": "5000",
       "convergence_blocking_requirements": "100_cycle_window,delta_r",
       "convergence_quality_flags": "",
       "convergence_forecast_status": null,
-      "delta_r_ratio_to_tolerance": 31.373474609790605,
+      "delta_r_ratio_to_tolerance": 32.492448570664905,
       "gamma_ratio_to_tolerance": 0.0084423190277556,
-      "period_ratio_to_tolerance": 0.0005169275235098116
+      "period_ratio_to_tolerance": 0.0005355199020518737
     },
     {
       "model_id": "model_003",
@@ -204,9 +204,9 @@
       "convergence_blocking_requirements": "delta_r",
       "convergence_quality_flags": "surface_velocity_watch",
       "convergence_forecast_status": "worsening",
-      "delta_r_ratio_to_tolerance": 206.33798919670377,
-      "gamma_ratio_to_tolerance": 0.0539127689347654,
-      "period_ratio_to_tolerance": 0.006966374729640533
+      "delta_r_ratio_to_tolerance": 206.35544859631284,
+      "gamma_ratio_to_tolerance": 0.05438624802670596,
+      "period_ratio_to_tolerance": 0.00696637341650011
     },
     {
       "model_id": "model_009",
@@ -221,14 +221,14 @@
       "verification_passed": false,
       "missing": "strict convergence, canonical animation, fixed-cell Fourier depth diagnostic, final-cycle products, trusted animation, verification",
       "active_stage": "create",
-      "latest_period": "273",
+      "latest_period": "274",
       "max_periods": "600",
       "convergence_blocking_requirements": "gamma,period,delta_r",
       "convergence_quality_flags": "",
       "convergence_forecast_status": "worsening",
-      "delta_r_ratio_to_tolerance": 403.849241126736,
+      "delta_r_ratio_to_tolerance": 403.2765859445396,
       "gamma_ratio_to_tolerance": 5.295484819423992,
-      "period_ratio_to_tolerance": 60.75964583702148
+      "period_ratio_to_tolerance": 60.679443471809094
     }
   ]
 }
