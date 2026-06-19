@@ -480,10 +480,48 @@ def copy_site_to_pages(kappa_root: Path, pages_root: Path) -> None:
             shutil.copy2(child, destination)
 
 
+def batch_model_ids(rre_root: Path) -> list[str]:
+    manifest = load_json(rre_root / "rsp_batch_runs" / "inputs" / "manifest.json")
+    if not isinstance(manifest, list):
+        return []
+    model_ids: list[str] = []
+    for row in manifest:
+        if not isinstance(row, dict):
+            continue
+        model_id = row.get("model_id")
+        if not isinstance(model_id, str) or model_id == "model_000":
+            continue
+        model_ids.append(model_id)
+    return sorted(model_ids)
+
+
+def refresh_full_gate_audit(args: argparse.Namespace, log_path: Path) -> None:
+    rre_root = args.rre_root.resolve()
+    model_ids = batch_model_ids(rre_root)
+    if not model_ids:
+        raise RuntimeError("Could not determine batch model ids for convergence gate audit")
+    gate_script = rre_root / "rsp_batch_convergence_gate_audit.py"
+    completed = run_command(
+        [
+            str(args.python),
+            str(gate_script),
+            "--workspace",
+            str(rre_root / "rsp_batch_runs"),
+            "--models",
+            *model_ids,
+        ],
+        rre_root,
+        log_path,
+    )
+    if completed.returncode != 0:
+        raise RuntimeError("Full convergence gate audit refresh failed")
+
+
 def deploy(args: argparse.Namespace, log_path: Path) -> None:
     kappa_root = args.kappa_root.resolve()
     pages_root = args.pages_root.resolve()
     build_script = kappa_root / "scripts" / "build_static_site.py"
+    refresh_full_gate_audit(args, log_path)
     completed = run_command(
         [
             str(args.python),
