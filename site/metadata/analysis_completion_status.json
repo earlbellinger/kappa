@@ -1,6 +1,6 @@
 {
   "summary": {
-    "generated_at": "2026-06-19T14:22:44+00:00",
+    "generated_at": "2026-06-19T14:30:31+00:00",
     "analysis_complete": false,
     "models_total": 10,
     "models_final_ready": 1,
@@ -72,9 +72,9 @@
       "convergence_blocking_requirements": "100_cycle_window,delta_r",
       "convergence_quality_flags": "",
       "convergence_forecast_status": null,
-      "delta_r_ratio_to_tolerance": 36.96746148461021,
-      "gamma_ratio_to_tolerance": 0.0084423190277556,
-      "period_ratio_to_tolerance": 0.0005355199091191926
+      "delta_r_ratio_to_tolerance": 38.08597197582395,
+      "gamma_ratio_to_tolerance": 0.009178571252496139,
+      "period_ratio_to_tolerance": 0.0005355199095136892
     },
     {
       "model_id": "model_003",
@@ -204,8 +204,8 @@
       "convergence_blocking_requirements": "delta_r",
       "convergence_quality_flags": "surface_velocity_watch",
       "convergence_forecast_status": "worsening",
-      "delta_r_ratio_to_tolerance": 206.42695148003386,
-      "gamma_ratio_to_tolerance": 0.0546063766710134,
+      "delta_r_ratio_to_tolerance": 206.4448021417673,
+      "gamma_ratio_to_tolerance": 0.054678275912730875,
       "period_ratio_to_tolerance": 0.006966371180778121
     },
     {
@@ -221,14 +221,14 @@
       "verification_passed": false,
       "missing": "strict convergence, canonical animation, fixed-cell Fourier depth diagnostic, final-cycle products, trusted animation, verification",
       "active_stage": "create",
-      "latest_period": "278",
+      "latest_period": "279",
       "max_periods": "600",
       "convergence_blocking_requirements": "gamma,period,delta_r",
       "convergence_quality_flags": "",
       "convergence_forecast_status": "worsening",
-      "delta_r_ratio_to_tolerance": 397.3557927667477,
+      "delta_r_ratio_to_tolerance": 404.17089885984666,
       "gamma_ratio_to_tolerance": 5.295484819423992,
-      "period_ratio_to_tolerance": 60.679443471809094
+      "period_ratio_to_tolerance": 61.033913361526636
     }
   ]
 }
