@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import subprocess
 import sys
 import time
@@ -19,9 +20,15 @@ CONVERGENCE_TRENDS = ROOT / "rsp_batch_convergence_trends.py"
 CONVERGENCE_FORECAST = ROOT / "rsp_batch_convergence_forecast.py"
 CONVERGENCE_GATE_AUDIT = ROOT / "rsp_batch_convergence_gate_audit.py"
 AUDIT = ROOT / "rsp_batch_audit.py"
+PHASE_SEAM_AUDIT = ROOT / "rsp_batch_phase_seam_audit.py"
+CYCLE_BOUNDARY_AUDIT = ROOT / "rsp_batch_cycle_boundary_audit.py"
 GALLERY = ROOT / "rsp_batch_make_gallery.py"
 FINISHED_VIEWER = ROOT / "rsp_batch_make_finished_viewer.py"
+FOURIER_FIXED = ROOT / "plot_fourier_fixed_cells_vs_logT.py"
 PRODUCT_STAGES = ("restart", "deep2cycles", "final_cycle", "plot", "verify")
+FOURIER_FIXED_SCHEMA_VERSION = "amplitude-plus-thermodynamic-peak-lags-v1"
+
+from rsp_batch_run import animation_product_is_current
 
 
 def now_iso() -> str:
@@ -36,7 +43,12 @@ def parse_args() -> argparse.Namespace:
         )
     )
     parser.add_argument("--workspace", type=Path, default=DEFAULT_WORKSPACE)
-    parser.add_argument("--models", nargs="+", default=["model_007", "model_008", "model_009"])
+    parser.add_argument(
+        "--models",
+        nargs="+",
+        default=None,
+        help="Models to monitor. Defaults to the active model set reported by live_status.json.",
+    )
     parser.add_argument("--python", type=Path, default=DEFAULT_PYTHON if DEFAULT_PYTHON.exists() else Path(sys.executable))
     parser.add_argument("--bash", default="bash")
     parser.add_argument("--interval-seconds", type=int, default=300)
@@ -73,6 +85,32 @@ def manifest_by_model(workspace: Path) -> dict[str, dict]:
     return {str(row.get("model_id")): row for row in manifest if isinstance(row, dict)}
 
 
+def active_model_ids(workspace: Path) -> list[str]:
+    live = read_json(workspace / "output" / "live_status.json")
+    if not isinstance(live, dict):
+        return []
+    ids: list[str] = []
+    batch = live.get("batch_status")
+    if isinstance(batch, dict):
+        for model_id in batch.get("models", []):
+            text = str(model_id)
+            if text not in ids:
+                ids.append(text)
+        for model_id in batch.get("current_models", []):
+            text = str(model_id)
+            if text not in ids:
+                ids.append(text)
+    for row in live.get("models", []):
+        if not isinstance(row, dict):
+            continue
+        model_id = row.get("model_id")
+        if model_id and row.get("active_stage"):
+            text = str(model_id)
+            if text not in ids:
+                ids.append(text)
+    return ids
+
+
 def convergence_by_model(workspace: Path) -> dict[str, dict]:
     convergence = read_json(workspace / "output" / "convergence_summary_last100.json")
     rows = convergence.get("models", []) if isinstance(convergence, dict) else []
@@ -96,6 +134,39 @@ def stage_complete(record: dict, stage: str) -> bool:
     return isinstance(payload, dict) and payload.get("status") == "complete"
 
 
+def fixed_fourier_product_is_current(record: dict) -> tuple[bool, str]:
+    output_dir = Path(str(record["output_dir"]))
+    prefix = str(record["prefix"])
+    required = {
+        "png": output_dir / f"{prefix}_fourier_fixed_cells_vs_logT.png",
+        "csv": output_dir / f"{prefix}_fourier_fixed_cells_vs_logT.csv",
+        "summary": output_dir / f"{prefix}_fourier_fixed_cells_vs_logT_summary.json",
+    }
+    missing = [label for label, path in required.items() if not path.exists()]
+    if missing:
+        return False, "fixed-cell Fourier product is missing " + ", ".join(missing)
+    summary = read_json(required["summary"])
+    if not isinstance(summary, dict):
+        return False, "fixed-cell Fourier summary could not be parsed"
+    if summary.get("fourier_fixed_schema_version") != FOURIER_FIXED_SCHEMA_VERSION:
+        return False, "fixed-cell Fourier product predates the amplitude/thermodynamic phase-lag schema"
+    if not summary.get("thermodynamic_peak_phase_panel"):
+        return False, "fixed-cell Fourier product is missing thermodynamic peak phase-lag panel metadata"
+    return True, "fixed-cell Fourier product exists"
+
+
+def verified_product_current(record: dict) -> tuple[bool, str]:
+    if not stage_complete(record, "verify"):
+        return False, "verify stage is not complete"
+    animation_current, animation_reason = animation_product_is_current(record, Path(str(record["output_dir"])))
+    if not animation_current:
+        return False, animation_reason
+    fourier_current, fourier_reason = fixed_fourier_product_is_current(record)
+    if not fourier_current:
+        return False, fourier_reason
+    return True, f"{animation_reason}; {fourier_reason}"
+
+
 def model_lock_path(record: dict) -> Path:
     return Path(str(record["output_dir"])) / ".model_run.lock"
 
@@ -108,15 +179,33 @@ def run_command(command: list[str], log_path: Path) -> int:
     return completed.returncode
 
 
-def refresh_analysis(args: argparse.Namespace, log_path: Path) -> int:
+def build_fixed_fourier_product(args: argparse.Namespace, record: dict, log_path: Path) -> int:
+    command = [
+        str(args.python),
+        str(FOURIER_FIXED),
+        "--run-dir",
+        str(Path(str(record["run_dir"]))),
+        "--output-dir",
+        str(Path(str(record["output_dir"]))),
+        "--prefix",
+        str(record["prefix"]),
+        "--fit-harmonics",
+        "14",
+    ]
+    return run_command(command, log_path)
+
+
+def refresh_analysis(args: argparse.Namespace, log_path: Path, models: list[str]) -> int:
     workspace = args.workspace.resolve()
     commands = [
         [str(args.python), str(LIVE_STATUS), "--workspace", str(workspace)],
-        [str(args.python), str(CONVERGENCE), "--workspace", str(workspace), "--models", *args.models, "--merge-existing"],
-        [str(args.python), str(CONVERGENCE_TRENDS), "--workspace", str(workspace), "--models", *args.models, "--merge-existing"],
+        [str(args.python), str(CONVERGENCE), "--workspace", str(workspace), "--models", *models, "--merge-existing"],
+        [str(args.python), str(CONVERGENCE_TRENDS), "--workspace", str(workspace), "--models", *models, "--merge-existing"],
         [str(args.python), str(CONVERGENCE_FORECAST), "--workspace", str(workspace)],
-        [str(args.python), str(CONVERGENCE_GATE_AUDIT), "--workspace", str(workspace), "--models", *args.models],
+        [str(args.python), str(CONVERGENCE_GATE_AUDIT), "--workspace", str(workspace), "--models", *models],
         [str(args.python), str(AUDIT), "--workspace", str(workspace), "--allow-incomplete"],
+        [str(args.python), str(PHASE_SEAM_AUDIT), "--workspace", str(workspace)],
+        [str(args.python), str(CYCLE_BOUNDARY_AUDIT), "--workspace", str(workspace)],
         [str(args.python), str(GALLERY), "--workspace", str(workspace)],
         [str(args.python), str(FINISHED_VIEWER), "--workspace", str(workspace)],
     ]
@@ -127,37 +216,63 @@ def refresh_analysis(args: argparse.Namespace, log_path: Path) -> int:
     return 0
 
 
-def build_products(args: argparse.Namespace, model_id: str, log_path: Path) -> int:
+def build_products(args: argparse.Namespace, model_id: str, log_path: Path, models: list[str]) -> int:
     workspace = args.workspace.resolve()
-    for stage in PRODUCT_STAGES:
-        command = [
-            str(args.python),
-            str(RUNNER),
-            "--workspace",
-            str(workspace),
-            "--model",
-            model_id,
-            "--stage",
-            stage,
-            "--bash",
-            args.bash,
-            "--force",
-        ]
-        code = run_command(command, log_path)
+    record = manifest_by_model(workspace).get(model_id)
+    if record is None:
+        append_log(log_path, f"{model_id} missing manifest record; cannot build fixed-cell Fourier product")
+        return 1
+    animation_current = False
+    if stage_complete(record, "verify"):
+        animation_current, animation_reason = animation_product_is_current(record, Path(str(record["output_dir"])))
+        append_log(log_path, f"{model_id} animation current check: {animation_current} ({animation_reason})")
+    if not animation_current:
+        for stage in PRODUCT_STAGES:
+            command = [
+                str(args.python),
+                str(RUNNER),
+                "--workspace",
+                str(workspace),
+                "--model",
+                model_id,
+                "--stage",
+                stage,
+                "--bash",
+                args.bash,
+                "--force",
+            ]
+            code = run_command(command, log_path)
+            if code != 0:
+                return code
+    fourier_current, fourier_reason = fixed_fourier_product_is_current(record)
+    append_log(log_path, f"{model_id} fixed-cell Fourier current check: {fourier_current} ({fourier_reason})")
+    if not fourier_current:
+        code = build_fixed_fourier_product(args, record, log_path)
         if code != 0:
             return code
-    return refresh_analysis(args, log_path)
+    return refresh_analysis(args, log_path, models)
 
 
 def supervise_once(args: argparse.Namespace, log_path: Path) -> dict[str, object]:
-    refresh_code = refresh_analysis(args, log_path)
+    live_code = run_command(
+        [str(args.python), str(LIVE_STATUS), "--workspace", str(args.workspace.resolve())],
+        log_path,
+    )
+    if live_code != 0:
+        return {"result": "live_status_failed", "returncode": live_code, "models": []}
+
+    models = list(args.models) if args.models else active_model_ids(args.workspace)
+    if not models:
+        return {"result": "no_active_models", "models": []}
+
+    refresh_code = refresh_analysis(args, log_path, models)
     if refresh_code != 0:
-        return {"result": "analysis_refresh_failed", "returncode": refresh_code}
+        return {"result": "analysis_refresh_failed", "returncode": refresh_code, "models": models}
 
     records = manifest_by_model(args.workspace)
     convergence = convergence_by_model(args.workspace)
     actions: list[dict[str, object]] = []
-    for model_id in args.models:
+    for model_id in models:
         record = records.get(model_id)
         row = convergence.get(model_id, {})
         if record is None:
@@ -178,17 +293,27 @@ def supervise_once(args: argparse.Namespace, log_path: Path) -> dict[str, object
         if model_lock_path(record).exists():
             actions.append({"model_id": model_id, "action": "waiting_for_model_lock"})
             continue
-        if stage_complete(record, "verify"):
-            actions.append({"model_id": model_id, "action": "already_verified"})
+        verified_current, verified_reason = verified_product_current(record)
+        if verified_current:
+            actions.append(
+                {
+                    "model_id": model_id,
+                    "action": "already_verified",
+                    "reason": verified_reason,
+                }
+            )
             continue
 
-        append_log(log_path, f"{model_id} converged and unlocked; building products")
-        code = build_products(args, model_id, log_path)
+        append_log(
+            log_path,
+            f"{model_id} converged and unlocked; building products ({verified_reason})",
+        )
+        code = build_products(args, model_id, log_path, models)
         actions.append({"model_id": model_id, "action": "built_products", "returncode": code})
         if code != 0:
-            return {"result": "product_build_failed", "returncode": code, "actions": actions}
+            return {"result": "product_build_failed", "returncode": code, "actions": actions, "models": models}
 
-    return {"result": "ok", "actions": actions}
+    return {"result": "ok", "actions": actions, "models": models}
 
 
 def main() -> int:
@@ -206,8 +331,10 @@ def main() -> int:
             {
                 "updated_at": now_iso(),
                 "workspace": str(args.workspace),
-                "models": args.models,
+                "models": result.get("models", args.models or []),
                 "log": str(log_path),
+                "pid": os.getpid(),
+                "interval_seconds": int(args.interval_seconds),
                 **result,
             },
         )

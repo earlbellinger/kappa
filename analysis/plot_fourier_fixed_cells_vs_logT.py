@@ -39,6 +39,7 @@ from plot_fourier_vs_massdepth_profiles import (
 TWOPI = 2.0 * math.pi
 AMPLITUDE_DASH_THRESHOLD = 0.05
 PEAK_PHASE_SAMPLES = 4096
+FOURIER_FIXED_SCHEMA_VERSION = "amplitude-plus-thermodynamic-peak-lags-v1"
 
 
 def parse_args() -> argparse.Namespace:
@@ -474,6 +475,7 @@ def main() -> None:
 
     summary = {
         "prefix": prefix,
+        "fourier_fixed_schema_version": FOURIER_FIXED_SCHEMA_VERSION,
         "run_dir": str(run_dir),
         "output_dir": str(output_dir),
         "png_path": str(png_path),
