@@ -450,6 +450,62 @@ def commit_and_push(repo: Path, message: str, log_path: Path, branch: str) -> No
         raise RuntimeError(f"Command failed in {repo}: git push origin {branch}")
 
 
+def abort_rebase_if_needed(repo: Path, log_path: Path) -> None:
+    git_dir = repo / ".git"
+    if not ((git_dir / "rebase-merge").exists() or (git_dir / "rebase-apply").exists()):
+        return
+    completed = run_command(["git", "rebase", "--abort"], repo, log_path)
+    if completed.returncode != 0:
+        raise RuntimeError(f"Command failed in {repo}: git rebase --abort")
+
+
+def deploy_pages_app(kappa_root: Path, pages_root: Path, log_path: Path) -> None:
+    for attempt in range(1, 4):
+        abort_rebase_if_needed(pages_root, log_path)
+        update_branch(pages_root, log_path, "master")
+        copy_site_to_pages(kappa_root, pages_root)
+        if not git_dirty(pages_root):
+            append_log(log_path, f"[{now_iso()}] {pages_root}: no Pages app changes to commit")
+            return
+        completed = run_command(["git", "add", "apps/kappa"], pages_root, log_path)
+        if completed.returncode != 0:
+            raise RuntimeError(f"Command failed in {pages_root}: git add apps/kappa")
+        completed = run_command(["git", "commit", "-m", "Refresh Kappa batch status"], pages_root, log_path)
+        if completed.returncode != 0:
+            raise RuntimeError(f"Command failed in {pages_root}: git commit -m Refresh Kappa batch status")
+        completed = run_command(["git", "fetch", "origin", "master"], pages_root, log_path)
+        if completed.returncode != 0:
+            raise RuntimeError(f"Command failed in {pages_root}: git fetch origin master")
+        completed = run_command(["git", "rebase", "-X", "theirs", "origin/master"], pages_root, log_path)
+        if completed.returncode != 0:
+            append_log(
+                log_path,
+                f"[{now_iso()}] Pages rebase conflicted during deploy attempt {attempt}; "
+                "resolving by re-copying the generated Kappa app",
+            )
+            copy_site_to_pages(kappa_root, pages_root)
+            completed = run_command(["git", "add", "apps/kappa"], pages_root, log_path)
+            if completed.returncode != 0:
+                abort_rebase_if_needed(pages_root, log_path)
+                raise RuntimeError(f"Command failed in {pages_root}: git add apps/kappa")
+            completed = run_command(["git", "-c", "core.editor=true", "rebase", "--continue"], pages_root, log_path)
+            if completed.returncode != 0:
+                abort_rebase_if_needed(pages_root, log_path)
+                append_log(
+                    log_path,
+                    f"[{now_iso()}] Pages rebase conflict resolution failed during deploy attempt {attempt}; retrying",
+                )
+                continue
+        completed = run_command(["git", "push", "origin", "master"], pages_root, log_path)
+        if completed.returncode == 0:
+            return
+        append_log(
+            log_path,
+            f"[{now_iso()}] Pages push failed during deploy attempt {attempt}; retrying",
+        )
+    raise RuntimeError("Failed to deploy Pages app after 3 attempts")
+
+
 def update_branch(repo: Path, log_path: Path, branch: str) -> None:
     completed = run_command(["git", "fetch", "origin", branch], repo, log_path)
     if completed.returncode != 0:
@@ -548,9 +604,7 @@ def deploy(args: argparse.Namespace, log_path: Path) -> None:
         raise RuntimeError("Path leak check found local paths in Kappa site")
 
     commit_and_push(kappa_root, "Refresh batch status snapshot", log_path, "main")
-    update_branch(pages_root, log_path, "master")
-    copy_site_to_pages(kappa_root, pages_root)
-    commit_and_push(pages_root, "Refresh Kappa batch status", log_path, "master")
+    deploy_pages_app(kappa_root, pages_root, log_path)
 
 
 def main() -> int:
