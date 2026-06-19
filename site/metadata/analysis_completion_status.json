@@ -1,6 +1,6 @@
 {
   "summary": {
-    "generated_at": "2026-06-19T18:48:22+00:00",
+    "generated_at": "2026-06-19T18:58:55+00:00",
     "analysis_complete": false,
     "models_total": 10,
     "models_final_ready": 1,
@@ -45,7 +45,7 @@
       "verification_passed": true,
       "missing": "strict convergence, trusted animation",
       "active_stage": "continue_saturation",
-      "latest_period": "2001",
+      "latest_period": "2002",
       "max_periods": "5000",
       "convergence_blocking_requirements": "100_cycle_window,delta_r",
       "convergence_quality_flags": "surface_velocity_supersonic",
@@ -67,14 +67,14 @@
       "verification_passed": true,
       "missing": "strict convergence, trusted animation",
       "active_stage": "continue_saturation",
-      "latest_period": "2046",
+      "latest_period": "2047",
       "max_periods": "5000",
       "convergence_blocking_requirements": "100_cycle_window,delta_r",
       "convergence_quality_flags": "",
       "convergence_forecast_status": null,
-      "delta_r_ratio_to_tolerance": 53.73275854631205,
+      "delta_r_ratio_to_tolerance": 54.84966791802402,
       "gamma_ratio_to_tolerance": 0.012666272095232783,
-      "period_ratio_to_tolerance": 0.0008103165802165705
+      "period_ratio_to_tolerance": 0.0008103165838224339
     },
     {
       "model_id": "model_003",
@@ -177,7 +177,7 @@
       "verification_passed": false,
       "missing": "strict convergence, canonical animation, fixed-cell Fourier depth diagnostic, final-cycle products, trusted animation, verification",
       "active_stage": "continue_saturation",
-      "latest_period": "1727",
+      "latest_period": "1728",
       "max_periods": "5000",
       "convergence_blocking_requirements": "delta_r",
       "convergence_quality_flags": "surface_velocity_supersonic",
@@ -199,13 +199,13 @@
       "verification_passed": false,
       "missing": "strict convergence, canonical animation, fixed-cell Fourier depth diagnostic, final-cycle products, trusted animation, verification",
       "active_stage": "continue_saturation",
-      "latest_period": "1170",
+      "latest_period": "1171",
       "max_periods": "5000",
       "convergence_blocking_requirements": "delta_r",
       "convergence_quality_flags": "surface_velocity_watch",
       "convergence_forecast_status": "worsening",
-      "delta_r_ratio_to_tolerance": 206.65392107988805,
-      "gamma_ratio_to_tolerance": 0.055005902259483604,
+      "delta_r_ratio_to_tolerance": 206.66873845531552,
+      "gamma_ratio_to_tolerance": 0.055047303654734946,
       "period_ratio_to_tolerance": 0.006942914469502618
     },
     {
@@ -221,14 +221,14 @@
       "verification_passed": false,
       "missing": "strict convergence, canonical animation, fixed-cell Fourier depth diagnostic, final-cycle products, trusted animation, verification",
       "active_stage": "create",
-      "latest_period": "295",
+      "latest_period": "296",
       "max_periods": "600",
       "convergence_blocking_requirements": "gamma,period,delta_r",
       "convergence_quality_flags": "",
       "convergence_forecast_status": "worsening",
-      "delta_r_ratio_to_tolerance": 342.3666897868302,
+      "delta_r_ratio_to_tolerance": 356.13588296776277,
       "gamma_ratio_to_tolerance": 5.5250542682019015,
-      "period_ratio_to_tolerance": 61.214335400075136
+      "period_ratio_to_tolerance": 61.27842155197354
     }
   ]
 }
