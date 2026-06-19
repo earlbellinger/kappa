@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-19T12:45:58.313945+00:00",
+  "generated_at": "2026-06-19T12:59:51.707208+00:00",
   "models": [
     {
       "model_id": "model_000",
@@ -27,14 +27,14 @@
     {
       "model_id": "model_001",
       "run_name": "model_001_M0p5602_Z0p003592_T6824",
-      "history_source": "continue_saturation",
-      "history_path": "<local-rre-root>/rsp_batch_runs/runs/model_001_M0p5602_Z0p003592_T6824/LOGS_continue_saturation/history.data",
+      "history_source": "continue_saturation_resume:LOGS_continue_saturation_resume_2500000",
+      "history_path": "<local-rre-root>/rsp_batch_runs/runs/model_001_M0p5602_Z0p003592_T6824/LOGS_continue_saturation_resume_2500000/history.data",
       "diagnostic_png": "<local-rre-root>/rsp_batch_runs/output/cycle_diagnostics/model_001_M0p5602_Z0p003592_T6824_cycle_modulation_diagnostic.png",
       "history_candidate_cycle_counts": [
         {
           "history_source": "continue_saturation_resume:LOGS_continue_saturation_resume_2500000",
           "history_path": "<local-rre-root>/rsp_batch_runs/runs/model_001_M0p5602_Z0p003592_T6824/LOGS_continue_saturation_resume_2500000/history.data",
-          "cycle_count": 79
+          "cycle_count": 80
         },
         {
           "history_source": "continue_saturation",
@@ -52,15 +52,15 @@
           "cycle_count": 609
         }
       ],
-      "cycle_count": 1909,
+      "cycle_count": 80,
       "last_cycle_count_used": 80,
-      "max_l_modulation_fraction": 0.01825041585672436,
-      "min_v_modulation_mag": 0.02125423090948346,
-      "period_modulation_fraction": 0.016945448988228973,
-      "radius_amplitude_modulation_fraction": 0.07037958200170415,
-      "last_max_l_lsun": 71.83196371385539,
-      "last_min_abs_mag_v": 0.043484579152069894,
-      "last_period_days": 0.5941673386269031
+      "max_l_modulation_fraction": 0.010923651996886432,
+      "min_v_modulation_mag": 0.01198024881140717,
+      "period_modulation_fraction": 0.01521459208714099,
+      "radius_amplitude_modulation_fraction": 0.03781615292557676,
+      "last_max_l_lsun": 72.62158045903004,
+      "last_min_abs_mag_v": 0.03162231063755102,
+      "last_period_days": 0.5951336151254054
     },
     {
       "model_id": "model_002",
@@ -72,7 +72,7 @@
         {
           "history_source": "continue_saturation_resume:LOGS_continue_saturation_resume_2480000",
           "history_path": "<local-rre-root>/rsp_batch_runs/runs/model_002_M0p5753_Z0p00707_T6044/LOGS_continue_saturation_resume_2480000/history.data",
-          "cycle_count": 26
+          "cycle_count": 27
         },
         {
           "history_source": "continue_saturation",
@@ -262,13 +262,13 @@
       ],
       "cycle_count": 86,
       "last_cycle_count_used": 80,
-      "max_l_modulation_fraction": 0.2257792623535583,
-      "min_v_modulation_mag": 0.30683538322633264,
-      "period_modulation_fraction": 0.39088887841666825,
+      "max_l_modulation_fraction": 0.005529560651219889,
+      "min_v_modulation_mag": 0.006340536080847607,
+      "period_modulation_fraction": 0.017957120240819798,
       "radius_amplitude_modulation_fraction": 0.01568536226836872,
-      "last_max_l_lsun": 55.478779145642285,
-      "last_min_abs_mag_v": 0.3581060682140294,
-      "last_period_days": 0.3443887927362539
+      "last_max_l_lsun": 71.6191248505009,
+      "last_min_abs_mag_v": 0.05131522624497094,
+      "last_period_days": 0.5562727452447689
     },
     {
       "model_id": "model_008",
@@ -280,7 +280,7 @@
         {
           "history_source": "continue_saturation_resume:LOGS_continue_saturation_resume_1620000",
           "history_path": "<local-rre-root>/rsp_batch_runs/runs/model_008_M0p6151_Z0p0004406_T6792/LOGS_continue_saturation_resume_1620000/history.data",
-          "cycle_count": 133
+          "cycle_count": 134
         },
         {
           "history_source": "continue_saturation",
@@ -293,15 +293,15 @@
           "cycle_count": 608
         }
       ],
-      "cycle_count": 133,
+      "cycle_count": 134,
       "last_cycle_count_used": 80,
-      "max_l_modulation_fraction": 0.007601444509898358,
-      "min_v_modulation_mag": 0.009423946476218303,
-      "period_modulation_fraction": 0.09000190209182549,
-      "radius_amplitude_modulation_fraction": 0.16365691827850606,
-      "last_max_l_lsun": 63.66131350302338,
-      "last_min_abs_mag_v": 0.2512193404114706,
-      "last_period_days": 0.5747737655094625
+      "max_l_modulation_fraction": 0.007618977780918366,
+      "min_v_modulation_mag": 0.0094459556731889,
+      "period_modulation_fraction": 0.28000191928435064,
+      "radius_amplitude_modulation_fraction": 0.16367211134828155,
+      "last_max_l_lsun": 63.66801412030495,
+      "last_min_abs_mag_v": 0.2510885498029291,
+      "last_period_days": 0.4547660463936154
     },
     {
       "model_id": "model_009",
@@ -313,7 +313,7 @@
         {
           "history_source": "saturation_resume:LOGS_saturation_resume_130000",
           "history_path": "<local-rre-root>/rsp_batch_runs/runs/model_009_M0p6668_Z0p0001120_T6852/LOGS_saturation_resume_130000/history.data",
-          "cycle_count": 143
+          "cycle_count": 144
         },
         {
           "history_source": "saturation",
@@ -321,15 +321,15 @@
           "cycle_count": 147
         }
       ],
-      "cycle_count": 143,
+      "cycle_count": 144,
       "last_cycle_count_used": 80,
-      "max_l_modulation_fraction": 0.0007423332457323132,
-      "min_v_modulation_mag": 0.0009186984654873109,
-      "period_modulation_fraction": 0.07517570106212085,
-      "radius_amplitude_modulation_fraction": 0.3178273740307818,
-      "last_max_l_lsun": 51.327108310377824,
-      "last_min_abs_mag_v": 0.5068649406624567,
-      "last_period_days": 0.5193487816446236
+      "max_l_modulation_fraction": 0.0007612913759511211,
+      "min_v_modulation_mag": 0.000941981711670481,
+      "period_modulation_fraction": 0.07523647404045766,
+      "radius_amplitude_modulation_fraction": 0.3132975966147544,
+      "last_max_l_lsun": 51.33781726403159,
+      "last_min_abs_mag_v": 0.5066026115283935,
+      "last_period_days": 0.4907475194503377
     }
   ]
 }
