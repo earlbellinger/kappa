@@ -1,6 +1,6 @@
 {
   "summary": {
-    "generated_at": "2026-06-20T01:21:38+00:00",
+    "generated_at": "2026-06-20T01:37:59+00:00",
     "analysis_complete": false,
     "models_total": 10,
     "models_final_ready": 1,
@@ -45,14 +45,14 @@
       "verification_passed": true,
       "missing": "strict convergence, trusted animation",
       "active_stage": "continue_saturation",
-      "latest_period": "2015",
+      "latest_period": "2016",
       "max_periods": "5000",
       "convergence_blocking_requirements": "delta_r",
       "convergence_quality_flags": "surface_velocity_supersonic",
       "convergence_forecast_status": "approaching",
-      "delta_r_ratio_to_tolerance": 41.05230346184664,
+      "delta_r_ratio_to_tolerance": 40.231053911112525,
       "gamma_ratio_to_tolerance": 0.5563032818912523,
-      "period_ratio_to_tolerance": 0.2875830417676036
+      "period_ratio_to_tolerance": 0.28758265315822473
     },
     {
       "model_id": "model_002",
@@ -67,14 +67,14 @@
       "verification_passed": true,
       "missing": "strict convergence, trusted animation",
       "active_stage": "continue_saturation",
-      "latest_period": "2068",
+      "latest_period": "2069",
       "max_periods": "5000",
       "convergence_blocking_requirements": "100_cycle_window,delta_r",
       "convergence_quality_flags": "",
       "convergence_forecast_status": null,
-      "delta_r_ratio_to_tolerance": 78.27830792856798,
+      "delta_r_ratio_to_tolerance": 79.39278906221037,
       "gamma_ratio_to_tolerance": 0.017767722585922217,
-      "period_ratio_to_tolerance": 0.0012173173184833153
+      "period_ratio_to_tolerance": 0.0012173173220427348
     },
     {
       "model_id": "model_003",
@@ -177,14 +177,14 @@
       "verification_passed": false,
       "missing": "strict convergence, canonical animation, fixed-cell Fourier depth diagnostic, final-cycle products, trusted animation, verification",
       "active_stage": "continue_saturation",
-      "latest_period": "1740",
+      "latest_period": "1741",
       "max_periods": "5000",
       "convergence_blocking_requirements": "delta_r",
       "convergence_quality_flags": "surface_velocity_supersonic",
       "convergence_forecast_status": "approaching",
-      "delta_r_ratio_to_tolerance": 16.509297227987854,
+      "delta_r_ratio_to_tolerance": 16.543706023770678,
       "gamma_ratio_to_tolerance": 0.318659495526483,
-      "period_ratio_to_tolerance": 0.1339905843626829
+      "period_ratio_to_tolerance": 0.1339905250225611
     },
     {
       "model_id": "model_008",
@@ -199,13 +199,13 @@
       "verification_passed": false,
       "missing": "strict convergence, canonical animation, fixed-cell Fourier depth diagnostic, final-cycle products, trusted animation, verification",
       "active_stage": "continue_saturation",
-      "latest_period": "1190",
+      "latest_period": "1191",
       "max_periods": "5000",
       "convergence_blocking_requirements": "delta_r",
       "convergence_quality_flags": "surface_velocity_watch",
       "convergence_forecast_status": "worsening",
-      "delta_r_ratio_to_tolerance": 206.93234414059717,
-      "gamma_ratio_to_tolerance": 0.05614497229597306,
+      "delta_r_ratio_to_tolerance": 206.944063105599,
+      "gamma_ratio_to_tolerance": 0.0565038385545941,
       "period_ratio_to_tolerance": 0.005773542042564976
     },
     {
@@ -221,12 +221,12 @@
       "verification_passed": false,
       "missing": "strict convergence, canonical animation, fixed-cell Fourier depth diagnostic, final-cycle products, trusted animation, verification",
       "active_stage": "create",
-      "latest_period": "318",
+      "latest_period": "319",
       "max_periods": "600",
       "convergence_blocking_requirements": "gamma,period,delta_r",
       "convergence_quality_flags": "",
       "convergence_forecast_status": "worsening",
-      "delta_r_ratio_to_tolerance": 407.37413686039866,
+      "delta_r_ratio_to_tolerance": 397.96979624541257,
       "gamma_ratio_to_tolerance": 5.5250542682019015,
       "period_ratio_to_tolerance": 62.79683123869096
     }
