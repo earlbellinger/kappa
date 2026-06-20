@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-20T00:03:58.785314+00:00",
+  "generated_at": "2026-06-20T00:21:52.803975+00:00",
   "row_count": 10,
   "rows": [
     {
@@ -748,15 +748,8 @@
       "final_cycle_summary": "<local-rre-root>/rsp_batch_runs/output/model_007_M0p6887_Z0p004060_T6669/mesa_rsp_model_007_M0p6887_Z0p004060_T6669_final_cycle_summary.json",
       "history_radius_maxima": {
         "history_file": "<local-rre-root>/rsp_batch_runs/runs/model_007_M0p6887_Z0p004060_T6669/LOGS_continue_saturation_resume_2270000/history.data",
-        "radius_maxima_count": 110,
+        "radius_maxima_count": 111,
         "recent_radius_maxima": [
-          {
-            "age_days": 1300.4118862305943,
-            "index": 14149,
-            "luminosity_lsun": 50.596258443693486,
-            "radius_rsun": 5.723302188192737,
-            "teff_k": 6510.443617190855
-          },
           {
             "age_days": 1300.9677417131545,
             "index": 14283,
@@ -784,17 +777,16 @@
             "luminosity_lsun": 50.685640533139264,
             "radius_rsun": 5.723586976234505,
             "teff_k": 6513.724604619679
+          },
+          {
+            "age_days": 1303.195449378173,
+            "index": 14820,
+            "luminosity_lsun": 50.76872768694044,
+            "radius_rsun": 5.723407749578611,
+            "teff_k": 6516.87796771015
           }
         ],
         "recent_radius_maximum_intervals": [
-          {
-            "left_index": 14149,
-            "luminosity_change_lsun": 0.09065467819880269,
-            "period_days": 0.5558554825602187,
-            "radius_change_rsun": 0.0001402066247795375,
-            "right_index": 14283,
-            "teff_change_k": 3.3673862357481994
-          },
           {
             "left_index": 14283,
             "luminosity_change_lsun": 0.08157018407955974,
@@ -818,13 +810,21 @@
             "radius_change_rsun": 0.00015077143893194034,
             "right_index": 14686,
             "teff_change_k": 3.409915589708362
+          },
+          {
+            "left_index": 14686,
+            "luminosity_change_lsun": 0.08308715380117349,
+            "period_days": 0.5559351372030505,
+            "radius_change_rsun": -0.0001792266558942046,
+            "right_index": 14820,
+            "teff_change_k": 3.15336309047143
           }
         ]
       },
-      "latest_radius_maximum_luminosity_change_lsun": 0.09198509998785909,
-      "latest_radius_maximum_period_days": 0.555836612131543,
-      "latest_radius_maximum_radius_change_rsun": 0.00015077143893194034,
-      "latest_radius_maximum_teff_change_k": 3.409915589708362,
+      "latest_radius_maximum_luminosity_change_lsun": 0.08308715380117349,
+      "latest_radius_maximum_period_days": 0.5559351372030505,
+      "latest_radius_maximum_radius_change_rsun": -0.0001792266558942046,
+      "latest_radius_maximum_teff_change_k": 3.15336309047143,
       "lightcurve_boundary": {
         "exists": false
       },
@@ -840,15 +840,8 @@
       "final_cycle_summary": "<local-rre-root>/rsp_batch_runs/output/model_008_M0p6151_Z0p0004406_T6792/mesa_rsp_model_008_M0p6151_Z0p0004406_T6792_final_cycle_summary.json",
       "history_radius_maxima": {
         "history_file": "<local-rre-root>/rsp_batch_runs/runs/model_008_M0p6151_Z0p0004406_T6792/LOGS_continue_saturation_resume_1620000/history.data",
-        "radius_maxima_count": 170,
+        "radius_maxima_count": 171,
         "recent_radius_maxima": [
-          {
-            "age_days": 1126.960388822221,
-            "index": 16524,
-            "luminosity_lsun": 60.12839999748437,
-            "radius_rsun": 5.730765666236308,
-            "teff_k": 6749.184889764769
-          },
           {
             "age_days": 1127.5920068147373,
             "index": 16624,
@@ -876,17 +869,16 @@
             "luminosity_lsun": 60.12339455600108,
             "radius_rsun": 5.731104699868589,
             "teff_k": 6748.8605889448
+          },
+          {
+            "age_days": 1130.1184784895424,
+            "index": 17024,
+            "luminosity_lsun": 60.12212817130142,
+            "radius_rsun": 5.731189897427636,
+            "teff_k": 6748.77885318753
           }
         ],
         "recent_radius_maximum_intervals": [
-          {
-            "left_index": 16524,
-            "luminosity_change_lsun": -0.0012473955670841974,
-            "period_days": 0.6316179925163397,
-            "radius_change_rsun": 8.450972890461372e-05,
-            "right_index": 16624,
-            "teff_change_k": -0.08082173731691
-          },
           {
             "left_index": 16624,
             "luminosity_change_lsun": -0.0012456718243925025,
@@ -910,13 +902,21 @@
             "radius_change_rsun": 8.501581651731982e-05,
             "right_index": 16924,
             "teff_change_k": -0.08148908731163829
+          },
+          {
+            "left_index": 16924,
+            "luminosity_change_lsun": -0.0012663846996616712,
+            "period_days": 0.6316180437293042,
+            "radius_change_rsun": 8.519755904679016e-05,
+            "right_index": 17024,
+            "teff_change_k": -0.08173575726959825
           }
         ]
       },
-      "latest_radius_maximum_luminosity_change_lsun": -0.0012610107928381353,
-      "latest_radius_maximum_period_days": 0.6316180200951749,
-      "latest_radius_maximum_radius_change_rsun": 8.501581651731982e-05,
-      "latest_radius_maximum_teff_change_k": -0.08148908731163829,
+      "latest_radius_maximum_luminosity_change_lsun": -0.0012663846996616712,
+      "latest_radius_maximum_period_days": 0.6316180437293042,
+      "latest_radius_maximum_radius_change_rsun": 8.519755904679016e-05,
+      "latest_radius_maximum_teff_change_k": -0.08173575726959825,
       "lightcurve_boundary": {
         "exists": false
       },
